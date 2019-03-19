@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,7 +14,9 @@
 		5EF87220EE56F46EC4079C8B9990D89D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F940C819049CFF8741C0F5E3E075E607 /* Cocoa.framework */; };
 		869F714EAA538C76B6013353773B3EAF /* TextAnnotation-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 658CD5A547F44B74F5DD5C542333EC94 /* TextAnnotation-dummy.m */; };
 		8C77386D195D360A6A000F6AE9CA355E /* Pods-TextAnnotation_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 354AD102F44DAC6B4A46D8FF3AD6B03C /* Pods-TextAnnotation_Tests-dummy.m */; };
-		B37C5B00A32C48B6E24745D5344C6A3D /* ReplaceMe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92E3EE5A73BAEF8EBA0EE06DCD747A0 /* ReplaceMe.swift */; };
+		ACE1820B224246B600CEC127 /* TextAnnotationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE1820A224246B600CEC127 /* TextAnnotationDelegate.swift */; };
+		ACE1820C224246D600CEC127 /* TextAnnotationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE182082242466A00CEC127 /* TextAnnotationsController.swift */; };
+		B37C5B00A32C48B6E24745D5344C6A3D /* TextAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92E3EE5A73BAEF8EBA0EE06DCD747A0 /* TextAnnotation.swift */; };
 		CBBDCAA3E093BB40A04FD117CFBAC221 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F940C819049CFF8741C0F5E3E075E607 /* Cocoa.framework */; };
 		E2469B07B183200520E66146492FC609 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F940C819049CFF8741C0F5E3E075E607 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -49,26 +51,28 @@
 		354AD102F44DAC6B4A46D8FF3AD6B03C /* Pods-TextAnnotation_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-TextAnnotation_Tests-dummy.m"; sourceTree = "<group>"; };
 		3DAE950CCE7B8D85676EAA580D698787 /* Pods-TextAnnotation_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TextAnnotation_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		443D33AC62A60AF235A28943EF7F85DC /* TextAnnotation-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "TextAnnotation-Info.plist"; sourceTree = "<group>"; };
-		450132823E2D25A42CBD49292D353255 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		450132823E2D25A42CBD49292D353255 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		561EB3D4A9BC7BBCB510774A25A0B074 /* TextAnnotation.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = TextAnnotation.modulemap; sourceTree = "<group>"; };
 		658CD5A547F44B74F5DD5C542333EC94 /* TextAnnotation-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "TextAnnotation-dummy.m"; sourceTree = "<group>"; };
 		6AC8EABA0BF1981C5E744062B1B9453C /* Pods-TextAnnotation_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-TextAnnotation_Tests-umbrella.h"; sourceTree = "<group>"; };
-		6BE1D18E3A1F8C8B75C07AE9F0DC6D83 /* Pods_TextAnnotation_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_TextAnnotation_Example.framework; path = "Pods-TextAnnotation_Example.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6DA5B5364FC19956087335AB28771C31 /* TextAnnotation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = TextAnnotation.framework; path = TextAnnotation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6BE1D18E3A1F8C8B75C07AE9F0DC6D83 /* Pods_TextAnnotation_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TextAnnotation_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6DA5B5364FC19956087335AB28771C31 /* TextAnnotation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TextAnnotation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7CDBFF36018C2409836FBBF852A83AAC /* Pods-TextAnnotation_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TextAnnotation_Tests-Info.plist"; sourceTree = "<group>"; };
 		878849AC8FD94234CF34A8DC99102384 /* TextAnnotation.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = TextAnnotation.xcconfig; sourceTree = "<group>"; };
 		87AF92EFDE6D1E4D7A77C1C6E6EB81CB /* Pods-TextAnnotation_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-TextAnnotation_Example-frameworks.sh"; sourceTree = "<group>"; };
 		8EF100186837598CE1BB6333B18EDFF4 /* Pods-TextAnnotation_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TextAnnotation_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		95585C8AE8856E0FB321EC102F265AC9 /* Pods_TextAnnotation_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_TextAnnotation_Tests.framework; path = "Pods-TextAnnotation_Tests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		95585C8AE8856E0FB321EC102F265AC9 /* Pods_TextAnnotation_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TextAnnotation_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		978E0BA17F0D564CB1560B53DA608CC0 /* Pods-TextAnnotation_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-TextAnnotation_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A6B39A4A1D3C6FFA494EF469A7F22DB5 /* Pods-TextAnnotation_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TextAnnotation_Example.release.xcconfig"; sourceTree = "<group>"; };
 		ABC9FF214C16DED128CC71F155EA3B34 /* Pods-TextAnnotation_Example-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TextAnnotation_Example-Info.plist"; sourceTree = "<group>"; };
-		B55EB5256DA977B4B0C2E9DE566CB35A /* TextAnnotation.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = TextAnnotation.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		ACE182082242466A00CEC127 /* TextAnnotationsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TextAnnotationsController.swift; path = TextAnnotation/Classes/TextAnnotationsController.swift; sourceTree = "<group>"; };
+		ACE1820A224246B600CEC127 /* TextAnnotationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TextAnnotationDelegate.swift; path = TextAnnotation/Classes/TextAnnotationDelegate.swift; sourceTree = "<group>"; };
+		B55EB5256DA977B4B0C2E9DE566CB35A /* TextAnnotation.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = TextAnnotation.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		BC74F61A93E3480EDFA3D8C7564D78F2 /* Pods-TextAnnotation_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-TextAnnotation_Example-umbrella.h"; sourceTree = "<group>"; };
 		DB885DDC9234AC4E954A60861B620FC3 /* Pods-TextAnnotation_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TextAnnotation_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
-		E3D950C66917E9F88E53FE158F86A315 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
-		F92E3EE5A73BAEF8EBA0EE06DCD747A0 /* ReplaceMe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ReplaceMe.swift; path = TextAnnotation/Classes/ReplaceMe.swift; sourceTree = "<group>"; };
+		E3D950C66917E9F88E53FE158F86A315 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F92E3EE5A73BAEF8EBA0EE06DCD747A0 /* TextAnnotation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextAnnotation.swift; path = TextAnnotation/Classes/TextAnnotation.swift; sourceTree = "<group>"; };
 		F940C819049CFF8741C0F5E3E075E607 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
@@ -144,7 +148,9 @@
 		BE6954FCDFF605318F56889B1E975116 /* TextAnnotation */ = {
 			isa = PBXGroup;
 			children = (
-				F92E3EE5A73BAEF8EBA0EE06DCD747A0 /* ReplaceMe.swift */,
+				F92E3EE5A73BAEF8EBA0EE06DCD747A0 /* TextAnnotation.swift */,
+				ACE1820A224246B600CEC127 /* TextAnnotationDelegate.swift */,
+				ACE182082242466A00CEC127 /* TextAnnotationsController.swift */,
 				CC6F001EE76F3B3E0DF4CA6B75FF1784 /* Pod */,
 				3A58BBBEA1CD7A6BCF6CDAFA72BCC950 /* Support Files */,
 			);
@@ -317,6 +323,11 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0930;
 				LastUpgradeCheck = 0930;
+				TargetAttributes = {
+					041389E84C35AE9D2D24C45F740CD3FC = {
+						LastSwiftMigration = 1010;
+					};
+				};
 			};
 			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -382,7 +393,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B37C5B00A32C48B6E24745D5344C6A3D /* ReplaceMe.swift in Sources */,
+				B37C5B00A32C48B6E24745D5344C6A3D /* TextAnnotation.swift in Sources */,
+				ACE1820C224246D600CEC127 /* TextAnnotationsController.swift in Sources */,
+				ACE1820B224246B600CEC127 /* TextAnnotationDelegate.swift in Sources */,
 				869F714EAA538C76B6013353773B3EAF /* TextAnnotation-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -411,6 +424,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -436,6 +450,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -447,6 +463,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -472,6 +489,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -564,8 +582,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.2;
 				SYMROOT = "${SRCROOT}/../build";
 			};
