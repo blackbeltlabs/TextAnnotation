@@ -2,10 +2,8 @@ use_frameworks!
 
 target 'TextAnnotation_Example' do
   pod 'TextAnnotation', :path => '../'
+end
 
-  target 'TextAnnotation_Tests' do
-    inherit! :search_paths
-
-    
-  end
+target 'TextAnnotation_Tests' do
+  pod 'TextAnnotation', :path => '../'
 end

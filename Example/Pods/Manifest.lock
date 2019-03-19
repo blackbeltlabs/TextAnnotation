@@ -1,0 +1,16 @@
+PODS:
+  - TextAnnotation (0.1.0)
+
+DEPENDENCIES:
+  - TextAnnotation (from `../`)
+
+EXTERNAL SOURCES:
+  TextAnnotation:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  TextAnnotation: c0c4e145eeaedaa01b84aa10901c5eee2f5b86f5
+
+PODFILE CHECKSUM: 1e678a16d5bacffdffbfaf2975293583b01dfd64
+
+COCOAPODS: 1.6.1

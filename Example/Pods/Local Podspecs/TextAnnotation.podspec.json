@@ -1,0 +1,22 @@
+{
+  "name": "TextAnnotation",
+  "version": "0.1.0",
+  "summary": "A short description of TextAnnotation.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/Mirko Kiefer/TextAnnotation",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Mirko Kiefer": "mail@mirkokiefer.com"
+  },
+  "source": {
+    "git": "https://github.com/Mirko Kiefer/TextAnnotation.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "osx": "10.10"
+  },
+  "source_files": "TextAnnotation/Classes/**/*"
+}

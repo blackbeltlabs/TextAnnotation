@@ -1,6 +1,6 @@
 # TextAnnotation
 
-[![CI Status](https://img.shields.io/travis/Mirko Kiefer/TextAnnotation.svg?style=flat)](https://travis-ci.org/Mirko Kiefer/TextAnnotation)
+[![CI Status](https://img.shields.io/travis/blackbeltlabs/TextAnnotation.svg?style=flat)](https://travis-ci.org/blackbeltlabs/TextAnnotation)
 [![Version](https://img.shields.io/cocoapods/v/TextAnnotation.svg?style=flat)](https://cocoapods.org/pods/TextAnnotation)
 [![License](https://img.shields.io/cocoapods/l/TextAnnotation.svg?style=flat)](https://cocoapods.org/pods/TextAnnotation)
 [![Platform](https://img.shields.io/cocoapods/p/TextAnnotation.svg?style=flat)](https://cocoapods.org/pods/TextAnnotation)
