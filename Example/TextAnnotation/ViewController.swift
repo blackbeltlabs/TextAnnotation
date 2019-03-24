@@ -31,22 +31,21 @@ class TATextView: NSTextView {
 class TAContainerView: NSView {
     
     // MARK: - Variables
-//    var activateResponder: TAActivateResponder?
+    var activateResponder: TAActivateResponder?
     
     var isActive: Bool = false {
         didSet {
             guard isActive != oldValue else { return }
             
+            if isActive, let responder = activateResponder {
+                responder.textViewDidActivate(self)
+            }
+            
             border.isHidden = !isActive
             
-            guard textView != nil, let theWindow = textView.window else { return }
+            guard textView != nil else { return }
             textView.backgroundColor = isActive ? NSColor.white : NSColor.clear
             textView.textColor = isActive ? NSColor.black : NSColor.gray
-            
-            // FIXME: implement TAActivateResponder
-            if isActive, theWindow.firstResponder != textView {
-                theWindow.makeFirstResponder(textView)
-            }
         }
     }
 
@@ -154,13 +153,13 @@ class ViewController: NSViewController, TextAnnotationsController {
         
         let view1 = TAContainerView(frame: NSRect(origin: location, size: size))
         view1.text = "ann. 1"
-//        view1.activateResponder = self
+        view1.activateResponder = self
         view.addSubview(view1)
         annotations.append(view1)
         
         let view2 = TAContainerView(frame: NSRect(origin: CGPoint(x: 50, y: 20), size: size))
         view2.text = "ann. 2"
-//        view2.activateResponder = self
+        view2.activateResponder = self
         view.addSubview(view2)
         annotations.append(view2)
         
@@ -171,10 +170,7 @@ class ViewController: NSViewController, TextAnnotationsController {
   override func mouseDown(with event: NSEvent) {
     // TextAnnotationsController needs to handle mouse down events
 //    textAnnotationsMouseDown(event: event)
-    for item in annotations {
-        item.isActive = false
-    }
-    view.window?.makeFirstResponder(nil)
+    activateTextView(nil)
   }
   
   override func mouseDragged(with event: NSEvent) {
@@ -184,6 +180,19 @@ class ViewController: NSViewController, TextAnnotationsController {
     
     // MARK: - Private
     
+    func activateTextView(_ textView: TAContainerView?) {
+        if let aTextView = textView {
+            for item in annotations {
+                guard item != aTextView else { continue }
+                item.isActive = false
+            }
+        } else {
+            for item in annotations {
+                item.isActive = false
+            }
+            view.window?.makeFirstResponder(nil)
+        }
+    }
     
 }
 
@@ -197,8 +206,9 @@ extension ViewController: TextAnnotationDelegate {
   }
 }
 
-//extension ViewController: TAActivateResponder {
-//    func textViewDidActivate() {
-//        
-//    }
-//}
+extension ViewController: TAActivateResponder {
+    func textViewDidActivate(_ activeItem: Any?) {
+        guard let anActiveItem = activeItem as? TAContainerView else { return }
+        activateTextView(anActiveItem)
+    }
+}
