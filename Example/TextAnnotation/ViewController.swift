@@ -60,6 +60,7 @@ class TAContainerView: NSView {
     
     private var textView: TATextView!
     private var border: CALayer!
+    private let kPadding: CGFloat = 3
     
     // MARK: - Methods
     // MARK: Lifecycle
@@ -67,18 +68,19 @@ class TAContainerView: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         
-        let kPadding: CGFloat = 3
         let size = frameRect.size
 
         wantsLayer = true
 //        layer?.backgroundColor = NSColor.red.cgColor
         
         textView = TATextView(frame: NSRect(origin: CGPoint(x: kPadding, y: kPadding),
-                                                            size: CGSize(width: size.width - 2*kPadding, height: size.height - 2*kPadding)))
+                                                            size: CGSize(width: size.width - 2*kPadding,
+                                                                         height: size.height - 2*kPadding)))
+        textView.alignment = .center
         textView.backgroundColor = NSColor.clear
         textView.textColor = NSColor.gray
         textView.activateResponder = self
-        textView.textStorage?.delegate = self
+        textView.delegate = self
         
         border = CALayer()
         border.borderColor = NSColor.magenta.cgColor
@@ -104,25 +106,50 @@ class TAContainerView: NSView {
     }
     
     // MARK: - Public
-    
-//    func activate() {
-//        guard textView != nil, let theWindow = textView.window else { return }
-//        if theWindow.firstResponder != textView {
-//            theWindow.makeFirstResponder(textView)
-//        }
-//
-//        border.isHidden = false
-//    }
-//
-//    func inactivate() {
-//        border.isHidden = true
-//    }
 }
 
-extension TAContainerView: NSTextStorageDelegate {
-    func textStorage(_ textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int) {
+extension TAContainerView: NSTextViewDelegate /*NSTextDelegate*/ {
+    
+//    func textShouldBeginEditing(_ textObject: NSText) -> Bool
+//
+//    func textShouldEndEditing(_ textObject: NSText) -> Bool // YES means do it
+//
+//    func textDidBeginEditing(_ notification: Notification)
+//
+//    func textDidEndEditing(_ notification: Notification)
+    
+    func textDidChange(_ notification: Notification) {
+        let text = NSString(string: textView.string)
         
+        let center = CGPoint(x: NSMidX(frame), y: NSMidY(frame))
         
+        var font: NSFont!
+        if let theFont = textView.font {
+            font = theFont
+        } else {
+            font = NSFont.systemFont(ofSize: 15)
+        }
+        var textFrame = text.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: textView.bounds.size.height),
+                                          options: NSString.DrawingOptions.usesLineFragmentOrigin,
+                                          attributes: [NSAttributedStringKey.font : font])
+        
+        let width = textFrame.size.width + 2*font.xHeight
+        
+        textFrame = text.boundingRect(with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude),
+                                      options: NSString.DrawingOptions.usesLineFragmentOrigin,
+                                      attributes: [NSAttributedStringKey.font : font])
+        let height = textFrame.size.height
+        
+        let labelFrame = CGRect(x: kPadding, y: kPadding, width: width, height: height)
+
+        textFrame = CGRect(x: center.x - width/2.0 - kPadding,
+                           y: center.y - height/2.0 - kPadding,
+                           width: width + 2*kPadding,
+                           height: height + 2*kPadding)
+        
+        border.frame = CGRect(origin: CGPoint.zero, size: textFrame.size)
+        self.frame = textFrame
+        textView.frame = labelFrame
     }
 }
 
@@ -149,22 +176,28 @@ class ViewController: NSViewController, TextAnnotationsController {
         let location = CGPoint(x: 100, y: 150)
         
         //    let kPadding: CGFloat = 10
-        let size = CGSize(width: 100, height: 100)
+        let size = CGSize(width: 25, height: 25)
         
         let view1 = TAContainerView(frame: NSRect(origin: location, size: size))
-        view1.text = "ann. 1"
+        view1.text = "1"
         view1.activateResponder = self
         view.addSubview(view1)
         annotations.append(view1)
         
         let view2 = TAContainerView(frame: NSRect(origin: CGPoint(x: 50, y: 20), size: size))
-        view2.text = "ann. 2"
+        view2.text = "2"
         view2.activateResponder = self
         view.addSubview(view2)
         annotations.append(view2)
         
         // Method supplied by TextAnnotationsController protocol implementation
         //    addTextAnnotation(text: "Some text", location: location)
+    }
+    
+    override func viewDidAppear() {
+        super.viewDidAppear()
+        
+        activateTextView(nil)
     }
   
   override func mouseDown(with event: NSEvent) {
