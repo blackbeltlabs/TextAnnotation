@@ -1,9 +1,9 @@
 {
   "name": "TextAnnotation",
   "version": "0.1.0",
-  "summary": "A short description of TextAnnotation.",
-  "description": "TODO: Add long description of the pod here.",
-  "homepage": "https://github.com/Mirko Kiefer/TextAnnotation",
+  "summary": "Swift text annotation component for macOS.",
+  "description": "Text component that behaves like typical drawing or annotation apps require.",
+  "homepage": "https://github.com/blackbeltlabs/TextAnnotation",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
@@ -12,11 +12,12 @@
     "Mirko Kiefer": "mail@mirkokiefer.com"
   },
   "source": {
-    "git": "https://github.com/Mirko Kiefer/TextAnnotation.git",
+    "git": "https://github.com/blackbeltlabs/TextAnnotation.git",
     "tag": "0.1.0"
   },
   "platforms": {
-    "osx": "10.10"
+    "osx": "10.13"
   },
+  "swift_version": "4.2",
   "source_files": "TextAnnotation/Classes/**/*"
 }
