@@ -58,24 +58,8 @@ class TAContainerView: NSView {
     }
     
     // MARK: - Variables
-    var activateResponder: TAActivateResponder?
     
-//    var isActive: Bool = false {
-//        didSet {
-//            guard isActive != oldValue else { return }
-//
-//            if isActive, let responder = activateResponder {
-//                responder.textViewDidActivate(self)
-//            }
-//
-////            border.isHidden = !isActive
-////
-////            guard textView != nil else { return }
-////            textView.backgroundColor = isActive ? NSColor.white : NSColor.clear
-////            textView.textColor = isActive ? NSColor.black : NSColor.gray
-//        }
-//    }
-
+    var activateResponder: TAActivateResponder?
     var text: String! {
         didSet {
             guard textView != nil else { return }
@@ -98,7 +82,6 @@ class TAContainerView: NSView {
         let size = frameRect.size
 
         wantsLayer = true
-//        layer?.backgroundColor = NSColor.red.cgColor
         
         textView = TATextView(frame: NSRect(origin: CGPoint(x: kPadding, y: kPadding),
                                                             size: CGSize(width: size.width - 2*kPadding,
@@ -142,7 +125,7 @@ class TAContainerView: NSView {
 }
 
 extension TAContainerView: NSTextViewDelegate /*NSTextDelegate*/ {
-        
+    
     func textDidChange(_ notification: Notification) {
         let text = NSString(string: textView.string)
         
