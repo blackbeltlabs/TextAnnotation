@@ -24,21 +24,29 @@ class TATextView: NSTextView {
     override internal func mouseDown(with event: NSEvent) {
         guard let responder = activateResponder else { return }
         
+        self.isEditable = event.clickCount == 2
+        
         responder.textViewDidActivate(nil)
     }
 }
 
 class TAContainerView: NSView {
-    
-    // MARK: - Variables
-    var activateResponder: TAActivateResponder?
-    
-    var isActive: Bool = false {
+    enum TAContainerViewState {
+        case inactive
+        case active
+        case editing
+    }
+    var state: TAContainerViewState = .inactive {
         didSet {
-            guard isActive != oldValue else { return }
+            guard state != oldValue else { return }
             
-            if isActive, let responder = activateResponder {
-                responder.textViewDidActivate(self)
+            var isActive: Bool = false
+            if state != .inactive {
+                isActive = true
+            }
+            
+            if state != .editing {
+                textView.isEditable = false
             }
             
             border.isHidden = !isActive
@@ -48,6 +56,25 @@ class TAContainerView: NSView {
             textView.textColor = isActive ? NSColor.black : NSColor.gray
         }
     }
+    
+    // MARK: - Variables
+    var activateResponder: TAActivateResponder?
+    
+//    var isActive: Bool = false {
+//        didSet {
+//            guard isActive != oldValue else { return }
+//
+//            if isActive, let responder = activateResponder {
+//                responder.textViewDidActivate(self)
+//            }
+//
+////            border.isHidden = !isActive
+////
+////            guard textView != nil else { return }
+////            textView.backgroundColor = isActive ? NSColor.white : NSColor.clear
+////            textView.textColor = isActive ? NSColor.black : NSColor.gray
+//        }
+//    }
 
     var text: String! {
         didSet {
@@ -102,22 +129,20 @@ class TAContainerView: NSView {
     override internal func mouseDown(with event: NSEvent) {
         print("into annotation")
         
-        isActive = true
+        if event.clickCount > 1 {
+            state = .editing
+        } else {
+            state = .active
+        }
+        
+        super.mouseDown(with: event)
     }
     
     // MARK: - Public
 }
 
 extension TAContainerView: NSTextViewDelegate /*NSTextDelegate*/ {
-    
-//    func textShouldBeginEditing(_ textObject: NSText) -> Bool
-//
-//    func textShouldEndEditing(_ textObject: NSText) -> Bool // YES means do it
-//
-//    func textDidBeginEditing(_ notification: Notification)
-//
-//    func textDidEndEditing(_ notification: Notification)
-    
+        
     func textDidChange(_ notification: Notification) {
         let text = NSString(string: textView.string)
         
@@ -155,11 +180,9 @@ extension TAContainerView: NSTextViewDelegate /*NSTextDelegate*/ {
 
 extension TAContainerView: TAActivateResponder {
     func textViewDidActivate(_ activeItem: Any?) {
-        isActive = true
+        state = .active
     }
 }
-
-
 
 class ViewController: NSViewController, TextAnnotationsController {
     
@@ -204,6 +227,7 @@ class ViewController: NSViewController, TextAnnotationsController {
     // TextAnnotationsController needs to handle mouse down events
 //    textAnnotationsMouseDown(event: event)
     activateTextView(nil)
+    super.mouseDown(with: event)
   }
   
   override func mouseDragged(with event: NSEvent) {
@@ -217,11 +241,11 @@ class ViewController: NSViewController, TextAnnotationsController {
         if let aTextView = textView {
             for item in annotations {
                 guard item != aTextView else { continue }
-                item.isActive = false
+                item.state = .inactive
             }
         } else {
             for item in annotations {
-                item.isActive = false
+                item.state = .inactive
             }
             view.window?.makeFirstResponder(nil)
         }
