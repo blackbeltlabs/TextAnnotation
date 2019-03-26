@@ -43,6 +43,10 @@ class TAContainerView: NSView {
             var isActive: Bool = false
             if state != .inactive {
                 isActive = true
+                
+                if let responder = activateResponder {
+                    responder.textViewDidActivate(self)
+                }
             }
             
             if state != .editing {
