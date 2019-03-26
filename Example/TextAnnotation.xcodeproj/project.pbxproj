@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2A06CD4C2247F2CA00A7CD03 /* NSView+Center.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A06CD4B2247F2CA00A7CD03 /* NSView+Center.swift */; };
 		9F26AF7DF6C4C3B9E79A707C /* Pods_TextAnnotation_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E407781AC1326E99295B8A6 /* Pods_TextAnnotation_Tests.framework */; };
 		C0C93D9B7598916B05EDF75D /* Pods_TextAnnotation_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C31043B9B6FC1C8B8F605D6F /* Pods_TextAnnotation_Example.framework */; };
 		ED83F67C20348A760038D96B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED83F67B20348A760038D96B /* AppDelegate.swift */; };
@@ -30,7 +29,6 @@
 /* Begin PBXFileReference section */
 		077B39FC64B6640CCF7A8A9D /* Pods-TextAnnotation_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TextAnnotation_Example.debug.xcconfig"; path = "Target Support Files/Pods-TextAnnotation_Example/Pods-TextAnnotation_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		189CC0AEC1FFBA7FA23BD5DB /* Pods-TextAnnotation_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TextAnnotation_Tests.release.xcconfig"; path = "Target Support Files/Pods-TextAnnotation_Tests/Pods-TextAnnotation_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		2A06CD4B2247F2CA00A7CD03 /* NSView+Center.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+Center.swift"; sourceTree = "<group>"; };
 		4E407781AC1326E99295B8A6 /* Pods_TextAnnotation_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TextAnnotation_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EB25F493E1BCA6749EABAAE /* TextAnnotation.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = TextAnnotation.podspec; path = ../TextAnnotation.podspec; sourceTree = "<group>"; };
 		5191DD13053457CF169E29B9 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
@@ -105,7 +103,6 @@
 		ED83F67A20348A760038D96B /* TextAnnotation */ = {
 			isa = PBXGroup;
 			children = (
-				2A06CD4B2247F2CA00A7CD03 /* NSView+Center.swift */,
 				ED83F67B20348A760038D96B /* AppDelegate.swift */,
 				ED83F67D20348A760038D96B /* ViewController.swift */,
 				ED83F67F20348A760038D96B /* Assets.xcassets */,
@@ -341,7 +338,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A06CD4C2247F2CA00A7CD03 /* NSView+Center.swift in Sources */,
 				ED83F67E20348A760038D96B /* ViewController.swift in Sources */,
 				ED83F67C20348A760038D96B /* AppDelegate.swift in Sources */,
 			);
