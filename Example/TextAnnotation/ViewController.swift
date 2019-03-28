@@ -51,9 +51,9 @@ class TAContainerView: NSView {
             
             singleClickGestureRecognizer.isEnabled = state == .inactive
             border.isHidden = !isActive
+            layer?.backgroundColor = isActive ? NSColor.white.cgColor : NSColor.clear.cgColor
             
             guard textView != nil else { return }
-            textView.backgroundColor = isActive ? NSColor.white : NSColor.clear
             textView.textColor = isActive ? NSColor.black : NSColor.gray
         }
     }
@@ -140,13 +140,8 @@ class TAContainerView: NSView {
         responder.textViewDidActivate(self)
     }
     
-    // MARK: - Public
-}
-
-extension TAContainerView: NSTextViewDelegate {
-    
-    func textDidChange(_ notification: Notification) {
-        let text = NSString(string: textView.string)
+    func updateFrameWithText(_ string: String) {
+        let text = NSString(string: string)
         
         let center = CGPoint(x: NSMidX(frame), y: NSMidY(frame))
         
@@ -177,6 +172,32 @@ extension TAContainerView: NSTextViewDelegate {
         border.frame = CGRect(origin: CGPoint.zero, size: textFrame.size)
         self.frame = textFrame
         textView.frame = labelFrame
+    }
+    
+    // MARK: - Public
+}
+
+extension TAContainerView: NSTextViewDelegate {
+    
+    /*
+    func textView(_ textView: NSTextView, shouldChangeTextInRanges affectedRanges: [NSValue], replacementStrings: [String]?) -> Bool {
+        guard let stringsList = replacementStrings else { return true }
+        var temp = textView.string
+        for (rangeValue, stringValue) in zip(affectedRanges, stringsList) {
+            let range = rangeValue.rangeValue
+            temp = (temp as NSString).replacingCharacters(in: range, with: stringValue)
+        }
+
+        updateFrameWithText(temp)
+
+        return true
+    }
+    */
+    
+    // MARK: - NSTextDelegate
+    
+    func textDidChange(_ notification: Notification) {
+        updateFrameWithText(textView.string)
     }
 }
 
