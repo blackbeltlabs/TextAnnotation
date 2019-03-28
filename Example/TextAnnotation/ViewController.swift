@@ -15,16 +15,6 @@ protocol TAActivateResponder {
 class TATextView: NSTextView {
     
     // MARK: - Variables
-    
-    var activateResponder: TAActivateResponder?
-    override var isEditable: Bool {
-        didSet {
-            super.isEditable = isEditable
-            guard oldValue != isEditable else { return }
-            
-            print()
-        }
-    }
 }
 
 class TAContainerView: NSView {
@@ -40,6 +30,7 @@ class TAContainerView: NSView {
             var isActive: Bool = false
             if state == .inactive {
                 textView.isEditable = false
+                textView.isSelectable = false
                 doubleClickGestureRecognizer.isEnabled = !textView.isEditable
             } else {
                 isActive = true
@@ -67,6 +58,7 @@ class TAContainerView: NSView {
             textView.string = text
         }
     }
+    var initialTouchPoint = CGPoint.zero
     
     // MARK: Private
     
@@ -93,9 +85,8 @@ class TAContainerView: NSView {
         textView.alignment = .natural
         textView.backgroundColor = NSColor.clear
         textView.textColor = NSColor.gray
+        textView.isSelectable = false
         textView.isEditable = false
-        
-        textView.activateResponder = self
         textView.delegate = self
         
         singleClickGestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(self.singleClickGestureHandle(_:)))
@@ -126,16 +117,17 @@ class TAContainerView: NSView {
     
     // MARK: - Private
     
-    @objc private func singleClickGestureHandle(_ desture: NSClickGestureRecognizer) {
+    @objc private func singleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
         guard let theTextView = textView, !theTextView.isEditable else { return }
-        
+        initialTouchPoint = gesture.location(in: self.superview)
         state = .active
     }
     
-    @objc private func doubleClickGestureHandle(_ desture: NSClickGestureRecognizer) {
+    @objc private func doubleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
         guard let theTextView = textView, !theTextView.isEditable else { return }
         
         state = .editing
+        textView.isSelectable = true
         theTextView.isEditable = true
         doubleClickGestureRecognizer.isEnabled = !theTextView.isEditable
         
@@ -257,8 +249,26 @@ class ViewController: NSViewController, TextAnnotationsController {
     }
     
     override func mouseDragged(with event: NSEvent) {
-        // TextAnnotationsController needs to handle drag events
+
         textAnnotationsMouseDragged(event: event)
+        super.mouseDragged(with: event)
+    }
+    
+    // MARK: - Private
+    
+    private func textAnnotationsMouseDragged(event: NSEvent) {
+        guard activeAnnotation != nil else { return }
+        
+        let screenPoint = event.locationInWindow
+        let initialDragPoint = activeAnnotation.initialTouchPoint
+        let difference = CGSize(width: screenPoint.x - initialDragPoint.x,
+                                height: screenPoint.y - initialDragPoint.y)
+    
+        var frame = activeAnnotation.frame
+        frame.origin = CGPoint(x: frame.origin.x + difference.width,
+                               y: frame.origin.y + difference.height)
+        activeAnnotation.frame = frame
+        activeAnnotation.initialTouchPoint = screenPoint
     }
 }
 
