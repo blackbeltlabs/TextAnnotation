@@ -192,6 +192,21 @@ class ViewController: NSViewController, TextAnnotationsController {
     // MARK: - Variables
     
     var annotations = [TAContainerView]()
+    var activeAnnotation: TAContainerView! {
+        didSet {
+            if let aTextView = activeAnnotation {
+                for item in annotations {
+                    guard item != aTextView else { continue }
+                    item.state = .inactive
+                }
+            } else {
+                for item in annotations {
+                    item.state = .inactive
+                }
+                view.window?.makeFirstResponder(nil)
+            }
+        }
+    }
     
     // MARK: - Methods
     // MARK: Lifecycle
@@ -220,33 +235,17 @@ class ViewController: NSViewController, TextAnnotationsController {
     override func viewDidAppear() {
         super.viewDidAppear()
         
-        activateTextView(nil)
+        activeAnnotation = nil
     }
     
     override func mouseDown(with event: NSEvent) {
-        activateTextView(nil)
+        activeAnnotation = nil
         super.mouseDown(with: event)
     }
     
     override func mouseDragged(with event: NSEvent) {
         // TextAnnotationsController needs to handle drag events
         textAnnotationsMouseDragged(event: event)
-    }
-    
-    // MARK: - Private
-    
-    func activateTextView(_ textView: TAContainerView?) {
-        if let aTextView = textView {
-            for item in annotations {
-                guard item != aTextView else { continue }
-                item.state = .inactive
-            }
-        } else {
-            for item in annotations {
-                item.state = .inactive
-            }
-            view.window?.makeFirstResponder(nil)
-        }
     }
 }
 
@@ -263,6 +262,6 @@ extension ViewController: TextAnnotationDelegate {
 extension ViewController: TAActivateResponder {
     func textViewDidActivate(_ activeItem: Any?) {
         guard let anActiveItem = activeItem as? TAContainerView else { return }
-        activateTextView(anActiveItem)
+        activeAnnotation = anActiveItem
     }
 }
