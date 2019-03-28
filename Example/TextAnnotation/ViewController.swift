@@ -17,38 +17,50 @@ class TATextView: NSTextView {
     // MARK: - Variables
     
     var activateResponder: TAActivateResponder?
-    
-    // MARK: - Methods
-    // MARK: Private
-    
-    override internal func mouseDown(with event: NSEvent) {
-        guard let responder = activateResponder else { return }
-        
-        responder.textViewDidActivate(nil)
+    override var isEditable: Bool {
+        didSet {
+            super.isEditable = isEditable
+            guard oldValue != isEditable else { return }
+            
+            print()
+        }
     }
 }
 
 class TAContainerView: NSView {
-    
-    // MARK: - Variables
-    var activateResponder: TAActivateResponder?
-    
-    var isActive: Bool = false {
+    enum TAContainerViewState {
+        case inactive
+        case active
+        case editing
+    }
+    var state: TAContainerViewState = .inactive {
         didSet {
-            guard isActive != oldValue else { return }
+            guard state != oldValue else { return }
             
-            if isActive, let responder = activateResponder {
-                responder.textViewDidActivate(self)
+            var isActive: Bool = false
+            if state == .inactive {
+                textView.isEditable = false
+                doubleClickGestureRecognizer.isEnabled = !textView.isEditable
+            } else {
+                isActive = true
+                
+                if let responder = activateResponder {
+                    responder.textViewDidActivate(self)
+                }
             }
             
+            singleClickGestureRecognizer.isEnabled = state == .inactive
             border.isHidden = !isActive
+            layer?.backgroundColor = isActive ? NSColor.white.cgColor : NSColor.clear.cgColor
             
             guard textView != nil else { return }
-            textView.backgroundColor = isActive ? NSColor.white : NSColor.clear
             textView.textColor = isActive ? NSColor.black : NSColor.gray
         }
     }
-
+    
+    // MARK: - Variables
+    
+    var activateResponder: TAActivateResponder?
     var text: String! {
         didSet {
             guard textView != nil else { return }
@@ -62,6 +74,9 @@ class TAContainerView: NSView {
     private var border: CALayer!
     private let kPadding: CGFloat = 3
     
+    private var singleClickGestureRecognizer: NSClickGestureRecognizer!
+    private var doubleClickGestureRecognizer: NSClickGestureRecognizer!
+    
     // MARK: - Methods
     // MARK: Lifecycle
     
@@ -69,18 +84,27 @@ class TAContainerView: NSView {
         super.init(frame: frameRect)
         
         let size = frameRect.size
-
+        
         wantsLayer = true
-//        layer?.backgroundColor = NSColor.red.cgColor
         
         textView = TATextView(frame: NSRect(origin: CGPoint(x: kPadding, y: kPadding),
-                                                            size: CGSize(width: size.width - 2*kPadding,
-                                                                         height: size.height - 2*kPadding)))
-        textView.alignment = .center
+                                            size: CGSize(width: size.width - 2*kPadding,
+                                                         height: size.height - 2*kPadding)))
+        textView.alignment = .natural
         textView.backgroundColor = NSColor.clear
         textView.textColor = NSColor.gray
+        textView.isEditable = false
+        
         textView.activateResponder = self
         textView.delegate = self
+        
+        singleClickGestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(self.singleClickGestureHandle(_:)))
+        self.addGestureRecognizer(singleClickGestureRecognizer)
+        
+        doubleClickGestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(self.doubleClickGestureHandle(_:)))
+        doubleClickGestureRecognizer.numberOfClicksRequired = 2
+        doubleClickGestureRecognizer.numberOfTouchesRequired = 2
+        self.addGestureRecognizer(doubleClickGestureRecognizer)
         
         border = CALayer()
         border.borderColor = NSColor.magenta.cgColor
@@ -88,9 +112,12 @@ class TAContainerView: NSView {
         border.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         border.frame = CGRect(origin: CGPoint.zero, size: self.bounds.size)
         border.isHidden = true
+        
         self.layer?.addSublayer(border)
         
         addSubview(textView)
+        
+        updateFrameWithText(textView.string)
     }
     
     required init?(coder decoder: NSCoder) {
@@ -99,27 +126,25 @@ class TAContainerView: NSView {
     
     // MARK: - Private
     
-    override internal func mouseDown(with event: NSEvent) {
-        print("into annotation")
+    @objc private func singleClickGestureHandle(_ desture: NSClickGestureRecognizer) {
+        guard let theTextView = textView, !theTextView.isEditable else { return }
         
-        isActive = true
+        state = .active
     }
     
-    // MARK: - Public
-}
-
-extension TAContainerView: NSTextViewDelegate /*NSTextDelegate*/ {
+    @objc private func doubleClickGestureHandle(_ desture: NSClickGestureRecognizer) {
+        guard let theTextView = textView, !theTextView.isEditable else { return }
+        
+        state = .editing
+        theTextView.isEditable = true
+        doubleClickGestureRecognizer.isEnabled = !theTextView.isEditable
+        
+        guard let responder = activateResponder else { return }
+        responder.textViewDidActivate(self)
+    }
     
-//    func textShouldBeginEditing(_ textObject: NSText) -> Bool
-//
-//    func textShouldEndEditing(_ textObject: NSText) -> Bool // YES means do it
-//
-//    func textDidBeginEditing(_ notification: Notification)
-//
-//    func textDidEndEditing(_ notification: Notification)
-    
-    func textDidChange(_ notification: Notification) {
-        let text = NSString(string: textView.string)
+    func updateFrameWithText(_ string: String) {
+        let text = NSString(string: string)
         
         let center = CGPoint(x: NSMidX(frame), y: NSMidY(frame))
         
@@ -141,31 +166,60 @@ extension TAContainerView: NSTextViewDelegate /*NSTextDelegate*/ {
         let height = textFrame.size.height
         
         let labelFrame = CGRect(x: kPadding, y: kPadding, width: width, height: height)
-
+        
         textFrame = CGRect(x: center.x - width/2.0 - kPadding,
                            y: center.y - height/2.0 - kPadding,
                            width: width + 2*kPadding,
                            height: height + 2*kPadding)
         
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
         border.frame = CGRect(origin: CGPoint.zero, size: textFrame.size)
+        CATransaction.commit()
+        
         self.frame = textFrame
         textView.frame = labelFrame
+    }
+    
+    // MARK: - Public
+}
+
+extension TAContainerView: NSTextViewDelegate {
+    
+    // MARK: - NSTextDelegate
+    
+    func textDidChange(_ notification: Notification) {
+        updateFrameWithText(textView.string)
     }
 }
 
 extension TAContainerView: TAActivateResponder {
     func textViewDidActivate(_ activeItem: Any?) {
-        isActive = true
+        // After we reach the .editing state - we should not switch it back to .active, only on .inactive on complete edit
+        state = textView.isEditable ? .editing : .active
     }
 }
-
-
 
 class ViewController: NSViewController, TextAnnotationsController {
     
     // MARK: - Variables
     
     var annotations = [TAContainerView]()
+    var activeAnnotation: TAContainerView! {
+        didSet {
+            if let aTextView = activeAnnotation {
+                for item in annotations {
+                    guard item != aTextView else { continue }
+                    item.state = .inactive
+                }
+            } else {
+                for item in annotations {
+                    item.state = .inactive
+                }
+                view.window?.makeFirstResponder(nil)
+            }
+        }
+    }
     
     // MARK: - Methods
     // MARK: Lifecycle
@@ -189,59 +243,38 @@ class ViewController: NSViewController, TextAnnotationsController {
         view2.activateResponder = self
         view.addSubview(view2)
         annotations.append(view2)
-        
-        // Method supplied by TextAnnotationsController protocol implementation
-        //    addTextAnnotation(text: "Some text", location: location)
     }
     
     override func viewDidAppear() {
         super.viewDidAppear()
         
-        activateTextView(nil)
-    }
-  
-  override func mouseDown(with event: NSEvent) {
-    // TextAnnotationsController needs to handle mouse down events
-//    textAnnotationsMouseDown(event: event)
-    activateTextView(nil)
-  }
-  
-  override func mouseDragged(with event: NSEvent) {
-    // TextAnnotationsController needs to handle drag events
-    textAnnotationsMouseDragged(event: event)
-  }
-    
-    // MARK: - Private
-    
-    func activateTextView(_ textView: TAContainerView?) {
-        if let aTextView = textView {
-            for item in annotations {
-                guard item != aTextView else { continue }
-                item.isActive = false
-            }
-        } else {
-            for item in annotations {
-                item.isActive = false
-            }
-            view.window?.makeFirstResponder(nil)
-        }
+        activeAnnotation = nil
     }
     
+    override func mouseDown(with event: NSEvent) {
+        activeAnnotation = nil
+        super.mouseDown(with: event)
+    }
+    
+    override func mouseDragged(with event: NSEvent) {
+        // TextAnnotationsController needs to handle drag events
+        textAnnotationsMouseDragged(event: event)
+    }
 }
 
 extension ViewController: TextAnnotationDelegate {
-  func textAnnotationDidEdit(textAnnotation: TextAnnotation) {
-    print(textAnnotation.text)
-  }
-  
-  func textAnnotationDidMove(textAnnotation: TextAnnotation) {
-    print(textAnnotation.frame)
-  }
+    func textAnnotationDidEdit(textAnnotation: TextAnnotation) {
+        print(textAnnotation.text)
+    }
+    
+    func textAnnotationDidMove(textAnnotation: TextAnnotation) {
+        print(textAnnotation.frame)
+    }
 }
 
 extension ViewController: TAActivateResponder {
     func textViewDidActivate(_ activeItem: Any?) {
         guard let anActiveItem = activeItem as? TAContainerView else { return }
-        activateTextView(anActiveItem)
+        activeAnnotation = anActiveItem
     }
 }
