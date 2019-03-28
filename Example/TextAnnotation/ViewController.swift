@@ -84,17 +84,17 @@ class TAContainerView: NSView {
         super.init(frame: frameRect)
         
         let size = frameRect.size
-
+        
         wantsLayer = true
         
         textView = TATextView(frame: NSRect(origin: CGPoint(x: kPadding, y: kPadding),
-                                                            size: CGSize(width: size.width - 2*kPadding,
-                                                                         height: size.height - 2*kPadding)))
+                                            size: CGSize(width: size.width - 2*kPadding,
+                                                         height: size.height - 2*kPadding)))
         textView.alignment = .natural
         textView.backgroundColor = NSColor.clear
         textView.textColor = NSColor.gray
         textView.isEditable = false
-
+        
         textView.activateResponder = self
         textView.delegate = self
         
@@ -168,7 +168,7 @@ extension TAContainerView: NSTextViewDelegate {
         let height = textFrame.size.height
         
         let labelFrame = CGRect(x: kPadding, y: kPadding, width: width, height: height)
-
+        
         textFrame = CGRect(x: center.x - width/2.0 - kPadding,
                            y: center.y - height/2.0 - kPadding,
                            width: width + 2*kPadding,
@@ -222,16 +222,16 @@ class ViewController: NSViewController, TextAnnotationsController {
         
         activateTextView(nil)
     }
-  
-  override func mouseDown(with event: NSEvent) {
-    activateTextView(nil)
-    super.mouseDown(with: event)
-  }
-  
-  override func mouseDragged(with event: NSEvent) {
-    // TextAnnotationsController needs to handle drag events
-    textAnnotationsMouseDragged(event: event)
-  }
+    
+    override func mouseDown(with event: NSEvent) {
+        activateTextView(nil)
+        super.mouseDown(with: event)
+    }
+    
+    override func mouseDragged(with event: NSEvent) {
+        // TextAnnotationsController needs to handle drag events
+        textAnnotationsMouseDragged(event: event)
+    }
     
     // MARK: - Private
     
@@ -251,13 +251,13 @@ class ViewController: NSViewController, TextAnnotationsController {
 }
 
 extension ViewController: TextAnnotationDelegate {
-  func textAnnotationDidEdit(textAnnotation: TextAnnotation) {
-    print(textAnnotation.text)
-  }
-  
-  func textAnnotationDidMove(textAnnotation: TextAnnotation) {
-    print(textAnnotation.frame)
-  }
+    func textAnnotationDidEdit(textAnnotation: TextAnnotation) {
+        print(textAnnotation.text)
+    }
+    
+    func textAnnotationDidMove(textAnnotation: TextAnnotation) {
+        print(textAnnotation.frame)
+    }
 }
 
 extension ViewController: TAActivateResponder {
