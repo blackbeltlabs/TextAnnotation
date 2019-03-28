@@ -112,9 +112,12 @@ class TAContainerView: NSView {
         border.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         border.frame = CGRect(origin: CGPoint.zero, size: self.bounds.size)
         border.isHidden = true
+        
         self.layer?.addSublayer(border)
         
         addSubview(textView)
+        
+        updateFrameWithText(textView.string)
     }
     
     required init?(coder decoder: NSCoder) {
@@ -169,7 +172,11 @@ class TAContainerView: NSView {
                            width: width + 2*kPadding,
                            height: height + 2*kPadding)
         
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
         border.frame = CGRect(origin: CGPoint.zero, size: textFrame.size)
+        CATransaction.commit()
+        
         self.frame = textFrame
         textView.frame = labelFrame
     }
@@ -178,21 +185,6 @@ class TAContainerView: NSView {
 }
 
 extension TAContainerView: NSTextViewDelegate {
-    
-    /*
-    func textView(_ textView: NSTextView, shouldChangeTextInRanges affectedRanges: [NSValue], replacementStrings: [String]?) -> Bool {
-        guard let stringsList = replacementStrings else { return true }
-        var temp = textView.string
-        for (rangeValue, stringValue) in zip(affectedRanges, stringsList) {
-            let range = rangeValue.rangeValue
-            temp = (temp as NSString).replacingCharacters(in: range, with: stringValue)
-        }
-
-        updateFrameWithText(temp)
-
-        return true
-    }
-    */
     
     // MARK: - NSTextDelegate
     
