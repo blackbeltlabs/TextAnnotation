@@ -257,9 +257,20 @@ class ViewController: NSViewController, TextAnnotationsController {
     // MARK: - Private
     
     private func textAnnotationsMouseDragged(event: NSEvent) {
+        let screenPoint = event.locationInWindow
+        if activeAnnotation == nil {
+            let locationInView = view.convert(screenPoint, to: nil)
+            for annotation in annotations {
+                if annotation.frame.contains(locationInView) {
+                    activeAnnotation = annotation
+                    activeAnnotation.initialTouchPoint = locationInView
+                    activeAnnotation.state = .active
+                    break
+                }
+            }
+        }
         guard activeAnnotation != nil else { return }
         
-        let screenPoint = event.locationInWindow
         let initialDragPoint = activeAnnotation.initialTouchPoint
         let difference = CGSize(width: screenPoint.x - initialDragPoint.x,
                                 height: screenPoint.y - initialDragPoint.y)
