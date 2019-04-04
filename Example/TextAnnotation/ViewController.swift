@@ -12,6 +12,50 @@ import TextAnnotation
 protocol TAActivateResponder {
     func textViewDidActivate(_ activeItem: Any?)
 }
+class TAView: NSView {
+    
+//    var isFocused: Bool = false
+    
+    static let kPadding: CGFloat = 3
+    static let kRadius: CGFloat = 5
+    
+    override func draw(_ dirtyRect: NSRect) {
+        let color = #colorLiteral(red: 0.3215686275, green: 0.7137254902, blue: 0.8823529412, alpha: 1)
+        let framePath = NSBezierPath(rect: NSRect(x: TAView.kPadding + TAView.kRadius,
+                                                  y: TAView.kPadding,
+                                                  width: dirtyRect.size.width - 2 * (TAView.kPadding + TAView.kRadius),
+                                                  height: dirtyRect.size.height - 2 * TAView.kPadding))
+        #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).setFill()
+        framePath.fill()
+        
+        framePath.lineWidth = 1
+        color.set()
+        framePath.stroke()
+        framePath.close()
+        
+        let left = NSBezierPath()
+        left.appendArc(withCenter: NSPoint(x: TAView.kPadding + TAView.kRadius, y: dirtyRect.size.height/2),
+                            radius: TAView.kRadius,
+                            startAngle:  270,
+                            endAngle: 90,
+                            clockwise: true)
+        left.lineWidth = 1
+        color.set()
+        left.stroke()
+        left.close()
+        
+        let right = NSBezierPath()
+        right.appendArc(withCenter: NSPoint(x: dirtyRect.size.width - (TAView.kPadding + TAView.kRadius), y: dirtyRect.size.height/2),
+                       radius: TAView.kRadius,
+                       startAngle:  270,
+                       endAngle: 90,
+                       clockwise: false)
+        right.lineWidth = 1
+        color.set()
+        right.stroke()
+        right.close()
+    }
+}
 class TATextView: NSTextView {
     
     // MARK: - Variables
@@ -41,8 +85,8 @@ class TAContainerView: NSView {
             }
             
             singleClickGestureRecognizer.isEnabled = state == .inactive
-            border.isHidden = !isActive
-            layer?.backgroundColor = isActive ? NSColor.white.cgColor : NSColor.clear.cgColor
+            backgroundView.isHidden = !isActive
+            backgroundView.display()
             
             guard textView != nil else { return }
             textView.textColor = isActive ? NSColor.black : NSColor.gray
@@ -62,9 +106,11 @@ class TAContainerView: NSView {
     
     // MARK: Private
     
+    private var backgroundView: TAView!
     private var textView: TATextView!
-    private var border: CALayer!
+
     private let kPadding: CGFloat = 3
+    private let kCircleRadius: CGFloat = TAView.kRadius
     
     private var singleClickGestureRecognizer: NSClickGestureRecognizer!
     private var doubleClickGestureRecognizer: NSClickGestureRecognizer!
@@ -78,6 +124,10 @@ class TAContainerView: NSView {
         let size = frameRect.size
         
         wantsLayer = true
+        
+        backgroundView = TAView(frame: NSRect(origin: CGPoint.zero, size: frameRect.size))
+        backgroundView.isHidden = true
+        self.addSubview(backgroundView)
         
         textView = TATextView(frame: NSRect(origin: CGPoint(x: kPadding, y: kPadding),
                                             size: CGSize(width: size.width - 2*kPadding,
@@ -96,15 +146,6 @@ class TAContainerView: NSView {
         doubleClickGestureRecognizer.numberOfClicksRequired = 2
         doubleClickGestureRecognizer.numberOfTouchesRequired = 2
         self.addGestureRecognizer(doubleClickGestureRecognizer)
-        
-        border = CALayer()
-        border.borderColor = NSColor.magenta.cgColor
-        border.borderWidth = 1
-        border.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        border.frame = CGRect(origin: CGPoint.zero, size: self.bounds.size)
-        border.isHidden = true
-        
-        self.layer?.addSublayer(border)
         
         addSubview(textView)
         
@@ -157,16 +198,16 @@ class TAContainerView: NSView {
                                       attributes: [NSAttributedStringKey.font : font])
         let height = textFrame.size.height
         
-        let labelFrame = CGRect(x: kPadding, y: kPadding, width: width, height: height)
+        let labelFrame = CGRect(x: kPadding + kCircleRadius, y: kPadding, width: width, height: height)
         
-        textFrame = CGRect(x: center.x - width/2.0 - kPadding,
+        textFrame = CGRect(x: center.x - width/2.0 - (kPadding + kCircleRadius),
                            y: center.y - height/2.0 - kPadding,
-                           width: width + 2*kPadding,
+                           width: width + 2*(kPadding + kCircleRadius),
                            height: height + 2*kPadding)
         
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        border.frame = CGRect(origin: CGPoint.zero, size: textFrame.size)
+        backgroundView.frame = CGRect(origin: CGPoint.zero, size: textFrame.size)
         CATransaction.commit()
         
         self.frame = textFrame
