@@ -13,9 +13,6 @@ protocol TAActivateResponder {
     func textViewDidActivate(_ activeItem: Any?)
 }
 class TAView: NSView {
-    
-//    var isFocused: Bool = false
-    
     static let kPadding: CGFloat = 3
     static let kRadius: CGFloat = 5
     
@@ -109,7 +106,7 @@ class TAContainerView: NSView {
     private var backgroundView: TAView!
     private var textView: TATextView!
 
-    private let kPadding: CGFloat = 3
+    private let kPadding: CGFloat = TAView.kPadding
     private let kCircleRadius: CGFloat = TAView.kRadius
     
     private var singleClickGestureRecognizer: NSClickGestureRecognizer!
@@ -262,7 +259,6 @@ class ViewController: NSViewController, TextAnnotationsController {
         // Programmatically creating a text annotation
         let location = CGPoint(x: 100, y: 150)
         
-        //    let kPadding: CGFloat = 10
         let size = CGSize(width: 25, height: 25)
         
         let view1 = TAContainerView(frame: NSRect(origin: location, size: size))
