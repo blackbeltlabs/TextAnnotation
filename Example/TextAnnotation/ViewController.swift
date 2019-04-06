@@ -78,6 +78,7 @@ class TAContainerView: NSView {
         case resizeRight
         case resizeLeft
         case dragging
+        case scaling
     }
     var state: TAContainerViewState = .inactive {
         didSet {
@@ -119,6 +120,7 @@ class TAContainerView: NSView {
     var initialTouchPoint = CGPoint.zero
     var leftTally: NSView!
     var rightTally: NSView!
+    var scaleTally: NSView!
     var origin: CGPoint = CGPoint.zero {
         didSet {
             frame.origin = origin
@@ -185,9 +187,17 @@ class TAContainerView: NSView {
         leftTally = NSView(frame: tallyFrame)
         addSubview(leftTally)
         
-        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: 0)
+        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: tallyFrame.width)
+        tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.height - tallyFrame.width)
         rightTally = NSView(frame: tallyFrame)
         addSubview(rightTally)
+        
+        tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.width)
+        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: 0)
+        scaleTally = NSView(frame: tallyFrame)
+        scaleTally.wantsLayer = true
+        scaleTally.layer?.backgroundColor = #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
+        addSubview(scaleTally)
         
         updateFrameWithText(textView.string)
     }
@@ -246,8 +256,14 @@ class TAContainerView: NSView {
         var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: kPadding + kCircleRadius, height: size.height))
         leftTally.frame = tallyFrame
         
-        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: 0)
+        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: tallyFrame.width)
+        tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.height - tallyFrame.width)
         rightTally.frame = tallyFrame
+        
+        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: 0)
+        tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.width)
+        scaleTally.frame = tallyFrame
+        
         CATransaction.commit()
     }
     
@@ -284,6 +300,17 @@ class TAContainerView: NSView {
             theFrame.origin = CGPoint(x: theFrame.origin.x, y: centerY - height/2)
             // FIXME: here we should add some (prevention dissapearing symbols) height adding, depending on diff width amount. One symbol is about 9.0 of the difference
         }
+        
+        frame = theFrame
+        updateSubviewsFrames()
+    }
+    
+    func scaleWithDistance(_ difference: CGSize) {
+        guard state == .scaling else { return }
+        
+        var theFrame = frame
+        theFrame.size = CGSize(width: theFrame.width + difference.width, height: theFrame.height - difference.height)
+        theFrame.origin = CGPoint(x: theFrame.origin.x, y: theFrame.origin.y + difference.height)
         
         frame = theFrame
         updateSubviewsFrames()
@@ -410,14 +437,18 @@ class ViewController: NSViewController, TextAnnotationsController {
             }
         }
         
-        // are we should continue resize
-        if activeAnnotation != nil && (activeAnnotation.state == .resizeLeft || activeAnnotation.state == .resizeRight) {
+        // are we should continue resize or scale
+        if activeAnnotation != nil {
             let initialDragPoint = activeAnnotation.initialTouchPoint
             activeAnnotation.initialTouchPoint = screenPoint
             let difference = CGSize(width: screenPoint.x - initialDragPoint.x,
                                     height: screenPoint.y - initialDragPoint.y)
             
-            activeAnnotation.resizeWithDistance(difference.width)
+            if activeAnnotation.state == .resizeLeft || activeAnnotation.state == .resizeRight {
+                activeAnnotation.resizeWithDistance(difference.width)
+            } else {
+                activeAnnotation.scaleWithDistance(difference)
+            }
             return
         }
         
@@ -430,6 +461,8 @@ class ViewController: NSViewController, TextAnnotationsController {
                 state = .resizeLeft
             } else if annotationToActivate.rightTally.frame.contains(locationInAnnotation) {
                 state = .resizeRight
+            } else if annotationToActivate.scaleTally.frame.contains(locationInAnnotation) {
+                state = .scaling
             }
             
             if state != .active && annotationToActivate.state != .dragging {
