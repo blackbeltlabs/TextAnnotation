@@ -12,35 +12,86 @@ import TextAnnotation
 protocol TAActivateResponder {
     func textViewDidActivate(_ activeItem: Any?)
 }
+class TAView: NSView {
+    static let kPadding: CGFloat = 3
+    static let kRadius: CGFloat = 5
+    
+    override func draw(_ dirtyRect: NSRect) {
+        let color = #colorLiteral(red: 0.3215686275, green: 0.7137254902, blue: 0.8823529412, alpha: 1)
+        let framePath = NSBezierPath(rect: NSRect(x: TAView.kPadding + TAView.kRadius,
+                                                  y: TAView.kPadding,
+                                                  width: dirtyRect.width - 2 * (TAView.kPadding + TAView.kRadius),
+                                                  height: dirtyRect.height - 2 * TAView.kPadding))
+        #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).setFill()
+        framePath.fill()
+        
+        framePath.lineWidth = 1
+        color.set()
+        framePath.stroke()
+        framePath.close()
+        
+        let left = NSBezierPath()
+        left.appendArc(withCenter: NSPoint(x: TAView.kPadding + TAView.kRadius, y: dirtyRect.height/2),
+                            radius: TAView.kRadius,
+                            startAngle:  270,
+                            endAngle: 90,
+                            clockwise: true)
+        left.lineWidth = 1
+        color.set()
+        left.stroke()
+        left.close()
+        
+        let right = NSBezierPath()
+        right.appendArc(withCenter: NSPoint(x: dirtyRect.width - (TAView.kPadding + TAView.kRadius), y: dirtyRect.height/2),
+                       radius: TAView.kRadius,
+                       startAngle:  270,
+                       endAngle: 90,
+                       clockwise: false)
+        right.lineWidth = 1
+        color.set()
+        right.stroke()
+        right.close()
+    }
+}
 class TATextView: NSTextView {
-    
-    // MARK: - Variables
-    
-    var activateResponder: TAActivateResponder?
-    override var isEditable: Bool {
-        didSet {
-            super.isEditable = isEditable
-            guard oldValue != isEditable else { return }
-            
-            print()
-        }
+    lazy var twoSymbolsWidth = 2 * (font ?? NSFont.systemFont(ofSize: 15)).xHeight
+    func frameForWidth(_ width: CGFloat, height: CGFloat) -> CGRect {
+        let theFont = font ?? NSFont.systemFont(ofSize: 15)
+        return string.boundingRect(with: CGSize(width: width, height: height),
+                                 options: NSString.DrawingOptions.usesLineFragmentOrigin,
+                                 attributes: [NSAttributedStringKey.font : theFont])
     }
 }
 
+// MARK: -
+// MARK: -
+// MARK: -
+
 class TAContainerView: NSView {
+    
+    // MARK: - Variables
+    
     enum TAContainerViewState {
         case inactive
         case active
         case editing
+        case resizeRight
+        case resizeLeft
+        case dragging
     }
     var state: TAContainerViewState = .inactive {
         didSet {
             guard state != oldValue else { return }
+            if oldValue == .resizeLeft || oldValue == .resizeRight {
+                updateSubviewsFrames()
+            }
             
             var isActive: Bool = false
             if state == .inactive {
                 textView.isEditable = false
+                textView.isSelectable = false
                 doubleClickGestureRecognizer.isEnabled = !textView.isEditable
+                updateSubviewsFrames()
             } else {
                 isActive = true
                 
@@ -50,15 +101,13 @@ class TAContainerView: NSView {
             }
             
             singleClickGestureRecognizer.isEnabled = state == .inactive
-            border.isHidden = !isActive
-            layer?.backgroundColor = isActive ? NSColor.white.cgColor : NSColor.clear.cgColor
+            backgroundView.isHidden = !isActive
+            backgroundView.display()
             
             guard textView != nil else { return }
             textView.textColor = isActive ? NSColor.black : NSColor.gray
         }
     }
-    
-    // MARK: - Variables
     
     var activateResponder: TAActivateResponder?
     var text: String! {
@@ -67,15 +116,32 @@ class TAContainerView: NSView {
             textView.string = text
         }
     }
+    var initialTouchPoint = CGPoint.zero
+    var leftTally: NSView!
+    var rightTally: NSView!
+    var origin: CGPoint = CGPoint.zero {
+        didSet {
+            frame.origin = origin
+            updateSubviewsFrames()
+        }
+    }
     
     // MARK: Private
     
+    private var backgroundView: TAView!
     private var textView: TATextView!
-    private var border: CALayer!
-    private let kPadding: CGFloat = 3
+
+    private let kPadding: CGFloat = TAView.kPadding
+    private let kCircleRadius: CGFloat = TAView.kRadius
     
     private var singleClickGestureRecognizer: NSClickGestureRecognizer!
     private var doubleClickGestureRecognizer: NSClickGestureRecognizer!
+    
+    override internal var frame: NSRect {
+        didSet {
+            updateSubviewsFrames()
+        }
+    }
     
     // MARK: - Methods
     // MARK: Lifecycle
@@ -83,9 +149,13 @@ class TAContainerView: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         
+        initialTouchPoint = CGPoint(x: frameRect.origin.x + frameRect.width/2,
+                                    y: frameRect.origin.y + frameRect.height/2)
         let size = frameRect.size
         
-        wantsLayer = true
+        backgroundView = TAView(frame: NSRect(origin: CGPoint.zero, size: size))
+        backgroundView.isHidden = true
+        self.addSubview(backgroundView)
         
         textView = TATextView(frame: NSRect(origin: CGPoint(x: kPadding, y: kPadding),
                                             size: CGSize(width: size.width - 2*kPadding,
@@ -93,9 +163,12 @@ class TAContainerView: NSView {
         textView.alignment = .natural
         textView.backgroundColor = NSColor.clear
         textView.textColor = NSColor.gray
+        textView.isSelectable = false
+        textView.isRichText = false
+        textView.usesRuler = false
+        textView.usesFontPanel = false
         textView.isEditable = false
-        
-        textView.activateResponder = self
+        textView.isVerticallyResizable = false
         textView.delegate = self
         
         singleClickGestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(self.singleClickGestureHandle(_:)))
@@ -106,16 +179,15 @@ class TAContainerView: NSView {
         doubleClickGestureRecognizer.numberOfTouchesRequired = 2
         self.addGestureRecognizer(doubleClickGestureRecognizer)
         
-        border = CALayer()
-        border.borderColor = NSColor.magenta.cgColor
-        border.borderWidth = 1
-        border.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        border.frame = CGRect(origin: CGPoint.zero, size: self.bounds.size)
-        border.isHidden = true
-        
-        self.layer?.addSublayer(border)
-        
         addSubview(textView)
+        
+        var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: kPadding + kCircleRadius, height: size.height))
+        leftTally = NSView(frame: tallyFrame)
+        addSubview(leftTally)
+        
+        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: 0)
+        rightTally = NSView(frame: tallyFrame)
+        addSubview(rightTally)
         
         updateFrameWithText(textView.string)
     }
@@ -126,16 +198,18 @@ class TAContainerView: NSView {
     
     // MARK: - Private
     
-    @objc private func singleClickGestureHandle(_ desture: NSClickGestureRecognizer) {
+    @objc private func singleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
         guard let theTextView = textView, !theTextView.isEditable else { return }
-        
+        // FIXME: Here we fails with location of the point. ONLY in more than one row case
+        initialTouchPoint = gesture.location(in: self.superview)
         state = .active
     }
     
-    @objc private func doubleClickGestureHandle(_ desture: NSClickGestureRecognizer) {
+    @objc private func doubleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
         guard let theTextView = textView, !theTextView.isEditable else { return }
         
         state = .editing
+        textView.isSelectable = true
         theTextView.isEditable = true
         doubleClickGestureRecognizer.isEnabled = !theTextView.isEditable
         
@@ -143,45 +217,77 @@ class TAContainerView: NSView {
         responder.textViewDidActivate(self)
     }
     
-    func updateFrameWithText(_ string: String) {
-        let text = NSString(string: string)
-        
+    private func updateFrameWithText(_ string: String) {
         let center = CGPoint(x: NSMidX(frame), y: NSMidY(frame))
         
-        var font: NSFont!
-        if let theFont = textView.font {
-            font = theFont
-        } else {
-            font = NSFont.systemFont(ofSize: 15)
-        }
-        var textFrame = text.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: textView.bounds.size.height),
-                                          options: NSString.DrawingOptions.usesLineFragmentOrigin,
-                                          attributes: [NSAttributedStringKey.font : font])
+        var textFrame = textView.frameForWidth(CGFloat.greatestFiniteMagnitude, height: textView.bounds.height)
+        let width = max(textFrame.width + textView.twoSymbolsWidth, textView.bounds.width)
+        // FIXME: Re-design whole algorythm to will be number of lines sensetive
+        textFrame = textView.frameForWidth(width, height: CGFloat.greatestFiniteMagnitude)
+        let height = textFrame.height
         
-        let width = textFrame.size.width + 2*font.xHeight
-        
-        textFrame = text.boundingRect(with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude),
-                                      options: NSString.DrawingOptions.usesLineFragmentOrigin,
-                                      attributes: [NSAttributedStringKey.font : font])
-        let height = textFrame.size.height
-        
-        let labelFrame = CGRect(x: kPadding, y: kPadding, width: width, height: height)
-        
-        textFrame = CGRect(x: center.x - width/2.0 - kPadding,
+        // Now we knot text label frame. We should calculate new self.frame and redraw all the subviews
+        textFrame = CGRect(x: center.x - width/2.0 - (kPadding + kCircleRadius),
                            y: center.y - height/2.0 - kPadding,
-                           width: width + 2*kPadding,
+                           width: width + 2*(kPadding + kCircleRadius),
                            height: height + 2*kPadding)
+        
+        frame = textFrame
+    }
+    
+    private func updateSubviewsFrames() {
+        let size = frame.size
         
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        border.frame = CGRect(origin: CGPoint.zero, size: textFrame.size)
-        CATransaction.commit()
+        backgroundView.frame = CGRect(origin: CGPoint.zero, size: size)
+        textView.frame = CGRect(x: kPadding + kCircleRadius, y: kPadding, width: size.width - 2*(kPadding + kCircleRadius), height: size.height - 2*kPadding)
         
-        self.frame = textFrame
-        textView.frame = labelFrame
+        var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: kPadding + kCircleRadius, height: size.height))
+        leftTally.frame = tallyFrame
+        
+        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: 0)
+        rightTally.frame = tallyFrame
+        CATransaction.commit()
     }
     
     // MARK: - Public
+    
+    func resizeWithDistance(_ distance: CGFloat) {
+        guard state == .resizeRight || state == .resizeLeft else { return }
+        
+        var theFrame = frame
+        let delta = (state == .resizeRight ? 1 : -1) * distance
+        theFrame.size = CGSize(width: theFrame.width + delta, height: theFrame.height)
+        
+        // FIXME: better to calculate it like 2 * (kPadding + kCircleRadius) + textView.twoSymbolsWidth)
+        guard theFrame.width > 25 else {
+            state = .active
+            return
+        }
+        
+        if state == .resizeLeft {
+            // should move origin as well
+            theFrame.origin = CGPoint(x: theFrame.origin.x + distance, y: theFrame.origin.y)
+        }
+        
+        // Here we have to check if text view frame has good size for such container size
+        let textFrame = textView.frameForWidth(theFrame.width - 2 * (kPadding + kCircleRadius),
+                                               height: CGFloat.greatestFiniteMagnitude)
+        let diff_width = theFrame.width - (textFrame.width + 2 * (kPadding + kCircleRadius) + textView.twoSymbolsWidth)
+        if diff_width < 0 {
+            // let diff_height = theFrame.height - (textFrame.height + 2 * kPadding)
+            let height = textFrame.height + 2 * kPadding
+            let centerY = theFrame.origin.y + theFrame.height/2
+            
+            theFrame.size = CGSize(width: theFrame.width, height: height)
+            theFrame.origin = CGPoint(x: theFrame.origin.x, y: centerY - height/2)
+            // FIXME: here we should add some (prevention dissapearing symbols) height adding, depending on diff width amount. One symbol is about 9.0 of the difference
+        }
+        
+        frame = theFrame
+        updateSubviewsFrames()
+    }
 }
 
 extension TAContainerView: NSTextViewDelegate {
@@ -199,6 +305,10 @@ extension TAContainerView: TAActivateResponder {
         state = textView.isEditable ? .editing : .active
     }
 }
+
+// MARK: -
+// MARK: -
+// MARK: -
 
 class ViewController: NSViewController, TextAnnotationsController {
     
@@ -227,12 +337,9 @@ class ViewController: NSViewController, TextAnnotationsController {
         super.viewDidLoad()
         
         // Programmatically creating a text annotation
-        let location = CGPoint(x: 100, y: 150)
+        let size = CGSize.zero
         
-        //    let kPadding: CGFloat = 10
-        let size = CGSize(width: 25, height: 25)
-        
-        let view1 = TAContainerView(frame: NSRect(origin: location, size: size))
+        let view1 = TAContainerView(frame: NSRect(origin: CGPoint(x: 100, y: 150), size: size))
         view1.text = "1"
         view1.activateResponder = self
         view.addSubview(view1)
@@ -251,14 +358,109 @@ class ViewController: NSViewController, TextAnnotationsController {
         activeAnnotation = nil
     }
     
+    override func mouseUp(with event: NSEvent) {
+        if activeAnnotation != nil {
+            activeAnnotation.state = .active
+        }
+    }
+    
     override func mouseDown(with event: NSEvent) {
-        activeAnnotation = nil
+        let screenPoint = event.locationInWindow
+        
+        // check annotation to activate or break resize
+        let locationInView = view.convert(screenPoint, to: nil)
+        var annotationToActivate: TAContainerView!
+        
+        for annotation in annotations {
+            if annotation.frame.contains(locationInView) {
+                annotationToActivate = annotation
+                break
+            }
+        }
+        
+        if annotationToActivate == nil {
+            activeAnnotation = nil
+        } else {
+            activeAnnotation?.initialTouchPoint = screenPoint
+            activeAnnotation?.state = .active
+        }
+        
         super.mouseDown(with: event)
     }
     
     override func mouseDragged(with event: NSEvent) {
-        // TextAnnotationsController needs to handle drag events
+
         textAnnotationsMouseDragged(event: event)
+        super.mouseDragged(with: event)
+    }
+    
+    // MARK: - Private
+    
+    private func textAnnotationsMouseDragged(event: NSEvent) {
+        let screenPoint = event.locationInWindow
+        
+        // check annotation to activate or break resize
+        let locationInView = view.convert(screenPoint, to: nil)
+        var annotationToActivate: TAContainerView!
+        
+        for annotation in annotations {
+            if annotation.frame.contains(locationInView) {
+                annotationToActivate = annotation
+                break
+            }
+        }
+        
+        // are we should continue resize
+        if activeAnnotation != nil && (activeAnnotation.state == .resizeLeft || activeAnnotation.state == .resizeRight) {
+            let initialDragPoint = activeAnnotation.initialTouchPoint
+            activeAnnotation.initialTouchPoint = screenPoint
+            let difference = CGSize(width: screenPoint.x - initialDragPoint.x,
+                                    height: screenPoint.y - initialDragPoint.y)
+            
+            activeAnnotation.resizeWithDistance(difference.width)
+            return
+        }
+        
+        // start dragging or resize
+        if annotationToActivate != nil {
+            let locationInAnnotation = view.convert(screenPoint, to: annotationToActivate)
+            
+            var state: TAContainerView.TAContainerViewState = .active // default state
+            if annotationToActivate.leftTally.frame.contains(locationInAnnotation) {
+                state = .resizeLeft
+            } else if annotationToActivate.rightTally.frame.contains(locationInAnnotation) {
+                state = .resizeRight
+            }
+            
+            if state != .active && annotationToActivate.state != .dragging {
+                annotationToActivate.state = state
+                return
+            }
+        }
+
+        if activeAnnotation == nil ||
+            (annotationToActivate != nil && activeAnnotation != annotationToActivate) {
+            if activeAnnotation != nil {
+                activeAnnotation.state = .inactive
+            }
+            
+            activeAnnotation = annotationToActivate
+        }
+        guard activeAnnotation != nil else { return }
+        
+        // here we can only drag
+        if activeAnnotation.state != .dragging {
+            activeAnnotation.initialTouchPoint = screenPoint
+        }
+        activeAnnotation.state = .dragging
+        
+        let initialDragPoint = activeAnnotation.initialTouchPoint
+        activeAnnotation.initialTouchPoint = screenPoint
+        let difference = CGSize(width: screenPoint.x - initialDragPoint.x,
+                                height: screenPoint.y - initialDragPoint.y)
+        
+        activeAnnotation.origin = CGPoint(x: activeAnnotation.frame.origin.x + difference.width,
+                                          y: activeAnnotation.frame.origin.y + difference.height)
     }
 }
 
