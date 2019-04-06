@@ -20,10 +20,10 @@ class TAView: NSView {
         let color = #colorLiteral(red: 0.3215686275, green: 0.7137254902, blue: 0.8823529412, alpha: 1)
         let framePath = NSBezierPath(rect: NSRect(x: TAView.kPadding + TAView.kRadius,
                                                   y: TAView.kPadding,
-                                                  width: dirtyRect.size.width - 2 * (TAView.kPadding + TAView.kRadius),
-                                                  height: dirtyRect.size.height - 2 * TAView.kPadding))
-//        #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).setFill()
-//        framePath.fill()
+                                                  width: dirtyRect.width - 2 * (TAView.kPadding + TAView.kRadius),
+                                                  height: dirtyRect.height - 2 * TAView.kPadding))
+        #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).setFill()
+        framePath.fill()
         
         framePath.lineWidth = 1
         color.set()
@@ -31,7 +31,7 @@ class TAView: NSView {
         framePath.close()
         
         let left = NSBezierPath()
-        left.appendArc(withCenter: NSPoint(x: TAView.kPadding + TAView.kRadius, y: dirtyRect.size.height/2),
+        left.appendArc(withCenter: NSPoint(x: TAView.kPadding + TAView.kRadius, y: dirtyRect.height/2),
                             radius: TAView.kRadius,
                             startAngle:  270,
                             endAngle: 90,
@@ -42,7 +42,7 @@ class TAView: NSView {
         left.close()
         
         let right = NSBezierPath()
-        right.appendArc(withCenter: NSPoint(x: dirtyRect.size.width - (TAView.kPadding + TAView.kRadius), y: dirtyRect.size.height/2),
+        right.appendArc(withCenter: NSPoint(x: dirtyRect.width - (TAView.kPadding + TAView.kRadius), y: dirtyRect.height/2),
                        radius: TAView.kRadius,
                        startAngle:  270,
                        endAngle: 90,
@@ -54,8 +54,13 @@ class TAView: NSView {
     }
 }
 class TATextView: NSTextView {
-    
-    // MARK: - Variables
+    lazy var twoSymbolsWidth = 2 * (font ?? NSFont.systemFont(ofSize: 15)).xHeight
+    func frameForWidth(_ width: CGFloat, height: CGFloat) -> CGRect {
+        let theFont = font ?? NSFont.systemFont(ofSize: 15)
+        return string.boundingRect(with: CGSize(width: width, height: height),
+                                 options: NSString.DrawingOptions.usesLineFragmentOrigin,
+                                 attributes: [NSAttributedStringKey.font : theFont])
+    }
 }
 
 // MARK: -
@@ -63,6 +68,9 @@ class TATextView: NSTextView {
 // MARK: -
 
 class TAContainerView: NSView {
+    
+    // MARK: - Variables
+    
     enum TAContainerViewState {
         case inactive
         case active
@@ -74,6 +82,9 @@ class TAContainerView: NSView {
     var state: TAContainerViewState = .inactive {
         didSet {
             guard state != oldValue else { return }
+            if oldValue == .resizeLeft || oldValue == .resizeRight {
+                updateSubviewsFrames()
+            }
             
             var isActive: Bool = false
             if state == .inactive {
@@ -96,8 +107,6 @@ class TAContainerView: NSView {
             textView.textColor = isActive ? NSColor.black : NSColor.gray
         }
     }
-    
-    // MARK: - Variables
     
     var activateResponder: TAActivateResponder?
     var text: String! {
@@ -139,12 +148,9 @@ class TAContainerView: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         
-        initialTouchPoint = CGPoint(x: frameRect.origin.x + frameRect.size.width/2,
-                                    y: frameRect.origin.y + frameRect.size.height/2)
+        initialTouchPoint = CGPoint(x: frameRect.origin.x + frameRect.width/2,
+                                    y: frameRect.origin.y + frameRect.height/2)
         let size = frameRect.size
-        
-        wantsLayer = true
-        layer?.backgroundColor = #colorLiteral(red: 0.1960784346, green: 0.3411764801, blue: 0.1019607857, alpha: 0.1695205479)
         
         backgroundView = TAView(frame: NSRect(origin: CGPoint.zero, size: size))
         backgroundView.isHidden = true
@@ -154,10 +160,12 @@ class TAContainerView: NSView {
                                             size: CGSize(width: size.width - 2*kPadding,
                                                          height: size.height - 2*kPadding)))
         textView.alignment = .natural
-        textView.backgroundColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 0.3218642979)//NSColor.clear
+        textView.backgroundColor = NSColor.clear
         textView.textColor = NSColor.gray
         textView.isSelectable = false
-        
+        textView.isRichText = false
+        textView.usesRuler = false
+        textView.usesFontPanel = false
         textView.isEditable = false
         textView.delegate = self
         
@@ -208,27 +216,13 @@ class TAContainerView: NSView {
     }
     
     private func updateFrameWithText(_ string: String) {
-        let text = NSString(string: string)
-        
         let center = CGPoint(x: NSMidX(frame), y: NSMidY(frame))
         
-        var font: NSFont!
-        if let theFont = textView.font {
-            font = theFont
-        } else {
-            font = NSFont.systemFont(ofSize: 15)
-        }
-        func frameForWidth(_ width: CGFloat, height: CGFloat) -> CGRect {
-            return text.boundingRect(with: CGSize(width: width, height: height),
-                                     options: NSString.DrawingOptions.usesLineFragmentOrigin,
-                                     attributes: [NSAttributedStringKey.font : font])
-        }
-        
-        var textFrame = frameForWidth(CGFloat.greatestFiniteMagnitude, height: textView.bounds.size.height)
-        let width = textFrame.size.width + 2*font.xHeight
-        
-        textFrame = frameForWidth(width, height: CGFloat.greatestFiniteMagnitude)
-        let height = textFrame.size.height
+        var textFrame = textView.frameForWidth(CGFloat.greatestFiniteMagnitude, height: textView.bounds.height)
+        let width = max(textFrame.width + textView.twoSymbolsWidth, textView.bounds.width)
+        // FIXME: Re-design whole algorythm to will be number of lines sensetive
+        textFrame = textView.frameForWidth(width, height: CGFloat.greatestFiniteMagnitude)
+        let height = textFrame.height
         
         // Now we knot text label frame. We should calculate new self.frame and redraw all the subviews
         textFrame = CGRect(x: center.x - width/2.0 - (kPadding + kCircleRadius),
@@ -262,9 +256,10 @@ class TAContainerView: NSView {
         
         var theFrame = frame
         let delta = (state == .resizeRight ? 1 : -1) * distance
-        theFrame.size = CGSize(width: theFrame.size.width + delta, height: theFrame.size.height)
+        theFrame.size = CGSize(width: theFrame.width + delta, height: theFrame.height)
         
-        guard theFrame.size.width > 25 else {
+        // FIXME: better to calculate it like 2 * (kPadding + kCircleRadius) + textView.twoSymbolsWidth)
+        guard theFrame.width > 25 else {
             state = .active
             return
         }
@@ -272,6 +267,16 @@ class TAContainerView: NSView {
         if state == .resizeLeft {
             // should move origin as well
             theFrame.origin = CGPoint(x: theFrame.origin.x + distance, y: theFrame.origin.y)
+        }
+        
+        // Here we have to check if text view frame has good size for such container size
+        let textFrame = textView.frameForWidth(theFrame.width, height: CGFloat.greatestFiniteMagnitude)
+        let diff_width = theFrame.width - (textFrame.width + 2 * (kPadding + kCircleRadius) + textView.twoSymbolsWidth)
+        if diff_width < 0 {
+            let diff_height = theFrame.height - (textFrame.height + 2 * kPadding)
+            let height = textFrame.height + 2 * kPadding
+            theFrame.size = CGSize(width: theFrame.width, height: height)
+            // FIXME: here we should add some (prevention dissapearing symbols) height adding, depending on diff width amount. One symbol is about 9.0 of the difference
         }
         
         frame = theFrame
@@ -326,11 +331,9 @@ class ViewController: NSViewController, TextAnnotationsController {
         super.viewDidLoad()
         
         // Programmatically creating a text annotation
-        let location = CGPoint(x: 100, y: 150)
+        let size = CGSize.zero
         
-        let size = CGSize(width: 40, height: 40)
-        
-        let view1 = TAContainerView(frame: NSRect(origin: location, size: size))
+        let view1 = TAContainerView(frame: NSRect(origin: CGPoint(x: 100, y: 150), size: size))
         view1.text = "1"
         view1.activateResponder = self
         view.addSubview(view1)
