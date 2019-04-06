@@ -91,6 +91,7 @@ class TAContainerView: NSView {
                 textView.isEditable = false
                 textView.isSelectable = false
                 doubleClickGestureRecognizer.isEnabled = !textView.isEditable
+                updateSubviewsFrames()
             } else {
                 isActive = true
                 
@@ -167,6 +168,7 @@ class TAContainerView: NSView {
         textView.usesRuler = false
         textView.usesFontPanel = false
         textView.isEditable = false
+        textView.isVerticallyResizable = false
         textView.delegate = self
         
         singleClickGestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(self.singleClickGestureHandle(_:)))
@@ -270,12 +272,16 @@ class TAContainerView: NSView {
         }
         
         // Here we have to check if text view frame has good size for such container size
-        let textFrame = textView.frameForWidth(theFrame.width, height: CGFloat.greatestFiniteMagnitude)
+        let textFrame = textView.frameForWidth(theFrame.width - 2 * (kPadding + kCircleRadius),
+                                               height: CGFloat.greatestFiniteMagnitude)
         let diff_width = theFrame.width - (textFrame.width + 2 * (kPadding + kCircleRadius) + textView.twoSymbolsWidth)
         if diff_width < 0 {
-            let diff_height = theFrame.height - (textFrame.height + 2 * kPadding)
+            // let diff_height = theFrame.height - (textFrame.height + 2 * kPadding)
             let height = textFrame.height + 2 * kPadding
+            let centerY = theFrame.origin.y + theFrame.height/2
+            
             theFrame.size = CGSize(width: theFrame.width, height: height)
+            theFrame.origin = CGPoint(x: theFrame.origin.x, y: centerY - height/2)
             // FIXME: here we should add some (prevention dissapearing symbols) height adding, depending on diff width amount. One symbol is about 9.0 of the difference
         }
         
