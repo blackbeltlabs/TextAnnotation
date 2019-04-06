@@ -138,6 +138,8 @@ class TAContainerView: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         
+        initialTouchPoint = CGPoint(x: frameRect.origin.x + frameRect.size.width/2,
+                                    y: frameRect.origin.y + frameRect.size.height/2)
         let size = frameRect.size
         
         wantsLayer = true
@@ -359,7 +361,25 @@ class ViewController: NSViewController, TextAnnotationsController {
     }
     
     override func mouseDown(with event: NSEvent) {
-        activeAnnotation = nil
+        let screenPoint = event.locationInWindow
+        
+        // check annotation to activate or break resize
+        let locationInView = view.convert(screenPoint, to: nil)
+        var annotationToActivate: TAContainerView!
+        
+        for annotation in annotations {
+            if annotation.frame.contains(locationInView) {
+                annotationToActivate = annotation
+                break
+            }
+        }
+        
+        if annotationToActivate == nil {
+            activeAnnotation = nil
+        } else {
+            activeAnnotation.initialTouchPoint = screenPoint
+        }
+        
         super.mouseDown(with: event)
     }
     
@@ -381,7 +401,6 @@ class ViewController: NSViewController, TextAnnotationsController {
         for annotation in annotations {
             if annotation.frame.contains(locationInView) {
                 annotationToActivate = annotation
-//                annotationToActivate.initialTouchPoint = locationInView
                 break
             }
         }
@@ -389,7 +408,7 @@ class ViewController: NSViewController, TextAnnotationsController {
         // are we should continue resize
         if activeAnnotation != nil && (activeAnnotation.state == .resizeLeft || activeAnnotation.state == .resizeRight) {
             let initialDragPoint = activeAnnotation.initialTouchPoint
-            activeAnnotation.initialTouchPoint = locationInView
+            activeAnnotation.initialTouchPoint = screenPoint
             let difference = CGSize(width: screenPoint.x - initialDragPoint.x,
                                     height: screenPoint.y - initialDragPoint.y)
             
@@ -398,34 +417,42 @@ class ViewController: NSViewController, TextAnnotationsController {
         }
         
         // start dragging or resize
-        if activeAnnotation == nil, annotationToActivate != nil {
-            activeAnnotation = annotationToActivate
-            let locationInAnnotation = view.convert(screenPoint, to: activeAnnotation)
+        if /*activeAnnotation == nil,*/ annotationToActivate != nil {
+//            activeAnnotation = annotationToActivate
+            let locationInAnnotation = view.convert(screenPoint, to: annotationToActivate)
             
             var state: TAContainerView.TAContainerViewState = .active // default state
-            if activeAnnotation.leftTally.frame.contains(locationInAnnotation) {
+            if annotationToActivate.leftTally.frame.contains(locationInAnnotation) {
                 state = .resizeLeft
-            } else if activeAnnotation.rightTally.frame.contains(locationInAnnotation) {
+            } else if annotationToActivate.rightTally.frame.contains(locationInAnnotation) {
                 state = .resizeRight
             }
             
-            activeAnnotation.state = state
+            if state != .active {
+                annotationToActivate.state = state
+                return
+            }
         }
 
-        activeAnnotation = annotationToActivate
+        if activeAnnotation == nil ||
+            (annotationToActivate != nil && activeAnnotation != annotationToActivate){
+            if activeAnnotation != nil {
+                activeAnnotation.state = .inactive
+            }
+            
+            activeAnnotation = annotationToActivate
+        }
         guard activeAnnotation != nil else { return }
         
         // here we can only drag
+        activeAnnotation.state = .active
         let initialDragPoint = activeAnnotation.initialTouchPoint
-        activeAnnotation.initialTouchPoint = locationInView
+        activeAnnotation.initialTouchPoint = screenPoint
         let difference = CGSize(width: screenPoint.x - initialDragPoint.x,
                                 height: screenPoint.y - initialDragPoint.y)
         
-        if activeAnnotation.state == .active {
-            activeAnnotation.initialTouchPoint = screenPoint
-            activeAnnotation.origin = CGPoint(x: activeAnnotation.frame.origin.x + difference.width,
-                                              y: activeAnnotation.frame.origin.y + difference.height)
-        }
+        activeAnnotation.origin = CGPoint(x: activeAnnotation.frame.origin.x + difference.width,
+                                          y: activeAnnotation.frame.origin.y + difference.height)
     }
 }
 
