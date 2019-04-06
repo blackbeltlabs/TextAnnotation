@@ -262,13 +262,21 @@ class TAContainerView: NSView {
         guard state == .resizeRight || state == .resizeLeft else { return }
         
         var theFrame = frame
-        theFrame.size = CGSize(width: theFrame.size.width + distance, height: theFrame.size.height)
+        let delta = (state == .resizeRight ? 1 : -1) * distance
+        theFrame.size = CGSize(width: theFrame.size.width + delta, height: theFrame.size.height)
+        
+        guard theFrame.size.width > 25 else {
+            state = .active
+            return
+        }
+        
         if state == .resizeLeft {
             // should move origin as well
-//            theFrame.origin = CGPoint(x: theFrame.origin.x - distance, y: theFrame.origin.y)
+            theFrame.origin = CGPoint(x: theFrame.origin.x + distance, y: theFrame.origin.y)
         }
         
         frame = theFrame
+        updateSubviewsFrames()
     }
 }
 
@@ -366,31 +374,50 @@ class ViewController: NSViewController, TextAnnotationsController {
     private func textAnnotationsMouseDragged(event: NSEvent) {
         let screenPoint = event.locationInWindow
         
-        // check annotation to activate
+        // check annotation to activate or break resize
         let locationInView = view.convert(screenPoint, to: nil)
+        var annotationToActivate: TAContainerView!
+        
         for annotation in annotations {
             if annotation.frame.contains(locationInView) {
-                activeAnnotation = annotation
-                activeAnnotation.initialTouchPoint = locationInView
-                if activeAnnotation.state == .inactive {
-                    
-                    let locationInAnnotation = view.convert(screenPoint, to: activeAnnotation)
-                    var state: TAContainerView.TAContainerViewState = .active // default state
-                    if activeAnnotation.leftTally.frame.contains(locationInAnnotation) {
-                        state = .resizeLeft
-                    } else if activeAnnotation.rightTally.frame.contains(locationInAnnotation) {
-                        state = .resizeRight
-                    }
-                    
-                    activeAnnotation.state = state
-                }
+                annotationToActivate = annotation
+//                annotationToActivate.initialTouchPoint = locationInView
                 break
             }
         }
+        
+        // are we should continue resize
+        if activeAnnotation != nil && (activeAnnotation.state == .resizeLeft || activeAnnotation.state == .resizeRight) {
+            let initialDragPoint = activeAnnotation.initialTouchPoint
+            activeAnnotation.initialTouchPoint = locationInView
+            let difference = CGSize(width: screenPoint.x - initialDragPoint.x,
+                                    height: screenPoint.y - initialDragPoint.y)
+            
+            activeAnnotation.resizeWithDistance(difference.width)
+            return
+        }
+        
+        // start dragging or resize
+        if activeAnnotation == nil, annotationToActivate != nil {
+            activeAnnotation = annotationToActivate
+            let locationInAnnotation = view.convert(screenPoint, to: activeAnnotation)
+            
+            var state: TAContainerView.TAContainerViewState = .active // default state
+            if activeAnnotation.leftTally.frame.contains(locationInAnnotation) {
+                state = .resizeLeft
+            } else if activeAnnotation.rightTally.frame.contains(locationInAnnotation) {
+                state = .resizeRight
+            }
+            
+            activeAnnotation.state = state
+        }
 
+        activeAnnotation = annotationToActivate
         guard activeAnnotation != nil else { return }
         
+        // here we can only drag
         let initialDragPoint = activeAnnotation.initialTouchPoint
+        activeAnnotation.initialTouchPoint = locationInView
         let difference = CGSize(width: screenPoint.x - initialDragPoint.x,
                                 height: screenPoint.y - initialDragPoint.y)
         
@@ -398,8 +425,6 @@ class ViewController: NSViewController, TextAnnotationsController {
             activeAnnotation.initialTouchPoint = screenPoint
             activeAnnotation.origin = CGPoint(x: activeAnnotation.frame.origin.x + difference.width,
                                               y: activeAnnotation.frame.origin.y + difference.height)
-        } else if activeAnnotation.state == .resizeLeft || activeAnnotation.state == .resizeRight {
-            activeAnnotation.resizeWithDistance(difference.width)
         }
     }
 }
