@@ -69,6 +69,7 @@ class TAContainerView: NSView {
         case editing
         case resizeRight
         case resizeLeft
+        case dragging
     }
     var state: TAContainerViewState = .inactive {
         didSet {
@@ -353,9 +354,7 @@ class ViewController: NSViewController, TextAnnotationsController {
     }
     
     override func mouseUp(with event: NSEvent) {
-        guard activeAnnotation != nil else { return }
-        if activeAnnotation.state == .resizeLeft ||
-            activeAnnotation.state == .resizeRight {
+        if activeAnnotation != nil {
             activeAnnotation.state = .active
         }
     }
@@ -377,7 +376,8 @@ class ViewController: NSViewController, TextAnnotationsController {
         if annotationToActivate == nil {
             activeAnnotation = nil
         } else {
-            activeAnnotation.initialTouchPoint = screenPoint
+            activeAnnotation?.initialTouchPoint = screenPoint
+            activeAnnotation?.state = .active
         }
         
         super.mouseDown(with: event)
@@ -417,8 +417,7 @@ class ViewController: NSViewController, TextAnnotationsController {
         }
         
         // start dragging or resize
-        if /*activeAnnotation == nil,*/ annotationToActivate != nil {
-//            activeAnnotation = annotationToActivate
+        if annotationToActivate != nil {
             let locationInAnnotation = view.convert(screenPoint, to: annotationToActivate)
             
             var state: TAContainerView.TAContainerViewState = .active // default state
@@ -428,14 +427,14 @@ class ViewController: NSViewController, TextAnnotationsController {
                 state = .resizeRight
             }
             
-            if state != .active {
+            if state != .active && annotationToActivate.state != .dragging {
                 annotationToActivate.state = state
                 return
             }
         }
 
         if activeAnnotation == nil ||
-            (annotationToActivate != nil && activeAnnotation != annotationToActivate){
+            (annotationToActivate != nil && activeAnnotation != annotationToActivate) {
             if activeAnnotation != nil {
                 activeAnnotation.state = .inactive
             }
@@ -445,7 +444,11 @@ class ViewController: NSViewController, TextAnnotationsController {
         guard activeAnnotation != nil else { return }
         
         // here we can only drag
-        activeAnnotation.state = .active
+        if activeAnnotation.state != .dragging {
+            activeAnnotation.initialTouchPoint = screenPoint
+        }
+        activeAnnotation.state = .dragging
+        
         let initialDragPoint = activeAnnotation.initialTouchPoint
         activeAnnotation.initialTouchPoint = screenPoint
         let difference = CGSize(width: screenPoint.x - initialDragPoint.x,
