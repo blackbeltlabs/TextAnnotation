@@ -22,8 +22,8 @@ class TAView: NSView {
                                                   y: TAView.kPadding,
                                                   width: dirtyRect.size.width - 2 * (TAView.kPadding + TAView.kRadius),
                                                   height: dirtyRect.size.height - 2 * TAView.kPadding))
-        #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).setFill()
-        framePath.fill()
+//        #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).setFill()
+//        framePath.fill()
         
         framePath.lineWidth = 1
         color.set()
@@ -58,11 +58,17 @@ class TATextView: NSTextView {
     // MARK: - Variables
 }
 
+// MARK: -
+// MARK: -
+// MARK: -
+
 class TAContainerView: NSView {
     enum TAContainerViewState {
         case inactive
         case active
         case editing
+        case resizeRight
+        case resizeLeft
     }
     var state: TAContainerViewState = .inactive {
         didSet {
@@ -100,6 +106,14 @@ class TAContainerView: NSView {
         }
     }
     var initialTouchPoint = CGPoint.zero
+    var leftTally: NSView!
+    var rightTally: NSView!
+    var origin: CGPoint = CGPoint.zero {
+        didSet {
+            frame.origin = origin
+            updateSubviewsFrames()
+        }
+    }
     
     // MARK: Private
     
@@ -112,6 +126,12 @@ class TAContainerView: NSView {
     private var singleClickGestureRecognizer: NSClickGestureRecognizer!
     private var doubleClickGestureRecognizer: NSClickGestureRecognizer!
     
+    override internal var frame: NSRect {
+        didSet {
+            updateSubviewsFrames()
+        }
+    }
+    
     // MARK: - Methods
     // MARK: Lifecycle
     
@@ -121,8 +141,9 @@ class TAContainerView: NSView {
         let size = frameRect.size
         
         wantsLayer = true
+        layer?.backgroundColor = #colorLiteral(red: 0.1960784346, green: 0.3411764801, blue: 0.1019607857, alpha: 0.1695205479)
         
-        backgroundView = TAView(frame: NSRect(origin: CGPoint.zero, size: frameRect.size))
+        backgroundView = TAView(frame: NSRect(origin: CGPoint.zero, size: size))
         backgroundView.isHidden = true
         self.addSubview(backgroundView)
         
@@ -133,6 +154,7 @@ class TAContainerView: NSView {
         textView.backgroundColor = NSColor.clear
         textView.textColor = NSColor.gray
         textView.isSelectable = false
+        
         textView.isEditable = false
         textView.delegate = self
         
@@ -146,6 +168,18 @@ class TAContainerView: NSView {
         
         addSubview(textView)
         
+        var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: kPadding + kCircleRadius, height: size.height))
+        leftTally = NSView(frame: tallyFrame)
+        leftTally.wantsLayer = true
+        leftTally.layer?.backgroundColor = #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 0.5062607021)
+        addSubview(leftTally)
+        
+        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: 0)
+        rightTally = NSView(frame: tallyFrame)
+        rightTally.wantsLayer = true
+        rightTally.layer?.backgroundColor = #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 0.5062607021)
+        addSubview(rightTally)
+        
         updateFrameWithText(textView.string)
     }
     
@@ -157,6 +191,7 @@ class TAContainerView: NSView {
     
     @objc private func singleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
         guard let theTextView = textView, !theTextView.isEditable else { return }
+        // FIXME: Here we fails with location of the point. ONLY in more than one row case
         initialTouchPoint = gesture.location(in: self.superview)
         state = .active
     }
@@ -173,7 +208,7 @@ class TAContainerView: NSView {
         responder.textViewDidActivate(self)
     }
     
-    func updateFrameWithText(_ string: String) {
+    private func updateFrameWithText(_ string: String) {
         let text = NSString(string: string)
         
         let center = CGPoint(x: NSMidX(frame), y: NSMidY(frame))
@@ -195,23 +230,46 @@ class TAContainerView: NSView {
                                       attributes: [NSAttributedStringKey.font : font])
         let height = textFrame.size.height
         
-        let labelFrame = CGRect(x: kPadding + kCircleRadius, y: kPadding, width: width, height: height)
+        // Now we knot text label frame. We should calculate new self.frame and redraw all the subviews
         
         textFrame = CGRect(x: center.x - width/2.0 - (kPadding + kCircleRadius),
                            y: center.y - height/2.0 - kPadding,
                            width: width + 2*(kPadding + kCircleRadius),
                            height: height + 2*kPadding)
         
+        frame = textFrame
+    }
+    
+    private func updateSubviewsFrames() {
+        let size = frame.size
+        
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        backgroundView.frame = CGRect(origin: CGPoint.zero, size: textFrame.size)
-        CATransaction.commit()
+        backgroundView.frame = CGRect(origin: CGPoint.zero, size: size)
+        textView.frame = CGRect(x: kPadding + kCircleRadius, y: kPadding, width: size.width - 2*(kPadding + kCircleRadius), height: size.height - 2*kPadding)
         
-        self.frame = textFrame
-        textView.frame = labelFrame
+        var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: kPadding + kCircleRadius, height: size.height))
+        leftTally.frame = tallyFrame
+        
+        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: 0)
+        rightTally.frame = tallyFrame
+        CATransaction.commit()
     }
     
     // MARK: - Public
+    
+    func resizeWithDistance(_ distance: CGFloat) {
+        guard state == .resizeRight || state == .resizeLeft else { return }
+        
+        var theFrame = frame
+        theFrame.size = CGSize(width: theFrame.size.width + distance, height: theFrame.size.height)
+        if state == .resizeLeft {
+            // should move origin as well
+//            theFrame.origin = CGPoint(x: theFrame.origin.x - distance, y: theFrame.origin.y)
+        }
+        
+        frame = theFrame
+    }
 }
 
 extension TAContainerView: NSTextViewDelegate {
@@ -229,6 +287,10 @@ extension TAContainerView: TAActivateResponder {
         state = textView.isEditable ? .editing : .active
     }
 }
+
+// MARK: -
+// MARK: -
+// MARK: -
 
 class ViewController: NSViewController, TextAnnotationsController {
     
@@ -259,7 +321,7 @@ class ViewController: NSViewController, TextAnnotationsController {
         // Programmatically creating a text annotation
         let location = CGPoint(x: 100, y: 150)
         
-        let size = CGSize(width: 25, height: 25)
+        let size = CGSize(width: 40, height: 40)
         
         let view1 = TAContainerView(frame: NSRect(origin: location, size: size))
         view1.text = "1"
@@ -280,6 +342,14 @@ class ViewController: NSViewController, TextAnnotationsController {
         activeAnnotation = nil
     }
     
+    override func mouseUp(with event: NSEvent) {
+        guard activeAnnotation != nil else { return }
+        if activeAnnotation.state == .resizeLeft ||
+            activeAnnotation.state == .resizeRight {
+            activeAnnotation.state = .active
+        }
+    }
+    
     override func mouseDown(with event: NSEvent) {
         activeAnnotation = nil
         super.mouseDown(with: event)
@@ -295,28 +365,42 @@ class ViewController: NSViewController, TextAnnotationsController {
     
     private func textAnnotationsMouseDragged(event: NSEvent) {
         let screenPoint = event.locationInWindow
-        if activeAnnotation == nil {
-            let locationInView = view.convert(screenPoint, to: nil)
-            for annotation in annotations {
-                if annotation.frame.contains(locationInView) {
-                    activeAnnotation = annotation
-                    activeAnnotation.initialTouchPoint = locationInView
-                    activeAnnotation.state = .active
-                    break
+        
+        // check annotation to activate
+        let locationInView = view.convert(screenPoint, to: nil)
+        for annotation in annotations {
+            if annotation.frame.contains(locationInView) {
+                activeAnnotation = annotation
+                activeAnnotation.initialTouchPoint = locationInView
+                if activeAnnotation.state == .inactive {
+                    
+                    let locationInAnnotation = view.convert(screenPoint, to: activeAnnotation)
+                    var state: TAContainerView.TAContainerViewState = .active // default state
+                    if activeAnnotation.leftTally.frame.contains(locationInAnnotation) {
+                        state = .resizeLeft
+                    } else if activeAnnotation.rightTally.frame.contains(locationInAnnotation) {
+                        state = .resizeRight
+                    }
+                    
+                    activeAnnotation.state = state
                 }
+                break
             }
         }
+
         guard activeAnnotation != nil else { return }
         
         let initialDragPoint = activeAnnotation.initialTouchPoint
         let difference = CGSize(width: screenPoint.x - initialDragPoint.x,
                                 height: screenPoint.y - initialDragPoint.y)
-    
-        var frame = activeAnnotation.frame
-        frame.origin = CGPoint(x: frame.origin.x + difference.width,
-                               y: frame.origin.y + difference.height)
-        activeAnnotation.frame = frame
-        activeAnnotation.initialTouchPoint = screenPoint
+        
+        if activeAnnotation.state == .active {
+            activeAnnotation.initialTouchPoint = screenPoint
+            activeAnnotation.origin = CGPoint(x: activeAnnotation.frame.origin.x + difference.width,
+                                              y: activeAnnotation.frame.origin.y + difference.height)
+        } else if activeAnnotation.state == .resizeLeft || activeAnnotation.state == .resizeRight {
+            activeAnnotation.resizeWithDistance(difference.width)
+        }
     }
 }
 
