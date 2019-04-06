@@ -154,7 +154,7 @@ class TAContainerView: NSView {
                                             size: CGSize(width: size.width - 2*kPadding,
                                                          height: size.height - 2*kPadding)))
         textView.alignment = .natural
-        textView.backgroundColor = NSColor.clear
+        textView.backgroundColor = #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 0.3218642979)//NSColor.clear
         textView.textColor = NSColor.gray
         textView.isSelectable = false
         
@@ -173,14 +173,10 @@ class TAContainerView: NSView {
         
         var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: kPadding + kCircleRadius, height: size.height))
         leftTally = NSView(frame: tallyFrame)
-        leftTally.wantsLayer = true
-        leftTally.layer?.backgroundColor = #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 0.5062607021)
         addSubview(leftTally)
         
         tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: 0)
         rightTally = NSView(frame: tallyFrame)
-        rightTally.wantsLayer = true
-        rightTally.layer?.backgroundColor = #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 0.5062607021)
         addSubview(rightTally)
         
         updateFrameWithText(textView.string)
@@ -222,19 +218,19 @@ class TAContainerView: NSView {
         } else {
             font = NSFont.systemFont(ofSize: 15)
         }
-        var textFrame = text.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: textView.bounds.size.height),
-                                          options: NSString.DrawingOptions.usesLineFragmentOrigin,
-                                          attributes: [NSAttributedStringKey.font : font])
+        func frameForWidth(_ width: CGFloat, height: CGFloat) -> CGRect {
+            return text.boundingRect(with: CGSize(width: width, height: height),
+                                     options: NSString.DrawingOptions.usesLineFragmentOrigin,
+                                     attributes: [NSAttributedStringKey.font : font])
+        }
         
+        var textFrame = frameForWidth(CGFloat.greatestFiniteMagnitude, height: textView.bounds.size.height)
         let width = textFrame.size.width + 2*font.xHeight
         
-        textFrame = text.boundingRect(with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude),
-                                      options: NSString.DrawingOptions.usesLineFragmentOrigin,
-                                      attributes: [NSAttributedStringKey.font : font])
+        textFrame = frameForWidth(width, height: CGFloat.greatestFiniteMagnitude)
         let height = textFrame.size.height
         
         // Now we knot text label frame. We should calculate new self.frame and redraw all the subviews
-        
         textFrame = CGRect(x: center.x - width/2.0 - (kPadding + kCircleRadius),
                            y: center.y - height/2.0 - kPadding,
                            width: width + 2*(kPadding + kCircleRadius),
