@@ -465,17 +465,6 @@ class ViewController: NSViewController, TextAnnotationsController {
     private func textAnnotationsMouseDragged(event: NSEvent) {
         let screenPoint = event.locationInWindow
         
-        // check annotation to activate or break resize
-        let locationInView = view.convert(screenPoint, to: nil)
-        var annotationToActivate: TAContainerView!
-        
-        for annotation in annotations {
-            if annotation.frame.contains(locationInView) {
-                annotationToActivate = annotation
-                break
-            }
-        }
-        
         // are we should continue resize or scale
         if activeAnnotation != nil, activeAnnotation.state == .resizeLeft || activeAnnotation.state == .resizeRight || activeAnnotation.state == .scaling {
             
@@ -490,6 +479,17 @@ class ViewController: NSViewController, TextAnnotationsController {
                 activeAnnotation.scaleWithDistance(difference)
             }
             return
+        }
+        
+        // check annotation to activate or break resize
+        let locationInView = view.convert(screenPoint, to: nil)
+        var annotationToActivate: TAContainerView!
+        
+        for annotation in annotations {
+            if annotation.frame.contains(locationInView) {
+                annotationToActivate = annotation
+                break
+            }
         }
         
         // start dragging or resize
@@ -507,6 +507,7 @@ class ViewController: NSViewController, TextAnnotationsController {
             
             if state != .active && annotationToActivate.state != .dragging {
                 annotationToActivate.state = state
+                activeAnnotation = annotationToActivate
                 return
             }
         }
