@@ -9,6 +9,81 @@
 import Cocoa
 import TextAnnotation
 
+// MARK: - extension String
+
+extension String {
+    // Based on https://stackoverflow.com/a/54152859/1067147
+    
+    /// Attempts to return the font specified by name of the appropriate point
+    /// size for this string to fit within a particular container size and
+    /// constrained to a lower and upper bound point size.
+    /// - parameter name: of the font.
+    /// - parameter containerSize: that this string should fit inside.
+    /// - parameter lowerBound: minimum allowable point size of this font.
+    /// - parameter upperBound: maximum allowable point size of this font.
+    /// - returns: the font specified by name of the appropriate point
+    /// size for this string to fit within a particular container size and
+    /// constrained to a lower and upper bound point size; `nil` if no such
+    /// font exists.
+    public func font(named name: String,
+                     toFit containerSize: CGSize,
+                     noSmallerThan lowerBound: CGFloat = 1.0,
+                     noLargerThan upperBound: CGFloat = 256.0) -> NSFont? {
+        let lowerBound = lowerBound > upperBound ? upperBound : lowerBound
+        let mid = lowerBound + (upperBound - lowerBound) / 2
+        guard let tempFont = NSFont(name: name, size: mid) else { return nil }
+        let difference = containerSize.height -
+            self.size(withAttributes:
+                [NSAttributedStringKey.font : tempFont]).height
+        if mid == lowerBound || mid == upperBound {
+            return NSFont(name: name, size: difference < 0 ? mid - 1 : mid)
+        }
+        return difference < 0 ? font(named: name,
+                                     toFit: containerSize,
+                                     noSmallerThan: mid,
+                                     noLargerThan: mid - 1) :
+            (difference > 0 ? font(named: name,
+                                   toFit: containerSize,
+                                   noSmallerThan: mid,
+                                   noLargerThan: mid - 1) :
+                NSFont(name: name, size: mid))
+    }
+    
+    /// Returns the system font of the appropriate point size for this string
+    /// to fit within a particular container size and constrained to a lower
+    /// and upper bound point size.
+    /// - parameter containerSize: that this string should fit inside.
+    /// - parameter lowerBound: minimum allowable point size of this font.
+    /// - parameter upperBound: maximum allowable point size of this font.
+    /// - returns: the system font of the appropriate point size for this string
+    /// to fit within a particular container size and constrained to a lower
+    /// and upper bound point size.
+    public func systemFont(toFit containerSize: CGSize,
+                           noSmallerThan lowerBound: CGFloat = 1.0,
+                           noLargerThan upperBound: CGFloat = 256.0) -> NSFont {
+        let lowerBound = lowerBound > upperBound ? upperBound : lowerBound
+        let mid = lowerBound + (upperBound - lowerBound) / 2
+        let tempFont = NSFont.systemFont(ofSize: mid)
+        let difference = containerSize.height -
+            self.size(withAttributes:
+                [NSAttributedStringKey.font : tempFont]).height
+        if mid == lowerBound || mid == upperBound {
+            return NSFont.systemFont(ofSize: difference < 0 ? mid - 1 : mid)
+        }
+        return difference < 0 ? systemFont(toFit: containerSize,
+                                           noSmallerThan: mid,
+                                           noLargerThan: mid - 1) :
+            (difference > 0 ? systemFont(toFit: containerSize,
+                                         noSmallerThan: mid,
+                                         noLargerThan: mid - 1) :
+                NSFont.systemFont(ofSize: mid))
+    }
+    
+}
+
+// MARL: -
+// MARL: -
+
 protocol TAActivateResponder {
     func textViewDidActivate(_ activeItem: Any?)
 }
@@ -135,6 +210,8 @@ class TAContainerView: NSView {
 
     private let kPadding: CGFloat = TAView.kPadding
     private let kCircleRadius: CGFloat = TAView.kRadius
+    private let kMinimalWidth: CGFloat = 25 + 2*TAView.kPadding + 2*TAView.kRadius
+    private let kMinimalHeight: CGFloat = 25
     
     private var singleClickGestureRecognizer: NSClickGestureRecognizer!
     private var doubleClickGestureRecognizer: NSClickGestureRecognizer!
@@ -277,7 +354,7 @@ class TAContainerView: NSView {
         theFrame.size = CGSize(width: theFrame.width + delta, height: theFrame.height)
         
         // FIXME: better to calculate it like 2 * (kPadding + kCircleRadius) + textView.twoSymbolsWidth)
-        guard theFrame.width > 25 else {
+        guard theFrame.width > kMinimalWidth else {
             state = .active
             return
         }
@@ -309,8 +386,17 @@ class TAContainerView: NSView {
         guard state == .scaling else { return }
         
         var theFrame = frame
-        theFrame.size = CGSize(width: theFrame.width + difference.width, height: theFrame.height - difference.height)
+        var width = theFrame.width + difference.width
+        width = width < kMinimalWidth ? kMinimalWidth : width
+        var height = theFrame.height - difference.height
+        height = height < kMinimalHeight ? kMinimalHeight : height
+        theFrame.size = CGSize(width: width, height: height)
         theFrame.origin = CGPoint(x: theFrame.origin.x, y: theFrame.origin.y + difference.height)
+        
+        if let fontName = textView.font?.fontName {
+            let font = textView.string.font(named: fontName, toFit: textView.bounds.size)
+            textView.font = font
+        }
         
         frame = theFrame
         updateSubviewsFrames()
@@ -438,7 +524,8 @@ class ViewController: NSViewController, TextAnnotationsController {
         }
         
         // are we should continue resize or scale
-        if activeAnnotation != nil {
+        if activeAnnotation != nil, activeAnnotation.state == .resizeLeft || activeAnnotation.state == .resizeRight || activeAnnotation.state == .scaling {
+            
             let initialDragPoint = activeAnnotation.initialTouchPoint
             activeAnnotation.initialTouchPoint = screenPoint
             let difference = CGSize(width: screenPoint.x - initialDragPoint.x,
@@ -446,7 +533,7 @@ class ViewController: NSViewController, TextAnnotationsController {
             
             if activeAnnotation.state == .resizeLeft || activeAnnotation.state == .resizeRight {
                 activeAnnotation.resizeWithDistance(difference.width)
-            } else {
+            } else if activeAnnotation.state == .scaling {
                 activeAnnotation.scaleWithDistance(difference)
             }
             return
