@@ -308,13 +308,9 @@ class TAContainerView: NSView {
         
         var theFrame = frame
         let delta = (state == .resizeRight ? 1 : -1) * distance
-        theFrame.size = CGSize(width: theFrame.width + delta, height: theFrame.height)
-        
-        // FIXME: better to calculate it like 2 * (kPadding + kCircleRadius) + textView.twoSymbolsWidth)
-        guard theFrame.width > kMinimalWidth else {
-            state = .active
-            return
-        }
+        var width = theFrame.width + delta
+        width = width < kMinimalWidth ? kMinimalWidth : width
+        theFrame.size = CGSize(width: width, height: theFrame.height)
         
         if state == .resizeLeft {
             // should move origin as well
