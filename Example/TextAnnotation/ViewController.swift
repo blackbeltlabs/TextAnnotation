@@ -54,12 +54,44 @@ class TAView: NSView {
     }
 }
 class TATextView: NSTextView {
-    lazy var twoSymbolsWidth = 2 * (font ?? NSFont.systemFont(ofSize: 15)).xHeight
+    
+    // MARK: - Variables
+    
+    lazy var twoSymbolsWidth = 2 * getFont().xHeight
+    
+    // MARK: Private
+    
+    private var fontSizeToSizeRatio: CGFloat!
+    
+    // MARK: - Pubcic
+    
     func frameForWidth(_ width: CGFloat, height: CGFloat) -> CGRect {
-        let theFont = font ?? NSFont.systemFont(ofSize: 15)
+        // TODO: Try getFont().boundingRectForFont
         return string.boundingRect(with: CGSize(width: width, height: height),
                                  options: NSString.DrawingOptions.usesLineFragmentOrigin,
-                                 attributes: [NSAttributedStringKey.font : theFont])
+                                 attributes: [NSAttributedStringKey.font : getFont()])
+    }
+    
+    func resetFontSize() {
+        if fontSizeToSizeRatio == nil {
+            let fontSize = getFont().pointSize
+            let frameHip = hypot(frame.width,frame.height)
+            fontSizeToSizeRatio = fontSize/frameHip * 1.5
+        }
+        
+        let side = min(frame.width,frame.height)
+        let size = fontSizeToSizeRatio * min(hypot(side, side), hypot(frame.width,frame.height))
+        let ratio = size/getFont().pointSize
+        if !(1.0...1.1 ~= ratio) {
+            font = NSFont(name: getFont().fontName, size: size)
+            // print("font size changed to \(size)")
+        }
+    }
+    
+    // MARK: - Private
+    
+    private func getFont() -> NSFont {
+        return font ?? NSFont.systemFont(ofSize: 15)
     }
 }
 
@@ -318,10 +350,9 @@ class TAContainerView: NSView {
         theFrame.size = CGSize(width: width, height: height)
         theFrame.origin = CGPoint(x: theFrame.origin.x, y: theFrame.origin.y + difference.height)
         
-        
-        
         frame = theFrame
         updateSubviewsFrames()
+        textView.resetFontSize()
     }
 }
 
