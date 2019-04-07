@@ -94,15 +94,20 @@ class TATextView: NSTextView {
                                  attributes: [NSAttributedStringKey.font : getFont()])
     }
     
+    func calculateScaleRatio() {
+        let fontSize = getFont().pointSize
+        let temp = frame.height/CGFloat(numberOfLines())
+        fontSizeToSizeRatio = fontSize / temp
+    }
+    
     func resetFontSize() {
         if fontSizeToSizeRatio == nil {
-            let fontSize = getFont().pointSize
-            let frameHip = hypot(frame.width,frame.height)
-            fontSizeToSizeRatio = fontSize/frameHip * 1.5
+            calculateScaleRatio()
         }
         
-        let side = min(frame.width,frame.height)
-        let size = fontSizeToSizeRatio * min(hypot(side, side), hypot(frame.width,frame.height))
+        let temp = frame.height/CGFloat(numberOfLines())
+        let size = fontSizeToSizeRatio * temp
+        
         let ratio = size/getFont().pointSize
         if !(1.0...1.1 ~= ratio) {
             font = NSFont(name: getFont().fontName, size: size)
@@ -167,6 +172,10 @@ class TAContainerView: NSView {
                 doubleClickGestureRecognizer.isEnabled = !textView.isEditable
                 updateSubviewsFrames()
             } else {
+                if state == .scaling {
+                    textView.calculateScaleRatio()
+                }
+                
                 isActive = true
                 
                 if let responder = activateResponder {
