@@ -318,9 +318,7 @@ class TAContainerView: NSView {
         theFrame.size = CGSize(width: width, height: height)
         theFrame.origin = CGPoint(x: theFrame.origin.x, y: theFrame.origin.y + difference.height)
         
-        if let fontName = textView.font?.font {
-            
-        }
+        
         
         frame = theFrame
         updateSubviewsFrames()
