@@ -493,21 +493,21 @@ class ViewController: NSViewController, TextAnnotationsController {
         }
         
         // start dragging or resize
-        if annotationToActivate != nil {
-            let locationInAnnotation = view.convert(screenPoint, to: annotationToActivate)
+        if let annotation = annotationToActivate, annotation.state == .active {
+            let locationInAnnotation = view.convert(screenPoint, to: annotation)
             
             var state: TAContainerView.TAContainerViewState = .active // default state
-            if annotationToActivate.leftTally.frame.contains(locationInAnnotation) {
+            if annotation.leftTally.frame.contains(locationInAnnotation) {
                 state = .resizeLeft
-            } else if annotationToActivate.rightTally.frame.contains(locationInAnnotation) {
+            } else if annotation.rightTally.frame.contains(locationInAnnotation) {
                 state = .resizeRight
-            } else if annotationToActivate.scaleTally.frame.contains(locationInAnnotation) {
+            } else if annotation.scaleTally.frame.contains(locationInAnnotation) {
                 state = .scaling
             }
             
-            if state != .active && annotationToActivate.state != .dragging {
-                annotationToActivate.state = state
-                activeAnnotation = annotationToActivate
+            if state != .active && annotation.state != .dragging {
+                annotation.state = state
+                activeAnnotation = annotation
                 return
             }
         }
