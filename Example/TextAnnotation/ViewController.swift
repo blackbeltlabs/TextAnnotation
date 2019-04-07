@@ -12,16 +12,39 @@ import TextAnnotation
 protocol TAActivateResponder {
     func textViewDidActivate(_ activeItem: Any?)
 }
-class TAView: NSView {
+class TADotView: NSView {
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        let strokeWidth: CGFloat = 2
+        
+        let side = min(dirtyRect.width, dirtyRect.height) - strokeWidth
+        let squareRect = CGRect(x: dirtyRect.origin.x + (dirtyRect.width - side)/2,
+                                y: dirtyRect.origin.y + (dirtyRect.height - side)/2,
+                                width: side,
+                                height: side)
+        
+        let fillColor = #colorLiteral(red: 0.3215686275, green: 0.7137254902, blue: 0.8823529412, alpha: 1)
+        let path = NSBezierPath(ovalIn: squareRect)
+        fillColor.setFill()
+        path.fill()
+        
+        path.lineWidth = strokeWidth
+        #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).setStroke()
+        path.stroke()
+    }
+}
+class TAFrameView: NSView {
     static let kPadding: CGFloat = 3
     static let kRadius: CGFloat = 5
     
     override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        
         let color = #colorLiteral(red: 0.3215686275, green: 0.7137254902, blue: 0.8823529412, alpha: 1)
-        let framePath = NSBezierPath(rect: NSRect(x: TAView.kPadding + TAView.kRadius,
-                                                  y: TAView.kPadding,
-                                                  width: dirtyRect.width - 2 * (TAView.kPadding + TAView.kRadius),
-                                                  height: dirtyRect.height - 2 * TAView.kPadding))
+        let framePath = NSBezierPath(rect: NSRect(x: TAFrameView.kPadding + TAFrameView.kRadius,
+                                                  y: TAFrameView.kPadding,
+                                                  width: dirtyRect.width - 2 * (TAFrameView.kPadding + TAFrameView.kRadius),
+                                                  height: dirtyRect.height - 2 * TAFrameView.kPadding))
         #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).setFill()
         framePath.fill()
         
@@ -31,8 +54,8 @@ class TAView: NSView {
         framePath.close()
         
         let left = NSBezierPath()
-        left.appendArc(withCenter: NSPoint(x: TAView.kPadding + TAView.kRadius, y: dirtyRect.height/2),
-                            radius: TAView.kRadius,
+        left.appendArc(withCenter: NSPoint(x: TAFrameView.kPadding + TAFrameView.kRadius, y: dirtyRect.height/2),
+                            radius: TAFrameView.kRadius,
                             startAngle:  270,
                             endAngle: 90,
                             clockwise: true)
@@ -42,8 +65,8 @@ class TAView: NSView {
         left.close()
         
         let right = NSBezierPath()
-        right.appendArc(withCenter: NSPoint(x: dirtyRect.width - (TAView.kPadding + TAView.kRadius), y: dirtyRect.height/2),
-                       radius: TAView.kRadius,
+        right.appendArc(withCenter: NSPoint(x: dirtyRect.width - (TAFrameView.kPadding + TAFrameView.kRadius), y: dirtyRect.height/2),
+                       radius: TAFrameView.kRadius,
                        startAngle:  270,
                        endAngle: 90,
                        clockwise: false)
@@ -134,8 +157,12 @@ class TAContainerView: NSView {
             }
             
             singleClickGestureRecognizer.isEnabled = state == .inactive
+            
             backgroundView.isHidden = !isActive
             backgroundView.display()
+            
+            scaleTally.isHidden = !isActive
+            scaleTally.display()
             
             guard textView != nil else { return }
             textView.textColor = isActive ? NSColor.black : NSColor.gray
@@ -162,12 +189,12 @@ class TAContainerView: NSView {
     
     // MARK: Private
     
-    private var backgroundView: TAView!
+    private var backgroundView: TAFrameView!
     private var textView: TATextView!
 
-    private let kPadding: CGFloat = TAView.kPadding
-    private let kCircleRadius: CGFloat = TAView.kRadius
-    private let kMinimalWidth: CGFloat = 25 + 2*TAView.kPadding + 2*TAView.kRadius
+    private let kPadding: CGFloat = TAFrameView.kPadding
+    private let kCircleRadius: CGFloat = TAFrameView.kRadius
+    private let kMinimalWidth: CGFloat = 25 + 2*TAFrameView.kPadding + 2*TAFrameView.kRadius
     private let kMinimalHeight: CGFloat = 25
     
     private var singleClickGestureRecognizer: NSClickGestureRecognizer!
@@ -189,7 +216,7 @@ class TAContainerView: NSView {
                                     y: frameRect.origin.y + frameRect.height/2)
         let size = frameRect.size
         
-        backgroundView = TAView(frame: NSRect(origin: CGPoint.zero, size: size))
+        backgroundView = TAFrameView(frame: NSRect(origin: CGPoint.zero, size: size))
         backgroundView.isHidden = true
         self.addSubview(backgroundView)
         
@@ -228,9 +255,8 @@ class TAContainerView: NSView {
         
         tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.width)
         tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: 0)
-        scaleTally = NSView(frame: tallyFrame)
-        scaleTally.wantsLayer = true
-        scaleTally.layer?.backgroundColor = #colorLiteral(red: 0.9607843161, green: 0.7058823705, blue: 0.200000003, alpha: 1)
+        scaleTally = TADotView(frame: tallyFrame)
+        scaleTally.isHidden = true
         addSubview(scaleTally)
         
         updateFrameWithText(textView.string)
