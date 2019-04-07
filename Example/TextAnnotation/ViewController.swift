@@ -384,15 +384,15 @@ class TAContainerView: NSView {
     func scaleWithDistance(_ difference: CGSize) {
         guard state == .scaling else { return }
         
-        var theFrame = frame
-        var width = theFrame.width + difference.width
-        width = width < kMinimalWidth ? kMinimalWidth : width
-        var height = theFrame.height - difference.height
-        height = height < kMinimalHeight ? kMinimalHeight : height
-        theFrame.size = CGSize(width: width, height: height)
-        theFrame.origin = CGPoint(x: theFrame.origin.x, y: theFrame.origin.y + difference.height)
+        // we should scale it proportionally, driver of the mpvement is height difference
+        var height = frame.height - difference.height
+        var width = frame.width/frame.height * height
         
-        frame = theFrame
+        width = width < kMinimalWidth ? kMinimalWidth : width
+        height = height < kMinimalHeight ? kMinimalHeight : height
+        
+        frame = CGRect(origin: CGPoint(x: frame.origin.x, y: frame.origin.y + difference.height),
+                       size: CGSize(width: width, height: height))
         updateSubviewsFrames()
         textView.resetFontSize()
     }
