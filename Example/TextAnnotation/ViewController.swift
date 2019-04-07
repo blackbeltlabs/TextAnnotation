@@ -115,6 +115,25 @@ class TATextView: NSTextView {
     private func getFont() -> NSFont {
         return font ?? NSFont.systemFont(ofSize: 15)
     }
+    
+    private func numberOfLines() -> Int {
+        var numberOfLines = 1
+        if let lManager = layoutManager {
+            let numberOfGlyphs = lManager.numberOfGlyphs
+            var index = 0
+            var lineRange = NSRange(location: NSNotFound, length: 0)
+            numberOfLines = 0
+            
+            while index < numberOfGlyphs {
+                lManager.lineFragmentRect(forGlyphAt: index, effectiveRange: &lineRange)
+                index = NSMaxRange(lineRange)
+                numberOfLines += 1
+            }
+        }
+        
+        return numberOfLines
+    }
+
 }
 
 // MARK: -
