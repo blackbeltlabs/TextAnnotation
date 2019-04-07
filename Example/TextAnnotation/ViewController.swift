@@ -89,7 +89,6 @@ class TATextView: NSTextView {
     // MARK: - Pubcic
     
     func frameForWidth(_ width: CGFloat, height: CGFloat) -> CGRect {
-        // TODO: Try getFont().boundingRectForFont
         return string.boundingRect(with: CGSize(width: width, height: height),
                                  options: NSString.DrawingOptions.usesLineFragmentOrigin,
                                  attributes: [NSAttributedStringKey.font : getFont()])
@@ -292,11 +291,13 @@ class TAContainerView: NSView {
         
         var textFrame = textView.frameForWidth(CGFloat.greatestFiniteMagnitude, height: textView.bounds.height)
         let width = max(textFrame.width + textView.twoSymbolsWidth, textView.bounds.width)
-        // FIXME: Re-design whole algorythm to will be number of lines sensetive
-        textFrame = textView.frameForWidth(width, height: CGFloat.greatestFiniteMagnitude)
+        
+        // We should use minimal value to get height. Because of multiline.
+        let minWidth = min(textFrame.width + textView.twoSymbolsWidth, textView.bounds.width)
+        textFrame = textView.frameForWidth(minWidth, height: CGFloat.greatestFiniteMagnitude)
         let height = textFrame.height
         
-        // Now we knot text label frame. We should calculate new self.frame and redraw all the subviews
+        // Now we know text label frame. We should calculate new self.frame and redraw all the subviews
         textFrame = CGRect(x: center.x - width/2.0 - (kPadding + kCircleRadius),
                            y: center.y - height/2.0 - kPadding,
                            width: width + 2*(kPadding + kCircleRadius),
