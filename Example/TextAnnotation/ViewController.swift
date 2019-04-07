@@ -9,81 +9,6 @@
 import Cocoa
 import TextAnnotation
 
-// MARK: - extension String
-
-extension String {
-    // Based on https://stackoverflow.com/a/54152859/1067147
-    
-    /// Attempts to return the font specified by name of the appropriate point
-    /// size for this string to fit within a particular container size and
-    /// constrained to a lower and upper bound point size.
-    /// - parameter name: of the font.
-    /// - parameter containerSize: that this string should fit inside.
-    /// - parameter lowerBound: minimum allowable point size of this font.
-    /// - parameter upperBound: maximum allowable point size of this font.
-    /// - returns: the font specified by name of the appropriate point
-    /// size for this string to fit within a particular container size and
-    /// constrained to a lower and upper bound point size; `nil` if no such
-    /// font exists.
-    public func font(named name: String,
-                     toFit containerSize: CGSize,
-                     noSmallerThan lowerBound: CGFloat = 1.0,
-                     noLargerThan upperBound: CGFloat = 256.0) -> NSFont? {
-        let lowerBound = lowerBound > upperBound ? upperBound : lowerBound
-        let mid = lowerBound + (upperBound - lowerBound) / 2
-        guard let tempFont = NSFont(name: name, size: mid) else { return nil }
-        let difference = containerSize.height -
-            self.size(withAttributes:
-                [NSAttributedStringKey.font : tempFont]).height
-        if mid == lowerBound || mid == upperBound {
-            return NSFont(name: name, size: difference < 0 ? mid - 1 : mid)
-        }
-        return difference < 0 ? font(named: name,
-                                     toFit: containerSize,
-                                     noSmallerThan: mid,
-                                     noLargerThan: mid - 1) :
-            (difference > 0 ? font(named: name,
-                                   toFit: containerSize,
-                                   noSmallerThan: mid,
-                                   noLargerThan: mid - 1) :
-                NSFont(name: name, size: mid))
-    }
-    
-    /// Returns the system font of the appropriate point size for this string
-    /// to fit within a particular container size and constrained to a lower
-    /// and upper bound point size.
-    /// - parameter containerSize: that this string should fit inside.
-    /// - parameter lowerBound: minimum allowable point size of this font.
-    /// - parameter upperBound: maximum allowable point size of this font.
-    /// - returns: the system font of the appropriate point size for this string
-    /// to fit within a particular container size and constrained to a lower
-    /// and upper bound point size.
-    public func systemFont(toFit containerSize: CGSize,
-                           noSmallerThan lowerBound: CGFloat = 1.0,
-                           noLargerThan upperBound: CGFloat = 256.0) -> NSFont {
-        let lowerBound = lowerBound > upperBound ? upperBound : lowerBound
-        let mid = lowerBound + (upperBound - lowerBound) / 2
-        let tempFont = NSFont.systemFont(ofSize: mid)
-        let difference = containerSize.height -
-            self.size(withAttributes:
-                [NSAttributedStringKey.font : tempFont]).height
-        if mid == lowerBound || mid == upperBound {
-            return NSFont.systemFont(ofSize: difference < 0 ? mid - 1 : mid)
-        }
-        return difference < 0 ? systemFont(toFit: containerSize,
-                                           noSmallerThan: mid,
-                                           noLargerThan: mid - 1) :
-            (difference > 0 ? systemFont(toFit: containerSize,
-                                         noSmallerThan: mid,
-                                         noLargerThan: mid - 1) :
-                NSFont.systemFont(ofSize: mid))
-    }
-    
-}
-
-// MARL: -
-// MARL: -
-
 protocol TAActivateResponder {
     func textViewDidActivate(_ activeItem: Any?)
 }
@@ -393,9 +318,8 @@ class TAContainerView: NSView {
         theFrame.size = CGSize(width: width, height: height)
         theFrame.origin = CGPoint(x: theFrame.origin.x, y: theFrame.origin.y + difference.height)
         
-        if let fontName = textView.font?.fontName {
-            let font = textView.string.font(named: fontName, toFit: textView.bounds.size)
-            textView.font = font
+        if let fontName = textView.font?.font {
+            
         }
         
         frame = theFrame
