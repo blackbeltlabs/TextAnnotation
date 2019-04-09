@@ -85,7 +85,7 @@ class TATextView: NSTextView {
     
     // MARK: - Variables
     
-    lazy var twoSymbolsWidth = 2 * getFont().xHeight
+    lazy var twoSymbolsWidth: CGFloat = 2 * getFont().xHeight
     
     // MARK: Private
     
@@ -203,6 +203,7 @@ class TAContainerView: NSView {
         didSet {
             guard textView != nil else { return }
             textView.string = text
+            updateFrameWithText(textView.string)
         }
     }
     var initialTouchPoint = CGPoint.zero
@@ -221,6 +222,7 @@ class TAContainerView: NSView {
     private var backgroundView: TAFrameView!
     private var textView: TATextView!
 
+    private let kTextPadding: CGFloat = 2
     private let kPadding: CGFloat = TAFrameView.kPadding
     private let kCircleRadius: CGFloat = TAFrameView.kRadius
     private let kMinimalWidth: CGFloat = 25 + 2*TAFrameView.kPadding + 2*TAFrameView.kRadius
@@ -326,10 +328,10 @@ class TAContainerView: NSView {
         let height = textFrame.height
         
         // Now we know text label frame. We should calculate new self.frame and redraw all the subviews
-        textFrame = CGRect(x: center.x - width/2.0 - (kPadding + kCircleRadius),
-                           y: center.y - height/2.0 - kPadding,
-                           width: width + 2*(kPadding + kCircleRadius),
-                           height: height + 2*kPadding)
+        textFrame = CGRect(x: center.x - width/2.0 - (kPadding + kCircleRadius + kTextPadding),
+                           y: center.y - height/2.0 - (kPadding + kTextPadding),
+                           width: width + 2*(kPadding + kCircleRadius + kTextPadding),
+                           height: height + 2*(kPadding + kTextPadding))
         
         frame = textFrame
     }
@@ -340,7 +342,7 @@ class TAContainerView: NSView {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         backgroundView.frame = CGRect(origin: CGPoint.zero, size: size)
-        textView.frame = CGRect(x: kPadding + kCircleRadius, y: kPadding, width: size.width - 2*(kPadding + kCircleRadius), height: size.height - 2*kPadding)
+        textView.frame = CGRect(x: kPadding + kCircleRadius + kTextPadding, y: kPadding + kTextPadding, width: size.width - 2*(kPadding + kCircleRadius + kTextPadding), height: size.height - 2 * (kPadding + kTextPadding))
         
         var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: kPadding + 2*kCircleRadius, height: size.height))
         leftTally.frame = tallyFrame
@@ -373,18 +375,18 @@ class TAContainerView: NSView {
         }
         
         // Here we have to check if text view frame has good size for such container size
-        let textFrame = textView.frameForWidth(theFrame.width - 2 * (kPadding + kCircleRadius),
+        let textFrame = textView.frameForWidth(theFrame.width - 2 * (kPadding + kCircleRadius + kTextPadding),
                                                height: CGFloat.greatestFiniteMagnitude)
-        let diff_width = theFrame.width - (textFrame.width + 2 * (kPadding + kCircleRadius) + textView.twoSymbolsWidth)
+        let diff_width = theFrame.width - (textFrame.width + 2 * (kPadding + kCircleRadius + kTextPadding) + textView.twoSymbolsWidth)
         if diff_width < 0 {
-            // let diff_height = theFrame.height - (textFrame.height + 2 * kPadding)
-            let height = textFrame.height + 2 * kPadding
+            let height = textFrame.height + 2 * (kPadding + kTextPadding)
             let centerY = theFrame.origin.y + theFrame.height/2
             
             theFrame.size = CGSize(width: theFrame.width, height: height)
             theFrame.origin = CGPoint(x: theFrame.origin.x, y: centerY - height/2)
-            // FIXME: here we should add some (prevention dissapearing symbols) height adding, depending on diff width amount. One symbol is about 9.0 of the difference
         }
+        
+        print(theFrame.debugDescription)
         
         frame = theFrame
         updateSubviewsFrames()
@@ -457,7 +459,7 @@ class ViewController: NSViewController, TextAnnotationsController {
         let size = CGSize.zero
         
         let view1 = TAContainerView(frame: NSRect(origin: CGPoint(x: 100, y: 150), size: size))
-        view1.text = "Some text\nacross lines"
+        view1.text = "S"
         view1.activateResponder = self
         view.addSubview(view1)
         annotations.append(view1)
