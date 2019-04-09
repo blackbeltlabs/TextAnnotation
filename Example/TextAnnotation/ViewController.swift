@@ -116,7 +116,6 @@ class TATextView: NSTextView {
         let ratio = size/getFont().pointSize
         if !(1.0...1.1 ~= ratio) {
             font = NSFont(name: getFont().fontName, size: size)
-            // print("font size changed to \(size)")
         }
     }
     
@@ -385,8 +384,6 @@ class TAContainerView: NSView {
             theFrame.size = CGSize(width: theFrame.width, height: height)
             theFrame.origin = CGPoint(x: theFrame.origin.x, y: centerY - height/2)
         }
-        
-        print(theFrame.debugDescription)
         
         frame = theFrame
         updateSubviewsFrames()
