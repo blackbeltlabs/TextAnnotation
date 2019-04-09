@@ -12,10 +12,11 @@ import TextAnnotation
 protocol TAActivateResponder {
     func textViewDidActivate(_ activeItem: Any?)
 }
+
 class TADotView: NSView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        let strokeWidth: CGFloat = 2
+        let strokeWidth: CGFloat = 1
         
         let side = min(dirtyRect.width, dirtyRect.height) - strokeWidth
         let squareRect = CGRect(x: dirtyRect.origin.x + (dirtyRect.width - side)/2,
@@ -23,57 +24,61 @@ class TADotView: NSView {
                                 width: side,
                                 height: side)
         
-        let fillColor = #colorLiteral(red: 0.3215686275, green: 0.7137254902, blue: 0.8823529412, alpha: 1)
         let path = NSBezierPath(ovalIn: squareRect)
-        fillColor.setFill()
+        TAFrameView.kColorControlFill.setFill()
         path.fill()
         
         path.lineWidth = strokeWidth
-        #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).setStroke()
+        TAFrameView.kColorControlStroke.setStroke()
         path.stroke()
     }
 }
 class TAFrameView: NSView {
-    static let kPadding: CGFloat = 3
+    static let kPadding: CGFloat = 2
     static let kRadius: CGFloat = 5
+    static let kColorControlFill = #colorLiteral(red: 1, green: 0.3803921569, blue: 0, alpha: 1)
+    static let kColorControlStroke = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         
-        let color = #colorLiteral(red: 0.3215686275, green: 0.7137254902, blue: 0.8823529412, alpha: 1)
-        let framePath = NSBezierPath(rect: NSRect(x: TAFrameView.kPadding + TAFrameView.kRadius,
-                                                  y: TAFrameView.kPadding,
-                                                  width: dirtyRect.width - 2 * (TAFrameView.kPadding + TAFrameView.kRadius),
-                                                  height: dirtyRect.height - 2 * TAFrameView.kPadding))
-        #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0).setFill()
-        framePath.fill()
+        let padding = TAFrameView.kPadding + TAFrameView.kRadius
+        let framePath = NSBezierPath(rect: NSRect(x: padding,
+                                                  y: padding,
+                                                  width: dirtyRect.width - 2 * padding,
+                                                  height: dirtyRect.height - 2 * padding))
         
         framePath.lineWidth = 1
-        color.set()
+        #colorLiteral(red: 0.7960784314, green: 0.7960784314, blue: 0.7960784314, alpha: 1).set()
         framePath.stroke()
         framePath.close()
         
-        let left = NSBezierPath()
-        left.appendArc(withCenter: NSPoint(x: TAFrameView.kPadding + TAFrameView.kRadius, y: dirtyRect.height/2),
-                            radius: TAFrameView.kRadius,
-                            startAngle:  270,
-                            endAngle: 90,
-                            clockwise: true)
-        left.lineWidth = 1
-        color.set()
-        left.stroke()
-        left.close()
+        let strokeWidth: CGFloat = 1
+        let side = 2*TAFrameView.kRadius - strokeWidth
         
-        let right = NSBezierPath()
-        right.appendArc(withCenter: NSPoint(x: dirtyRect.width - (TAFrameView.kPadding + TAFrameView.kRadius), y: dirtyRect.height/2),
-                       radius: TAFrameView.kRadius,
-                       startAngle:  270,
-                       endAngle: 90,
-                       clockwise: false)
-        right.lineWidth = 1
-        color.set()
-        right.stroke()
-        right.close()
+        // left
+        var squareRect = CGRect(x: TAFrameView.kPadding,
+                                y: (dirtyRect.height - TAFrameView.kRadius)/2,
+                                width: side,
+                                height: side)
+        var path = NSBezierPath(ovalIn: squareRect)
+        TAFrameView.kColorControlFill.setFill()
+        path.fill()
+        
+        TAFrameView.kColorControlStroke.set()
+        path.stroke()
+        
+        // right
+        squareRect = CGRect(x: dirtyRect.width - (TAFrameView.kPadding + 2*TAFrameView.kRadius),
+                            y: (dirtyRect.height - TAFrameView.kRadius)/2,
+                            width: side,
+                            height: side)
+        path = NSBezierPath(ovalIn: squareRect)
+        TAFrameView.kColorControlFill.setFill()
+        path.fill()
+        
+        TAFrameView.kColorControlStroke.set()
+        path.stroke()
     }
 }
 class TATextView: NSTextView {
@@ -190,9 +195,6 @@ class TAContainerView: NSView {
             
             scaleTally.isHidden = !isActive
             scaleTally.display()
-            
-            guard textView != nil else { return }
-            textView.textColor = isActive ? NSColor.black : NSColor.gray
         }
     }
     
@@ -252,7 +254,8 @@ class TAContainerView: NSView {
                                                          height: size.height - 2*kPadding)))
         textView.alignment = .natural
         textView.backgroundColor = NSColor.clear
-        textView.textColor = NSColor.gray
+        textView.textColor = TAFrameView.kColorControlFill
+        textView.font = NSFont(name: "HelveticaNeue-Bold", size: 30)
         textView.isSelectable = false
         textView.isRichText = false
         textView.usesRuler = false
@@ -271,17 +274,14 @@ class TAContainerView: NSView {
         
         addSubview(textView)
         
-        var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: kPadding + kCircleRadius, height: size.height))
+        // all frames here is zero, later we set it in updateSubviewsFrames()
+        let tallyFrame = NSRect.zero
         leftTally = NSView(frame: tallyFrame)
         addSubview(leftTally)
         
-        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: tallyFrame.width)
-        tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.height - tallyFrame.width)
         rightTally = NSView(frame: tallyFrame)
         addSubview(rightTally)
         
-        tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.width)
-        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: 0)
         scaleTally = TADotView(frame: tallyFrame)
         scaleTally.isHidden = true
         addSubview(scaleTally)
@@ -342,15 +342,15 @@ class TAContainerView: NSView {
         backgroundView.frame = CGRect(origin: CGPoint.zero, size: size)
         textView.frame = CGRect(x: kPadding + kCircleRadius, y: kPadding, width: size.width - 2*(kPadding + kCircleRadius), height: size.height - 2*kPadding)
         
-        var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: kPadding + kCircleRadius, height: size.height))
+        var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: kPadding + 2*kCircleRadius, height: size.height))
         leftTally.frame = tallyFrame
         
         tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: tallyFrame.width)
-        tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.height - tallyFrame.width)
+        tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.height - (2*kCircleRadius + kPadding))
         rightTally.frame = tallyFrame
         
-        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: 0)
-        tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.width)
+        tallyFrame.origin = CGPoint(x: size.width - (kPadding + 2*kCircleRadius), y: kPadding)
+        tallyFrame.size = CGSize(width: 2*kCircleRadius, height: 2*kCircleRadius)
         scaleTally.frame = tallyFrame
         
         CATransaction.commit()
@@ -457,7 +457,7 @@ class ViewController: NSViewController, TextAnnotationsController {
         let size = CGSize.zero
         
         let view1 = TAContainerView(frame: NSRect(origin: CGPoint(x: 100, y: 150), size: size))
-        view1.text = "1"
+        view1.text = "Some text\nacross lines"
         view1.activateResponder = self
         view.addSubview(view1)
         annotations.append(view1)
