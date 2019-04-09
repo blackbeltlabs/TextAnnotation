@@ -327,7 +327,7 @@ class TAContainerView: NSView {
         let height = textFrame.height
         
         // Now we know text label frame. We should calculate new self.frame and redraw all the subviews
-        textFrame = CGRect(x: center.x - width/2.0 - (kPadding + kCircleRadius + kTextPadding),
+        textFrame = CGRect(x: frame.minX,
                            y: center.y - height/2.0 - (kPadding + kTextPadding),
                            width: width + 2*(kPadding + kCircleRadius + kTextPadding),
                            height: height + 2*(kPadding + kTextPadding))
