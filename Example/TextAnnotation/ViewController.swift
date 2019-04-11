@@ -9,11 +9,61 @@
 import Cocoa
 import TextAnnotation
 
-protocol TAActivateResponder {
+protocol TAActivateResponder: class {
     func textViewDidActivate(_ activeItem: Any?)
 }
 
-class TADotView: NSView {
+enum TAActiveArea {
+    case resizeRightArea
+    case resizeLeftArea
+    case scaleArea
+}
+protocol TAActiveAreaResponder: class {
+    func areaDidActivated(_ area: TAActiveArea)
+}
+class TAActivateView: NSView {
+    
+    // MARK: - Variables
+    
+    weak private var activeAreaResponder: TAActiveAreaResponder?
+    private var areaType: TAActiveArea?
+    
+    // MARK: - Lifecycle
+    
+    convenience init(type: TAActiveArea, responder: TAActiveAreaResponder, frameRect: NSRect) {
+        self.init(frame: frameRect)
+        
+        areaType = type
+        activeAreaResponder = responder
+    }
+    
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        
+        let options = NSTrackingArea.Options.activeInKeyWindow.rawValue | NSTrackingArea.Options.mouseEnteredAndExited.rawValue | NSTrackingArea.Options.inVisibleRect.rawValue
+        let trackingArea = NSTrackingArea(rect: bounds, options: NSTrackingArea.Options(rawValue: options), owner: self, userInfo: nil)
+        
+        addTrackingArea(trackingArea)
+    }
+    
+    required init?(coder decoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: NSResponder
+    
+    override func mouseEntered(with event: NSEvent) {
+        // we can not implement it on this level, because on the dragging we directly receive mouseExited(with theEvent:) here
+        if let responder = activeAreaResponder, let type = areaType {
+            responder.areaDidActivated(type)
+        }
+    }
+}
+
+class TADotView: TAActivateView {
+    
+    // MARK: - Variables
+
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         let strokeWidth: CGFloat = 1
@@ -33,6 +83,7 @@ class TADotView: NSView {
         path.stroke()
     }
 }
+
 class TAFrameView: NSView {
     static let kPadding: CGFloat = 2
     static let kRadius: CGFloat = 5
@@ -81,6 +132,7 @@ class TAFrameView: NSView {
         path.stroke()
     }
 }
+
 class TATextView: NSTextView {
     
     // MARK: - Variables
@@ -142,7 +194,6 @@ class TATextView: NSTextView {
         
         return numberOfLines
     }
-
 }
 
 // MARK: -
@@ -192,12 +243,24 @@ class TAContainerView: NSView {
             backgroundView.isHidden = !isActive
             backgroundView.display()
             
-            scaleTally.isHidden = !isActive
-            scaleTally.display()
+            if let tally = leftTally {
+                tally.isHidden = !isActive
+            }
+            
+            if let tally = rightTally {
+                tally.isHidden = !isActive
+            }
+            
+            if let tally = scaleTally {
+                tally.isHidden = !isActive
+                tally.display()
+            }
         }
     }
     
-    var activateResponder: TAActivateResponder?
+    weak var activateResponder: TAActivateResponder?
+    weak var activeAreaResponder: TAActiveAreaResponder?
+    
     var text: String! {
         didSet {
             guard textView != nil else { return }
@@ -206,9 +269,10 @@ class TAContainerView: NSView {
         }
     }
     var initialTouchPoint = CGPoint.zero
-    var leftTally: NSView!
+    var leftTally: TAActivateView?
     var rightTally: NSView!
-    var scaleTally: NSView!
+    var scaleTally: TADotView?
+    
     var origin: CGPoint = CGPoint.zero {
         didSet {
             frame.origin = origin
@@ -277,15 +341,20 @@ class TAContainerView: NSView {
         
         // all frames here is zero, later we set it in updateSubviewsFrames()
         let tallyFrame = NSRect.zero
-        leftTally = NSView(frame: tallyFrame)
-        addSubview(leftTally)
+        var flipper = TAActivateView(type: TAActiveArea.resizeLeftArea, responder: self, frameRect: tallyFrame)
+        flipper.isHidden = true
+        addSubview(flipper)
+        leftTally = flipper
         
-        rightTally = NSView(frame: tallyFrame)
-        addSubview(rightTally)
+        flipper = TAActivateView(type: TAActiveArea.resizeRightArea, responder: self, frameRect: tallyFrame)
+        flipper.isHidden = true
+        addSubview(flipper)
+        rightTally = flipper
         
-        scaleTally = TADotView(frame: tallyFrame)
-        scaleTally.isHidden = true
-        addSubview(scaleTally)
+        let tally = TADotView(type: TAActiveArea.scaleArea, responder: self, frameRect: tallyFrame)
+        tally.isHidden = true
+        addSubview(tally)
+        scaleTally = tally
         
         updateFrameWithText(textView.string)
     }
@@ -344,15 +413,21 @@ class TAContainerView: NSView {
         textView.frame = CGRect(x: kPadding + kCircleRadius + kTextPadding, y: kPadding + kTextPadding, width: size.width - 2*(kPadding + kCircleRadius + kTextPadding), height: size.height - 2 * (kPadding + kTextPadding))
         
         var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: kPadding + 2*kCircleRadius, height: size.height))
-        leftTally.frame = tallyFrame
+        if let tally = leftTally {
+            tally.frame = tallyFrame
+        }
         
-        tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: tallyFrame.width)
-        tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.height - (2*kCircleRadius + kPadding))
-        rightTally.frame = tallyFrame
+        if let tally = rightTally {
+            tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: tallyFrame.width)
+            tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.height - (2*kCircleRadius + kPadding))
+            tally.frame = tallyFrame
+        }
         
-        tallyFrame.origin = CGPoint(x: size.width - (kPadding + 2*kCircleRadius), y: kPadding)
-        tallyFrame.size = CGSize(width: 2*kCircleRadius, height: 2*kCircleRadius)
-        scaleTally.frame = tallyFrame
+        if let tally = scaleTally {
+            tallyFrame.origin = CGPoint(x: size.width - (kPadding + 2*kCircleRadius), y: kPadding)
+            tallyFrame.size = CGSize(width: 2*kCircleRadius, height: 2*kCircleRadius)
+            tally.frame = tallyFrame
+        }
         
         CATransaction.commit()
     }
@@ -422,6 +497,13 @@ extension TAContainerView: TAActivateResponder {
     }
 }
 
+extension TAContainerView: TAActiveAreaResponder {
+    func areaDidActivated(_ area: TAActiveArea) {
+        guard let areaResponder = activeAreaResponder, state == .active else { return }
+        areaResponder.areaDidActivated(area)
+    }
+}
+
 // MARK: -
 // MARK: -
 // MARK: -
@@ -447,8 +529,11 @@ class ViewController: NSViewController, TextAnnotationsController {
         }
     }
     
+    private lazy var currentCursor: NSCursor = NSCursor.current
+    
     // MARK: - Methods
     // MARK: Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -458,14 +543,21 @@ class ViewController: NSViewController, TextAnnotationsController {
         let view1 = TAContainerView(frame: NSRect(origin: CGPoint(x: 100, y: 150), size: size))
         view1.text = "S"
         view1.activateResponder = self
+        view1.activeAreaResponder = self
         view.addSubview(view1)
         annotations.append(view1)
         
         let view2 = TAContainerView(frame: NSRect(origin: CGPoint(x: 50, y: 20), size: size))
         view2.text = "2"
         view2.activateResponder = self
+        view2.activeAreaResponder = self
         view.addSubview(view2)
         annotations.append(view2)
+        
+        let options = NSTrackingArea.Options.activeInKeyWindow.rawValue | NSTrackingArea.Options.mouseEnteredAndExited.rawValue
+        let trackingArea = NSTrackingArea(rect: view1.bounds, options: NSTrackingArea.Options(rawValue: options), owner: self, userInfo: nil)
+        
+        view1.addTrackingArea(trackingArea)
     }
     
     override func viewDidAppear() {
@@ -473,6 +565,8 @@ class ViewController: NSViewController, TextAnnotationsController {
         
         activeAnnotation = nil
     }
+    
+    // MARK: NSResponder
     
     override func mouseUp(with event: NSEvent) {
         if activeAnnotation != nil {
@@ -507,9 +601,11 @@ class ViewController: NSViewController, TextAnnotationsController {
     override func mouseDragged(with event: NSEvent) {
 
         textAnnotationsMouseDragged(event: event)
+//        NSCursor.closedHand.set()
+        
         super.mouseDragged(with: event)
     }
-    
+
     // MARK: - Private
     
     private func textAnnotationsMouseDragged(event: NSEvent) {
@@ -547,11 +643,11 @@ class ViewController: NSViewController, TextAnnotationsController {
             let locationInAnnotation = view.convert(screenPoint, to: annotation)
             
             var state: TAContainerView.TAContainerViewState = .active // default state
-            if annotation.leftTally.frame.contains(locationInAnnotation) {
+            if let tally = annotation.leftTally, tally.frame.contains(locationInAnnotation) {
                 state = .resizeLeft
-            } else if annotation.rightTally.frame.contains(locationInAnnotation) {
+            } else if let tally = annotation.rightTally, tally.frame.contains(locationInAnnotation) {
                 state = .resizeRight
-            } else if annotation.scaleTally.frame.contains(locationInAnnotation) {
+            } else if let tally = annotation.scaleTally, tally.frame.contains(locationInAnnotation) {
                 state = .scaling
             }
             
@@ -602,5 +698,11 @@ extension ViewController: TAActivateResponder {
     func textViewDidActivate(_ activeItem: Any?) {
         guard let anActiveItem = activeItem as? TAContainerView else { return }
         activeAnnotation = anActiveItem
+    }
+}
+
+extension ViewController: TAActiveAreaResponder {
+    func areaDidActivated(_ area: TAActiveArea) {
+        print(area)
     }
 }
