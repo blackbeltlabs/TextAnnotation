@@ -17,6 +17,7 @@ enum TAActiveArea {
     case resizeRightArea
     case resizeLeftArea
     case scaleArea
+    case textArea
 }
 protocol TAActiveAreaResponder: class {
     func areaDidActivated(_ area: TAActiveArea)
@@ -138,12 +139,35 @@ class TATextView: NSTextView {
     // MARK: - Variables
     
     lazy var twoSymbolsWidth: CGFloat = 2 * getFont().xHeight
+    private weak var activeAreaResponder: TAActiveAreaResponder?
     
     // MARK: Private
     
     private var fontSizeToSizeRatio: CGFloat!
     
-    // MARK: - Pubcic
+    // MARK: - Lifecycle
+    
+    convenience init(frame frameRect: NSRect, responder: TAActiveAreaResponder ) {
+        self.init(frame: frameRect)
+        
+        activeAreaResponder = responder
+        
+        let options = NSTrackingArea.Options.activeInKeyWindow.rawValue | NSTrackingArea.Options.mouseEnteredAndExited.rawValue
+        let trackingArea = NSTrackingArea(rect: bounds, options: NSTrackingArea.Options(rawValue: options), owner: self, userInfo: nil)
+        
+        addTrackingArea(trackingArea)
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        // we can not implement it on this level, because on the dragging we directly receive mouseExited(with theEvent:) here
+        if let responder = activeAreaResponder {
+            responder.areaDidActivated(.textArea)
+        }
+        
+        super.mouseEntered(with: event)
+    }
+    
+    // MARK: - Public
     
     func frameForWidth(_ width: CGFloat, height: CGFloat) -> CGRect {
         return string.boundingRect(with: CGSize(width: width, height: height),
@@ -314,9 +338,7 @@ class TAContainerView: NSView {
         backgroundView.isHidden = true
         self.addSubview(backgroundView)
         
-        textView = TATextView(frame: NSRect(origin: CGPoint(x: kPadding, y: kPadding),
-                                            size: CGSize(width: size.width - 2*kPadding,
-                                                         height: size.height - 2*kPadding)))
+        textView = TATextView(frame: NSRect.zero, responder: self)
         textView.alignment = .natural
         textView.backgroundColor = NSColor.clear
         textView.textColor = TAFrameView.kColorControlFill
@@ -530,9 +552,10 @@ class ViewController: NSViewController, TextAnnotationsController {
     }
     
     private lazy var currentCursor: NSCursor = NSCursor.current
+    private let resizeCursor = NSCursor(image: #imageLiteral(resourceName: "East-West"), hotSpot: NSPoint(x: 9, y: 9))
+    private let scaleCursor = NSCursor(image: #imageLiteral(resourceName: "North-West-South-East"), hotSpot: NSPoint(x: 9, y: 9))
     
-    // MARK: - Methods
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -553,11 +576,6 @@ class ViewController: NSViewController, TextAnnotationsController {
         view2.activeAreaResponder = self
         view.addSubview(view2)
         annotations.append(view2)
-        
-        let options = NSTrackingArea.Options.activeInKeyWindow.rawValue | NSTrackingArea.Options.mouseEnteredAndExited.rawValue
-        let trackingArea = NSTrackingArea(rect: view1.bounds, options: NSTrackingArea.Options(rawValue: options), owner: self, userInfo: nil)
-        
-        view1.addTrackingArea(trackingArea)
     }
     
     override func viewDidAppear() {
@@ -569,6 +587,8 @@ class ViewController: NSViewController, TextAnnotationsController {
     // MARK: NSResponder
     
     override func mouseUp(with event: NSEvent) {
+        currentCursor.set()
+        
         if activeAnnotation != nil {
             activeAnnotation.state = .active
         }
@@ -599,9 +619,7 @@ class ViewController: NSViewController, TextAnnotationsController {
     }
     
     override func mouseDragged(with event: NSEvent) {
-
         textAnnotationsMouseDragged(event: event)
-//        NSCursor.closedHand.set()
         
         super.mouseDragged(with: event)
     }
@@ -621,9 +639,14 @@ class ViewController: NSViewController, TextAnnotationsController {
             
             if activeAnnotation.state == .resizeLeft || activeAnnotation.state == .resizeRight {
                 activeAnnotation.resizeWithDistance(difference.width)
+                
+                resizeCursor.set()
             } else if activeAnnotation.state == .scaling {
                 activeAnnotation.scaleWithDistance(difference)
+                
+                scaleCursor.set()
             }
+            
             return
         }
         
@@ -666,7 +689,11 @@ class ViewController: NSViewController, TextAnnotationsController {
             
             activeAnnotation = annotationToActivate
         }
-        guard activeAnnotation != nil else { return }
+        guard activeAnnotation != nil else {
+            currentCursor.set()
+            
+            return
+        }
         
         // here we can only drag
         if activeAnnotation.state != .dragging {
@@ -703,6 +730,11 @@ extension ViewController: TAActivateResponder {
 
 extension ViewController: TAActiveAreaResponder {
     func areaDidActivated(_ area: TAActiveArea) {
-        print(area)
+        switch area {
+        case .resizeLeftArea:   resizeCursor.set()
+        case .resizeRightArea:  resizeCursor.set()
+        case .scaleArea:        scaleCursor.set()
+        case .textArea:         currentCursor.set()
+        }
     }
 }
