@@ -155,12 +155,12 @@
 		2A0F906322635888005F754C /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				2A0F905822635822005F754C /* BBContainerView.swift */,
+				2A0F905922635823005F754C /* BBTextView.swift */,
+				2A0F905722635813005F754C /* BBDotView.swift */,
 				2A0F905A22635823005F754C /* BBActiveView.swift */,
 				2A0F905B22635823005F754C /* BBBackgroundView.swift */,
 				2A0F905C22635823005F754C /* BBConstants.swift */,
-				2A0F905822635822005F754C /* BBContainerView.swift */,
-				2A0F905722635813005F754C /* BBDotView.swift */,
-				2A0F905922635823005F754C /* BBTextView.swift */,
 				1FADDCBC44B954E75B611FE190142AF2 /* TextAnnotation.swift */,
 				7C09635A47D05125DEF3DC478327B331 /* TextAnnotationDelegate.swift */,
 				584C1278C6A3E2B6D3C049CCC965268D /* TextAnnotationsController.swift */,
