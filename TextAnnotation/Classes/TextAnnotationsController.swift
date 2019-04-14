@@ -1,27 +1,26 @@
 import Foundation
 
-public protocol TextAnnotationsController {
+//public protocol TextAnnotationsController {
+//
+//}
+//
+//extension TextAnnotationsController {
+//  public func addTextAnnotation(text: String, location: CGPoint) {
+//
+//  }
+//
+//  public func textAnnotationsMouseDown(event: NSEvent) {
+//    
+//  }
+//  
+//  public func textAnnotationsMouseDragged(event: NSEvent) {
+//    
+//  }
+//}
 
-}
-
-extension TextAnnotationsController {
-  public func addTextAnnotation(text: String, location: CGPoint) {
-
-  }
-
-  public func textAnnotationsMouseDown(event: NSEvent) {
-    
-  }
-  
-  public func textAnnotationsMouseDragged(event: NSEvent) {
-    
-  }
-}
-
-/*
 open class TextAnnotationsController: NSViewController {
 }
-
+/*
  // MARK: - Variables
  
  var annotations = [BBContainerView]()
