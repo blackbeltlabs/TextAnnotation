@@ -14,6 +14,7 @@
 		2A0F906022635823005F754C /* BBActiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A0F905A22635823005F754C /* BBActiveView.swift */; };
 		2A0F906122635823005F754C /* BBBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A0F905B22635823005F754C /* BBBackgroundView.swift */; };
 		2A0F906222635823005F754C /* BBConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A0F905C22635823005F754C /* BBConstants.swift */; };
+		2A0F9068226359C6005F754C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A0F9067226359C6005F754C /* Assets.xcassets */; };
 		2D970BEC9E7B9961C6A82171DDED13FF /* TextAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FADDCBC44B954E75B611FE190142AF2 /* TextAnnotation.swift */; };
 		3E9B230350F890347907847B9C910AA8 /* TextAnnotation-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = ABB8C63E98FCC4B397BFA125B31B8EB0 /* TextAnnotation-dummy.m */; };
 		A30B41A3D2185D2823C2B5808798D463 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF428FC7C7A6555B2B02D8E238C8D8F2 /* Cocoa.framework */; };
@@ -51,23 +52,24 @@
 		0A92EA3EAB9220F64E26CE8837A8DB38 /* Pods-TextAnnotation_Example-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TextAnnotation_Example-Info.plist"; sourceTree = "<group>"; };
 		192C71820D88A6A791D4F0987E819BD0 /* Pods-TextAnnotation_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-TextAnnotation_Tests-umbrella.h"; sourceTree = "<group>"; };
 		1ECD39701BECEA0E6915DC31BC890AA9 /* Pods-TextAnnotation_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-TextAnnotation_Example-dummy.m"; sourceTree = "<group>"; };
-		1FADDCBC44B954E75B611FE190142AF2 /* TextAnnotation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextAnnotation.swift; path = TextAnnotation/Classes/TextAnnotation.swift; sourceTree = "<group>"; };
-		2A0F905722635813005F754C /* BBDotView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BBDotView.swift; path = TextAnnotation/Classes/BBDotView.swift; sourceTree = "<group>"; };
-		2A0F905822635822005F754C /* BBContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BBContainerView.swift; path = TextAnnotation/Classes/BBContainerView.swift; sourceTree = "<group>"; };
-		2A0F905922635823005F754C /* BBTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BBTextView.swift; path = TextAnnotation/Classes/BBTextView.swift; sourceTree = "<group>"; };
-		2A0F905A22635823005F754C /* BBActiveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BBActiveView.swift; path = TextAnnotation/Classes/BBActiveView.swift; sourceTree = "<group>"; };
-		2A0F905B22635823005F754C /* BBBackgroundView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BBBackgroundView.swift; path = TextAnnotation/Classes/BBBackgroundView.swift; sourceTree = "<group>"; };
-		2A0F905C22635823005F754C /* BBConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BBConstants.swift; path = TextAnnotation/Classes/BBConstants.swift; sourceTree = "<group>"; };
+		1FADDCBC44B954E75B611FE190142AF2 /* TextAnnotation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TextAnnotation.swift; sourceTree = "<group>"; };
+		2A0F905722635813005F754C /* BBDotView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBDotView.swift; sourceTree = "<group>"; };
+		2A0F905822635822005F754C /* BBContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBContainerView.swift; sourceTree = "<group>"; };
+		2A0F905922635823005F754C /* BBTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBTextView.swift; sourceTree = "<group>"; };
+		2A0F905A22635823005F754C /* BBActiveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBActiveView.swift; sourceTree = "<group>"; };
+		2A0F905B22635823005F754C /* BBBackgroundView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBBackgroundView.swift; sourceTree = "<group>"; };
+		2A0F905C22635823005F754C /* BBConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BBConstants.swift; sourceTree = "<group>"; };
+		2A0F9067226359C6005F754C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2CD80E7800AD761198FEB2F774AB4D2B /* Pods-TextAnnotation_Tests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-TextAnnotation_Tests-frameworks.sh"; sourceTree = "<group>"; };
 		2EF0E9C3ECA658E36FB24766B149C725 /* Pods-TextAnnotation_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TextAnnotation_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		31BDDF117B76B0FA05775032EA7B0372 /* Pods-TextAnnotation_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-TextAnnotation_Example-umbrella.h"; sourceTree = "<group>"; };
 		384E7E035D21B9E44C843D33DF4E9C7F /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		3D1F0F8F9CFEC152631BA7847A49EAA1 /* Pods-TextAnnotation_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-TextAnnotation_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		42AAEC257EDB12FB47B5A590B6394D8A /* Pods_TextAnnotation_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TextAnnotation_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		584C1278C6A3E2B6D3C049CCC965268D /* TextAnnotationsController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextAnnotationsController.swift; path = TextAnnotation/Classes/TextAnnotationsController.swift; sourceTree = "<group>"; };
+		584C1278C6A3E2B6D3C049CCC965268D /* TextAnnotationsController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TextAnnotationsController.swift; sourceTree = "<group>"; };
 		73C9009BB4BA14CDB21BB5AEB144FE1C /* Pods-TextAnnotation_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-TextAnnotation_Example-frameworks.sh"; sourceTree = "<group>"; };
 		7A4C913BA8A22E7D6C8713D66071F137 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		7C09635A47D05125DEF3DC478327B331 /* TextAnnotationDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextAnnotationDelegate.swift; path = TextAnnotation/Classes/TextAnnotationDelegate.swift; sourceTree = "<group>"; };
+		7C09635A47D05125DEF3DC478327B331 /* TextAnnotationDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TextAnnotationDelegate.swift; sourceTree = "<group>"; };
 		83AE453523059F1620EC873E3933303F /* Pods-TextAnnotation_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TextAnnotation_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		870616A3FEA4A88FED8EA632137A2378 /* Pods-TextAnnotation_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TextAnnotation_Example-acknowledgements.plist"; sourceTree = "<group>"; };
 		8B75A67496C6F8CB6138FE131C514900 /* TextAnnotation.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = TextAnnotation.xcconfig; sourceTree = "<group>"; };
@@ -141,6 +143,18 @@
 		18A95322D2C30D9C7868D68A0C884274 /* TextAnnotation */ = {
 			isa = PBXGroup;
 			children = (
+				2A0F906422635901005F754C /* Assets */,
+				2A0F906322635888005F754C /* Classes */,
+				8B726DFE48ED4C1F43C4E09B440D7142 /* Pod */,
+				02A42B4D6EE109C40CDFF3F614E3505C /* Support Files */,
+			);
+			name = TextAnnotation;
+			path = ../..;
+			sourceTree = "<group>";
+		};
+		2A0F906322635888005F754C /* Classes */ = {
+			isa = PBXGroup;
+			children = (
 				2A0F905A22635823005F754C /* BBActiveView.swift */,
 				2A0F905B22635823005F754C /* BBBackgroundView.swift */,
 				2A0F905C22635823005F754C /* BBConstants.swift */,
@@ -150,11 +164,18 @@
 				1FADDCBC44B954E75B611FE190142AF2 /* TextAnnotation.swift */,
 				7C09635A47D05125DEF3DC478327B331 /* TextAnnotationDelegate.swift */,
 				584C1278C6A3E2B6D3C049CCC965268D /* TextAnnotationsController.swift */,
-				8B726DFE48ED4C1F43C4E09B440D7142 /* Pod */,
-				02A42B4D6EE109C40CDFF3F614E3505C /* Support Files */,
 			);
-			name = TextAnnotation;
-			path = ../..;
+			name = Classes;
+			path = TextAnnotation/Classes;
+			sourceTree = "<group>";
+		};
+		2A0F906422635901005F754C /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				2A0F9067226359C6005F754C /* Assets.xcassets */,
+			);
+			name = Assets;
+			path = TextAnnotation/Assets;
 			sourceTree = "<group>";
 		};
 		35B3ECA3DCA461666EACAA4DE3EE16C0 /* Targets Support Files */ = {
@@ -380,6 +401,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A0F9068226359C6005F754C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
