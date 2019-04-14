@@ -11,7 +11,7 @@ protocol BBActivateResponder: class {
     func textViewDidActivate(_ activeItem: Any?)
 }
 
-class BBContainerView: NSView {
+open class BBContainerView: NSView {
     
     // MARK: - Variables
     
@@ -102,7 +102,7 @@ class BBContainerView: NSView {
     private var singleClickGestureRecognizer: NSClickGestureRecognizer!
     private var doubleClickGestureRecognizer: NSClickGestureRecognizer!
     
-    override internal var frame: NSRect {
+    override open var frame: NSRect {
         didSet {
             updateSubviewsFrames()
         }
@@ -165,7 +165,7 @@ class BBContainerView: NSView {
         updateFrameWithText(textView.string)
     }
     
-    required init?(coder decoder: NSCoder) {
+    required public init?(coder decoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     

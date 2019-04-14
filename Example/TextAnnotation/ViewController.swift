@@ -9,7 +9,7 @@
 import Cocoa
 import TextAnnotation
 
-class ViewController: TextAnnotationsController {
+class ViewController: NSViewController, TextAnnotationsController {
 //    override func viewDidLoad() {
 //        super.viewDidLoad()
 //        
@@ -31,12 +31,12 @@ class ViewController: TextAnnotationsController {
     //  }
 }
 
-extension ViewController: TextAnnotationDelegate {
-    func textAnnotationDidEdit(textAnnotation: TextAnnotation) {
-        print(textAnnotation.text)
-    }
-    
-    func textAnnotationDidMove(textAnnotation: TextAnnotation) {
-        print(textAnnotation.frame)
-    }
-}
+//extension ViewController: TextAnnotationDelegate {
+//    func textAnnotationDidEdit(textAnnotation: TextAnnotation) {
+//        print(textAnnotation.text)
+//    }
+//    
+//    func textAnnotationDidMove(textAnnotation: TextAnnotation) {
+//        print(textAnnotation.frame)
+//    }
+//}
