@@ -1,30 +1,30 @@
 import Foundation
 
-//public protocol TextAnnotationsController {
-//
-//}
-//
-//extension TextAnnotationsController {
-//  public func addTextAnnotation(text: String, location: CGPoint) {
-//
-//  }
-//
-//  public func textAnnotationsMouseDown(event: NSEvent) {
-//
-//  }
-//
-//  public func textAnnotationsMouseDragged(event: NSEvent) {
-//
-//  }
-//}
+public protocol TextAnnotationsController {
 
+}
 
-class TextAnnotationsController: NSViewController {
+extension TextAnnotationsController {
+  public func addTextAnnotation(text: String, location: CGPoint) {
+
+  }
+
+  public func textAnnotationsMouseDown(event: NSEvent) {
+
+  }
+
+  public func textAnnotationsMouseDragged(event: NSEvent) {
+
+  }
+}
+
+/*
+open class TextAnnotationsController: NSViewController {
     
     // MARK: - Variables
     
-    var annotations = [BBContainerView]()
-    var activeAnnotation: BBContainerView! {
+    open var annotations = [BBContainerView]()
+    open var activeAnnotation: BBContainerView! {
         didSet {
             if let aTextView = activeAnnotation {
                 for item in annotations {
@@ -39,14 +39,14 @@ class TextAnnotationsController: NSViewController {
             }
         }
     }
-    
+
     private lazy var currentCursor: NSCursor = NSCursor.current
     private let resizeCursor = NSCursor(image: #imageLiteral(resourceName: "East-West"), hotSpot: NSPoint(x: 9, y: 9))
     private let scaleCursor = NSCursor(image: #imageLiteral(resourceName: "North-West-South-East"), hotSpot: NSPoint(x: 9, y: 9))
     
     // MARK: - Lifecycle
     
-    override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         
         // Programmatically creating a text annotation
@@ -67,7 +67,7 @@ class TextAnnotationsController: NSViewController {
         annotations.append(view2)
     }
     
-    override func viewDidAppear() {
+    open override func viewDidAppear() {
         super.viewDidAppear()
         
         activeAnnotation = nil
@@ -75,7 +75,7 @@ class TextAnnotationsController: NSViewController {
     
     // MARK: NSResponder
     
-    override func mouseUp(with event: NSEvent) {
+    open override func mouseUp(with event: NSEvent) {
         currentCursor.set()
         
         if activeAnnotation != nil {
@@ -83,7 +83,7 @@ class TextAnnotationsController: NSViewController {
         }
     }
     
-    override func mouseDown(with event: NSEvent) {
+    open override func mouseDown(with event: NSEvent) {
         let screenPoint = event.locationInWindow
         
         // check annotation to activate or break resize
@@ -107,7 +107,7 @@ class TextAnnotationsController: NSViewController {
         super.mouseDown(with: event)
     }
     
-    override func mouseDragged(with event: NSEvent) {
+    open override func mouseDragged(with event: NSEvent) {
         textAnnotationsMouseDragged(event: event)
         
         super.mouseDragged(with: event)
@@ -199,24 +199,30 @@ class TextAnnotationsController: NSViewController {
                                           y: activeAnnotation.frame.origin.y + difference.height)
     }
 }
+*/
 
-//extension ViewController: TextAnnotationDelegate {
-//    func textAnnotationDidEdit(textAnnotation: TextAnnotation) {
-//        print(textAnnotation.text)
-//    }
-//
-//    func textAnnotationDidMove(textAnnotation: TextAnnotation) {
-//        print(textAnnotation.frame)
-//    }
-//}
+/*
+extension ViewController: TextAnnotationDelegate {
+    func textAnnotationDidEdit(textAnnotation: TextAnnotation) {
+        print(textAnnotation.text)
+    }
 
+    func textAnnotationDidMove(textAnnotation: TextAnnotation) {
+        print(textAnnotation.frame)
+    }
+}
+ */
+
+/*
 extension TextAnnotationsController: BBActivateResponder {
     func textViewDidActivate(_ activeItem: Any?) {
         guard let anActiveItem = activeItem as? BBContainerView else { return }
         activeAnnotation = anActiveItem
     }
 }
+ */
 
+/*
 extension TextAnnotationsController: BBActiveAreaResponder {
     func areaDidActivated(_ area: BBArea) {
         switch area {
@@ -227,3 +233,4 @@ extension TextAnnotationsController: BBActiveAreaResponder {
         }
     }
 }
+*/
