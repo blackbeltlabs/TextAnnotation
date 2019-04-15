@@ -12,7 +12,6 @@ protocol BBActivateResponder: class {
 }
 
 open class BBContainerView: NSView {
-    
     // MARK: - Variables
     
     enum ContainerViewState {
