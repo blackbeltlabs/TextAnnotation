@@ -83,7 +83,7 @@ open class BBContainerView: NSView {
     var leftTally: BBActiveView?
     var rightTally: BBActiveView?
     var scaleTally: BBDotView?
-    
+    /*
     var origin: CGPoint = CGPoint.zero {
         didSet {
             frame.origin = origin
@@ -92,9 +92,10 @@ open class BBContainerView: NSView {
     }
     
     // MARK: Private
-    
+    */
     private var backgroundView: BBBackgroundView!
     private var textView: BBTextView!
+    
     
     private let kMinimalWidth: CGFloat = 25 + 2*BBConfiguration.frameMargin + 2*BBConfiguration.dotRadius
     private let kMinimalHeight: CGFloat = 25
@@ -237,7 +238,7 @@ open class BBContainerView: NSView {
         
         CATransaction.commit()
     }
-    
+    /*
     // MARK: - Public
     
     func resizeWithDistance(_ distance: CGFloat) {
@@ -285,23 +286,26 @@ open class BBContainerView: NSView {
         updateSubviewsFrames()
         textView.resetFontSize()
     }
+ */
 }
 
 extension BBContainerView: NSTextViewDelegate {
     
     // MARK: - NSTextDelegate
     
-    func textDidChange(_ notification: Notification) {
+    private func textDidChange(_ notification: Notification) {
         updateFrameWithText(textView.string)
     }
 }
 
+/*
 extension BBContainerView: BBActivateResponder {
     func textViewDidActivate(_ activeItem: Any?) {
         // After we reach the .editing state - we should not switch it back to .active, only on .inactive on complete edit
         state = textView.isEditable ? .editing : .active
     }
 }
+ */
 
 extension BBContainerView: BBActiveAreaResponder {
     func areaDidActivated(_ area: BBArea) {
