@@ -20,33 +20,12 @@ open class TextAnnotationsController: NSViewController {
             }
         }
     }
-
+    
     private lazy var currentCursor: NSCursor = NSCursor.current
     private lazy var resizeCursor = NSCursor.dragLink //(image: #imageLiteral(resourceName: "East-West"), hotSpot: NSPoint(x: 9, y: 9))
     private lazy var scaleCursor = NSCursor.dragCopy //(image: #imageLiteral(resourceName: "North-West-South-East"), hotSpot: NSPoint(x: 9, y: 9))
 
     // MARK: - Lifecycle
-    
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Programmatically creating a text annotation
-        let size = CGSize.zero
-        
-        let view1 = BBContainerView(frame: NSRect(origin: CGPoint(x: 100, y: 150), size: size))
-        view1.text = "S"
-        view1.activateResponder = self
-        view1.activeAreaResponder = self
-        view.addSubview(view1)
-        annotations.append(view1)
-        
-        let view2 = BBContainerView(frame: NSRect(origin: CGPoint(x: 50, y: 20), size: size))
-        view2.text = "2"
-        view2.activateResponder = self
-        view2.activeAreaResponder = self
-        view.addSubview(view2)
-        annotations.append(view2)
-    }
 
     open override func viewDidAppear() {
         super.viewDidAppear()
@@ -79,7 +58,7 @@ open class TextAnnotationsController: NSViewController {
         }
         
         if annotationToActivate == nil {
-            activeAnnotation = nil
+            addTextAnnotation(text: " ", location: screenPoint)
         } else {
             activeAnnotation?.initialTouchPoint = screenPoint
             activeAnnotation?.state = .active
@@ -94,6 +73,20 @@ open class TextAnnotationsController: NSViewController {
         super.mouseDragged(with: event)
     }
 
+    // MARK: - Public
+    
+    open func addTextAnnotation(text: String, location: CGPoint) {
+        let annotation = BBContainerView(frame: NSRect(origin: location, size: CGSize.zero))
+        annotation.text = text
+        annotation.activateResponder = self
+        annotation.activeAreaResponder = self
+        view.addSubview(annotation)
+        annotations.append(annotation)
+        
+        activeAnnotation = annotation
+        activeAnnotation.state = .editing
+    }
+    
     // MARK: - Private
     
     private func textAnnotationsMouseDragged(event: NSEvent) {

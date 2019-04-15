@@ -292,7 +292,7 @@ extension BBContainerView: NSTextViewDelegate {
     
     // MARK: - NSTextDelegate
     
-    private func textDidChange(_ notification: Notification) {
+    open func textDidChange(_ notification: Notification) {
         updateFrameWithText(textView.string)
     }
 }
