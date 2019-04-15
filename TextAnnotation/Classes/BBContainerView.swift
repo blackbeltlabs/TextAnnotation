@@ -162,8 +162,6 @@ open class BBContainerView: NSView {
         tally.isHidden = true
         addSubview(tally)
         scaleTally = tally
-        
-        updateFrameWithText(textView.string)
     }
     
     required public init?(coder decoder: NSCoder) {

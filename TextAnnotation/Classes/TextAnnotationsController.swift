@@ -4,6 +4,7 @@ open class TextAnnotationsController: NSViewController {
     
     // MARK: - Variables
     
+    open var addNewAnnotationOnEmptySpaceTap = false
     open var annotations = [BBContainerView]()
     open var activeAnnotation: BBContainerView! {
         didSet {
@@ -58,7 +59,11 @@ open class TextAnnotationsController: NSViewController {
         }
         
         if annotationToActivate == nil {
-            addTextAnnotation(text: " ", location: screenPoint)
+            if addNewAnnotationOnEmptySpaceTap {
+                addTextAnnotation(text: " ", location: screenPoint)
+            } else {
+                activeAnnotation = nil
+            }
         } else {
             activeAnnotation?.initialTouchPoint = screenPoint
             activeAnnotation?.state = .active
