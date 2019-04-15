@@ -1,23 +1,4 @@
 import Cocoa
-/*
-public protocol TextAnnotationsController {
-
-}
-
-extension TextAnnotationsController {
-  public func addTextAnnotation(text: String, location: CGPoint) {
-
-  }
-
-  public func textAnnotationsMouseDown(event: NSEvent) {
-    
-  }
-  
-  public func textAnnotationsMouseDragged(event: NSEvent) {
-    
-  }
-}
-*/
 
 open class TextAnnotationsController: NSViewController {
     
@@ -72,7 +53,7 @@ open class TextAnnotationsController: NSViewController {
         
         activeAnnotation = nil
     }
-/*
+
     // MARK: NSResponder
     
     open override func mouseUp(with event: NSEvent) {
@@ -112,7 +93,7 @@ open class TextAnnotationsController: NSViewController {
         
         super.mouseDragged(with: event)
     }
-    
+
     // MARK: - Private
     
     private func textAnnotationsMouseDragged(event: NSEvent) {
@@ -198,20 +179,7 @@ open class TextAnnotationsController: NSViewController {
         activeAnnotation.origin = CGPoint(x: activeAnnotation.frame.origin.x + difference.width,
                                           y: activeAnnotation.frame.origin.y + difference.height)
     }
- */
 }
-
-/*
-extension ViewController: TextAnnotationDelegate {
-    func textAnnotationDidEdit(textAnnotation: TextAnnotation) {
-        print(textAnnotation.text)
-    }
-
-    func textAnnotationDidMove(textAnnotation: TextAnnotation) {
-        print(textAnnotation.frame)
-    }
-}
- */
 
 // MARK: - BBActivateResponder
 
