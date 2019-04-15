@@ -83,6 +83,7 @@ open class BBContainerView: NSView {
     var rightTally: BBActiveView?
     var scaleTally: BBDotView?
     
+    // FIXME: Possible unused
     var origin: CGPoint = CGPoint.zero {
         didSet {
             frame.origin = origin
@@ -160,8 +161,6 @@ open class BBContainerView: NSView {
         tally.isHidden = true
         addSubview(tally)
         scaleTally = tally
-        
-        updateFrameWithText(textView.string)
     }
     
     required public init?(coder decoder: NSCoder) {
@@ -290,7 +289,7 @@ extension BBContainerView: NSTextViewDelegate {
     
     // MARK: - NSTextDelegate
     
-    func textDidChange(_ notification: Notification) {
+    open func textDidChange(_ notification: Notification) {
         updateFrameWithText(textView.string)
     }
 }
