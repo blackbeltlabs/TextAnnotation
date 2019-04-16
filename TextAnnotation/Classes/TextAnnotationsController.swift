@@ -1,27 +1,5 @@
 import Cocoa
 
-<<<<<<< HEAD
-public protocol TextAnnotationsController {
-
-}
-
-extension TextAnnotationsController {
-  public func addTextAnnotation(text: String, location: CGPoint) {
-
-  }
-
-  public func textAnnotationsMouseDown(event: NSEvent) {
-
-  }
-
-  public func textAnnotationsMouseDragged(event: NSEvent) {
-
-  }
-}
-
-/*
-=======
->>>>>>> feature_podUpdate
 open class TextAnnotationsController: NSViewController {
     
     // MARK: - Variables
@@ -45,9 +23,15 @@ open class TextAnnotationsController: NSViewController {
     }
     
     private lazy var currentCursor: NSCursor = NSCursor.current
-    private lazy var resizeCursor = NSCursor.dragLink //(image: #imageLiteral(resourceName: "East-West"), hotSpot: NSPoint(x: 9, y: 9))
-    private lazy var scaleCursor = NSCursor.dragCopy //(image: #imageLiteral(resourceName: "North-West-South-East"), hotSpot: NSPoint(x: 9, y: 9))
-
+    private var resizeCursor: NSCursor {
+        guard let image = Bundle(for: TextAnnotationsController.self).image(forResource: "East-West") else { return NSCursor.crosshair }
+        return NSCursor(image: image, hotSpot: NSPoint(x: 9, y: 9))
+    }
+    private var scaleCursor: NSCursor {
+        guard let image = Bundle(for: TextAnnotationsController.self).image(forResource: "North-West-South-East") else { return NSCursor.crosshair }
+        return NSCursor(image: image, hotSpot: NSPoint(x: 9, y: 9))
+    }
+    
     // MARK: - Lifecycle
 
     open override func viewDidAppear() {

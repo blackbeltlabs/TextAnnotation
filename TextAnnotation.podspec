@@ -19,5 +19,5 @@ Text component that behaves like typical drawing or annotation apps require.
   s.swift_version = "4.2"
 
   s.source_files = 'TextAnnotation/Classes/**/*'
-  s.resources = 'TextAnnotation/Assets/**/*.{xcassets}'
+  s.resources = 'TextAnnotation/Assets/**/*'
 end
