@@ -7,20 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0045A1101769352F87B8D4E8D14F5698 /* TextAnnotationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F4E491E9D77C6B3E1B15D1C0CE491D /* TextAnnotationsController.swift */; };
 		1D37E8FF25BD41CDB249215178934936 /* Pods-TextAnnotation_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA46E31603726546C332771E08643BF /* Pods-TextAnnotation_Tests-dummy.m */; };
-		3ECC1BFF85D0F142652058318F8447EE /* BBTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57214C17304619CE3646D534F7A90D93 /* BBTextView.swift */; };
-		47509076D95AD2F5ADE69EF0C40FCDCC /* BBConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 398AC17313C7F2DF5E563511E0B1965E /* BBConstants.swift */; };
+		3ECC1BFF85D0F142652058318F8447EE /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57214C17304619CE3646D534F7A90D93 /* TextView.swift */; };
+		47509076D95AD2F5ADE69EF0C40FCDCC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 398AC17313C7F2DF5E563511E0B1965E /* Constants.swift */; };
 		54BFD81BEB328C08CC92B0848CA5D755 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C5834FAD9600759359DA4502D8FB890 /* Assets.xcassets */; };
-		5C3C0C3B3450A9091D7F768AB4486AF0 /* BBActiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4178A6DFF830790DBE881E75A7DFE562 /* BBActiveView.swift */; };
+		5C3C0C3B3450A9091D7F768AB4486AF0 /* MouseTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4178A6DFF830790DBE881E75A7DFE562 /* MouseTrackingView.swift */; };
 		624048E9283F12B1967DB1E8B1426C5B /* TextAnnotationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C922F4649746D886D8AF2FB22140FBEB /* TextAnnotationDelegate.swift */; };
 		84E2480A852D3A66CB24E3B913208202 /* TextAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E67ED7A64E38C01A84E05CC7C8C4947 /* TextAnnotation.swift */; };
-		85D168036C6108825A3ACDFAE7855535 /* BBBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84354F25FD6EF9A2717676054D22576F /* BBBackgroundView.swift */; };
 		9CCF87718524F6258C5B9EA915C94418 /* TextAnnotation-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 19114A1120B195F398E3E469CF63902A /* TextAnnotation-dummy.m */; };
 		A30B41A3D2185D2823C2B5808798D463 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF428FC7C7A6555B2B02D8E238C8D8F2 /* Cocoa.framework */; };
-		B442303968A38D0AA5D615D677ED7494 /* BBContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B364023EB089A490D939F5630B61ED /* BBContainerView.swift */; };
+		AC1E6577229021CD004326F0 /* TextAnnotationCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1E6576229021CD004326F0 /* TextAnnotationCanvas.swift */; };
+		AC1E65812292E731004326F0 /* SelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1E65802292E731004326F0 /* SelectionView.swift */; };
+		AC1E65872292FD79004326F0 /* CursorSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1E65862292FD79004326F0 /* CursorSet.swift */; };
+		B442303968A38D0AA5D615D677ED7494 /* TextContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B364023EB089A490D939F5630B61ED /* TextContainerView.swift */; };
 		BA7615DE012FAB9F33497D42F22389B1 /* TextAnnotation-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AF814DA15DFEB7FDB0963039F0488E8 /* TextAnnotation-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D704F57150984F31C1CD96FBB6B34F62 /* BBDotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12FA1F460D19A9EDDBFF57F03B05FEE2 /* BBDotView.swift */; };
+		D704F57150984F31C1CD96FBB6B34F62 /* KnobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12FA1F460D19A9EDDBFF57F03B05FEE2 /* KnobView.swift */; };
 		DD9D0E35B5B0FFEA92B261EFB372C72E /* Pods-TextAnnotation_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 31BDDF117B76B0FA05775032EA7B0372 /* Pods-TextAnnotation_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE4B464356FB02E84701B05DE427DA6C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF428FC7C7A6555B2B02D8E238C8D8F2 /* Cocoa.framework */; };
 		E21FACC7E79EFA03D5A2672705CF0134 /* Pods-TextAnnotation_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ECD39701BECEA0E6915DC31BC890AA9 /* Pods-TextAnnotation_Example-dummy.m */; };
@@ -50,8 +51,8 @@
 		090E9B017DA3AFE5C344256C4F1762FD /* TextAnnotation.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = TextAnnotation.modulemap; sourceTree = "<group>"; };
 		09499905F2C6177625654DE51479D657 /* Pods_TextAnnotation_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TextAnnotation_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A92EA3EAB9220F64E26CE8837A8DB38 /* Pods-TextAnnotation_Example-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TextAnnotation_Example-Info.plist"; sourceTree = "<group>"; };
-		12B364023EB089A490D939F5630B61ED /* BBContainerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BBContainerView.swift; path = TextAnnotation/Classes/BBContainerView.swift; sourceTree = "<group>"; };
-		12FA1F460D19A9EDDBFF57F03B05FEE2 /* BBDotView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BBDotView.swift; path = TextAnnotation/Classes/BBDotView.swift; sourceTree = "<group>"; };
+		12B364023EB089A490D939F5630B61ED /* TextContainerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextContainerView.swift; path = TextAnnotation/Classes/TextContainerView.swift; sourceTree = "<group>"; };
+		12FA1F460D19A9EDDBFF57F03B05FEE2 /* KnobView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = KnobView.swift; path = TextAnnotation/Classes/KnobView.swift; sourceTree = "<group>"; };
 		19114A1120B195F398E3E469CF63902A /* TextAnnotation-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "TextAnnotation-dummy.m"; sourceTree = "<group>"; };
 		192C71820D88A6A791D4F0987E819BD0 /* Pods-TextAnnotation_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-TextAnnotation_Tests-umbrella.h"; sourceTree = "<group>"; };
 		1ECD39701BECEA0E6915DC31BC890AA9 /* Pods-TextAnnotation_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-TextAnnotation_Example-dummy.m"; sourceTree = "<group>"; };
@@ -59,25 +60,26 @@
 		2EF0E9C3ECA658E36FB24766B149C725 /* Pods-TextAnnotation_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TextAnnotation_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		31BDDF117B76B0FA05775032EA7B0372 /* Pods-TextAnnotation_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-TextAnnotation_Example-umbrella.h"; sourceTree = "<group>"; };
 		38685EF36FAABECF75CD7BD34946A784 /* TextAnnotation.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = TextAnnotation.xcconfig; sourceTree = "<group>"; };
-		398AC17313C7F2DF5E563511E0B1965E /* BBConstants.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BBConstants.swift; path = TextAnnotation/Classes/BBConstants.swift; sourceTree = "<group>"; };
+		398AC17313C7F2DF5E563511E0B1965E /* Constants.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = TextAnnotation/Classes/Constants.swift; sourceTree = "<group>"; };
 		3A058264289C041AFCDAA8559E324796 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		3D1F0F8F9CFEC152631BA7847A49EAA1 /* Pods-TextAnnotation_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-TextAnnotation_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
-		4178A6DFF830790DBE881E75A7DFE562 /* BBActiveView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BBActiveView.swift; path = TextAnnotation/Classes/BBActiveView.swift; sourceTree = "<group>"; };
+		4178A6DFF830790DBE881E75A7DFE562 /* MouseTrackingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MouseTrackingView.swift; path = TextAnnotation/Classes/MouseTrackingView.swift; sourceTree = "<group>"; };
 		42AAEC257EDB12FB47B5A590B6394D8A /* Pods_TextAnnotation_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TextAnnotation_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C5834FAD9600759359DA4502D8FB890 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = TextAnnotation/Assets/Assets.xcassets; sourceTree = "<group>"; };
-		57214C17304619CE3646D534F7A90D93 /* BBTextView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BBTextView.swift; path = TextAnnotation/Classes/BBTextView.swift; sourceTree = "<group>"; };
+		57214C17304619CE3646D534F7A90D93 /* TextView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextView.swift; path = TextAnnotation/Classes/TextView.swift; sourceTree = "<group>"; };
 		5756A68A1A3D98FB4AEBCF8C0746893F /* TextAnnotation-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "TextAnnotation-Info.plist"; sourceTree = "<group>"; };
 		578A479C9F17495CA91C90491E0EDA7D /* TextAnnotation-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "TextAnnotation-prefix.pch"; sourceTree = "<group>"; };
 		73C9009BB4BA14CDB21BB5AEB144FE1C /* Pods-TextAnnotation_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-TextAnnotation_Example-frameworks.sh"; sourceTree = "<group>"; };
 		83AE453523059F1620EC873E3933303F /* Pods-TextAnnotation_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TextAnnotation_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		84354F25FD6EF9A2717676054D22576F /* BBBackgroundView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BBBackgroundView.swift; path = TextAnnotation/Classes/BBBackgroundView.swift; sourceTree = "<group>"; };
 		870616A3FEA4A88FED8EA632137A2378 /* Pods-TextAnnotation_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-TextAnnotation_Example-acknowledgements.plist"; sourceTree = "<group>"; };
 		8AF814DA15DFEB7FDB0963039F0488E8 /* TextAnnotation-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "TextAnnotation-umbrella.h"; sourceTree = "<group>"; };
 		8E67ED7A64E38C01A84E05CC7C8C4947 /* TextAnnotation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextAnnotation.swift; path = TextAnnotation/Classes/TextAnnotation.swift; sourceTree = "<group>"; };
 		93076A9B1B48FBF9E6E022B62DCC1576 /* Pods-TextAnnotation_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-TextAnnotation_Example.release.xcconfig"; sourceTree = "<group>"; };
 		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		AC1E6576229021CD004326F0 /* TextAnnotationCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TextAnnotationCanvas.swift; path = TextAnnotation/Classes/TextAnnotationCanvas.swift; sourceTree = "<group>"; };
+		AC1E65802292E731004326F0 /* SelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SelectionView.swift; path = TextAnnotation/Classes/SelectionView.swift; sourceTree = "<group>"; };
+		AC1E65862292FD79004326F0 /* CursorSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CursorSet.swift; path = TextAnnotation/Classes/CursorSet.swift; sourceTree = "<group>"; };
 		ADAF97132890C395F941ECB1252875F8 /* Pods-TextAnnotation_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-TextAnnotation_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
-		B0F4E491E9D77C6B3E1B15D1C0CE491D /* TextAnnotationsController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextAnnotationsController.swift; path = TextAnnotation/Classes/TextAnnotationsController.swift; sourceTree = "<group>"; };
 		B40F5B70F7986AD368A22AB96B980B01 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B650B446F90813F6B3193E0F2435BC24 /* TextAnnotation.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; path = TextAnnotation.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		C922F4649746D886D8AF2FB22140FBEB /* TextAnnotationDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextAnnotationDelegate.swift; path = TextAnnotation/Classes/TextAnnotationDelegate.swift; sourceTree = "<group>"; };
@@ -206,15 +208,16 @@
 		C1EAE96C775AC0014B6FB3CD001535E6 /* TextAnnotation */ = {
 			isa = PBXGroup;
 			children = (
-				4178A6DFF830790DBE881E75A7DFE562 /* BBActiveView.swift */,
-				84354F25FD6EF9A2717676054D22576F /* BBBackgroundView.swift */,
-				398AC17313C7F2DF5E563511E0B1965E /* BBConstants.swift */,
-				12B364023EB089A490D939F5630B61ED /* BBContainerView.swift */,
-				12FA1F460D19A9EDDBFF57F03B05FEE2 /* BBDotView.swift */,
-				57214C17304619CE3646D534F7A90D93 /* BBTextView.swift */,
+				4178A6DFF830790DBE881E75A7DFE562 /* MouseTrackingView.swift */,
+				398AC17313C7F2DF5E563511E0B1965E /* Constants.swift */,
+				AC1E65802292E731004326F0 /* SelectionView.swift */,
+				12B364023EB089A490D939F5630B61ED /* TextContainerView.swift */,
+				12FA1F460D19A9EDDBFF57F03B05FEE2 /* KnobView.swift */,
+				57214C17304619CE3646D534F7A90D93 /* TextView.swift */,
 				8E67ED7A64E38C01A84E05CC7C8C4947 /* TextAnnotation.swift */,
 				C922F4649746D886D8AF2FB22140FBEB /* TextAnnotationDelegate.swift */,
-				B0F4E491E9D77C6B3E1B15D1C0CE491D /* TextAnnotationsController.swift */,
+				AC1E65862292FD79004326F0 /* CursorSet.swift */,
+				AC1E6576229021CD004326F0 /* TextAnnotationCanvas.swift */,
 				F6D875644350C61497ACAF98F465AAAE /* Pod */,
 				502B620314EAA0AD6BEDEF2F3A38B7A1 /* Resources */,
 				55C1DD0DE7E567A2D694AD442C1A437D /* Support Files */,
@@ -358,6 +361,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
@@ -402,16 +406,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5C3C0C3B3450A9091D7F768AB4486AF0 /* BBActiveView.swift in Sources */,
-				85D168036C6108825A3ACDFAE7855535 /* BBBackgroundView.swift in Sources */,
-				47509076D95AD2F5ADE69EF0C40FCDCC /* BBConstants.swift in Sources */,
-				B442303968A38D0AA5D615D677ED7494 /* BBContainerView.swift in Sources */,
-				D704F57150984F31C1CD96FBB6B34F62 /* BBDotView.swift in Sources */,
-				3ECC1BFF85D0F142652058318F8447EE /* BBTextView.swift in Sources */,
+				5C3C0C3B3450A9091D7F768AB4486AF0 /* MouseTrackingView.swift in Sources */,
+				AC1E65812292E731004326F0 /* SelectionView.swift in Sources */,
+				47509076D95AD2F5ADE69EF0C40FCDCC /* Constants.swift in Sources */,
+				B442303968A38D0AA5D615D677ED7494 /* TextContainerView.swift in Sources */,
+				D704F57150984F31C1CD96FBB6B34F62 /* KnobView.swift in Sources */,
+				3ECC1BFF85D0F142652058318F8447EE /* TextView.swift in Sources */,
 				9CCF87718524F6258C5B9EA915C94418 /* TextAnnotation-dummy.m in Sources */,
+				AC1E65872292FD79004326F0 /* CursorSet.swift in Sources */,
+				AC1E6577229021CD004326F0 /* TextAnnotationCanvas.swift in Sources */,
 				84E2480A852D3A66CB24E3B913208202 /* TextAnnotation.swift in Sources */,
 				624048E9283F12B1967DB1E8B1426C5B /* TextAnnotationDelegate.swift in Sources */,
-				0045A1101769352F87B8D4E8D14F5698 /* TextAnnotationsController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
