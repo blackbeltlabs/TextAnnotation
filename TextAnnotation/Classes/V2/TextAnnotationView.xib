@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14490.70"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="TextAnnotationView" customModule="TextAnnotation" customModuleProvider="target">
+            <connections>
+                <outlet property="contentView" destination="c22-O7-iKe" id="hd3-gm-y5W"/>
+                <outlet property="leftResizeHandle" destination="omE-Jx-U2P" id="CeR-pg-ebS"/>
+                <outlet property="rightResizeHandle" destination="jZw-oF-tKV" id="XNe-aB-PUZ"/>
+                <outlet property="scaleHandle" destination="cFp-vk-MBJ" id="GjE-wF-CwI"/>
+                <outlet property="textView" destination="r4R-Mq-OlH" id="r5X-CW-RAb"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="c22-O7-iKe" customClass="SelectionView" customModule="TextAnnotation" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="286" height="94"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="omE-Jx-U2P" userLabel="leftResize">
+                    <rect key="frame" x="0.0" y="0.0" width="20" height="94"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="20" id="raC-rZ-Jdd"/>
+                    </constraints>
+                    <gestureRecognizers>
+                        <panGestureRecognizer delaysPrimaryMouseButtonEvents="YES" id="Nvm-3Y-UB6" userLabel="leftResize">
+                            <connections>
+                                <action selector="leftResizeDidDragWithRecognizer:" target="-2" id="7Kd-Sy-giB"/>
+                            </connections>
+                        </panGestureRecognizer>
+                    </gestureRecognizers>
+                </customView>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="jZw-oF-tKV" userLabel="rightResize">
+                    <rect key="frame" x="266" y="20" width="20" height="74"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="20" id="4oo-m5-2EV"/>
+                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="Sr5-sb-aU5"/>
+                    </constraints>
+                    <gestureRecognizers>
+                        <panGestureRecognizer delaysPrimaryMouseButtonEvents="YES" id="NDR-Uk-Dhx" userLabel="rightResize">
+                            <connections>
+                                <action selector="rightResizeDidDragWithRecognizer:" target="-2" id="nqL-AN-7Jy"/>
+                            </connections>
+                        </panGestureRecognizer>
+                    </gestureRecognizers>
+                </customView>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="cFp-vk-MBJ" userLabel="scale">
+                    <rect key="frame" x="266" y="0.0" width="20" height="20"/>
+                    <subviews>
+                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="dK3-5X-jXb" customClass="KnobView2" customModule="TextAnnotation" customModuleProvider="target">
+                            <rect key="frame" x="5" y="5" width="10" height="10"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="dK3-5X-jXb" secondAttribute="height" multiplier="1:1" id="QD9-ei-Jki"/>
+                                <constraint firstAttribute="height" constant="10" id="ky2-g0-7io"/>
+                            </constraints>
+                        </customView>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="dK3-5X-jXb" firstAttribute="centerX" secondItem="cFp-vk-MBJ" secondAttribute="centerX" id="7NW-5h-PRI"/>
+                        <constraint firstAttribute="height" constant="20" id="Gix-mf-23n"/>
+                        <constraint firstItem="dK3-5X-jXb" firstAttribute="centerY" secondItem="cFp-vk-MBJ" secondAttribute="centerY" id="jbe-9Y-kdc"/>
+                    </constraints>
+                    <gestureRecognizers>
+                        <panGestureRecognizer delaysPrimaryMouseButtonEvents="YES" id="9SE-8v-Tx8" userLabel="scale">
+                            <connections>
+                                <action selector="scaleDidDragWithRecognizer:" target="-2" id="RTU-hZ-9pg"/>
+                            </connections>
+                        </panGestureRecognizer>
+                    </gestureRecognizers>
+                </customView>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="r4R-Mq-OlH" customClass="TextView" customModule="TextAnnotation" customModuleProvider="target">
+                    <rect key="frame" x="25" y="5" width="236" height="84"/>
+                </customView>
+            </subviews>
+            <constraints>
+                <constraint firstItem="cFp-vk-MBJ" firstAttribute="width" secondItem="jZw-oF-tKV" secondAttribute="width" id="060-Vt-8vv"/>
+                <constraint firstAttribute="bottom" secondItem="r4R-Mq-OlH" secondAttribute="bottom" constant="5" id="1Ez-eC-cHP"/>
+                <constraint firstItem="r4R-Mq-OlH" firstAttribute="leading" secondItem="omE-Jx-U2P" secondAttribute="trailing" constant="5" id="AYx-Id-an4"/>
+                <constraint firstItem="cFp-vk-MBJ" firstAttribute="top" secondItem="jZw-oF-tKV" secondAttribute="bottom" id="DUe-xN-5ZF"/>
+                <constraint firstItem="r4R-Mq-OlH" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="5" id="QlB-Eg-mLY"/>
+                <constraint firstAttribute="trailing" secondItem="cFp-vk-MBJ" secondAttribute="trailing" id="T25-PW-WUr"/>
+                <constraint firstItem="omE-Jx-U2P" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="TIG-Bj-cmM"/>
+                <constraint firstItem="jZw-oF-tKV" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="WxU-yW-yzJ"/>
+                <constraint firstItem="jZw-oF-tKV" firstAttribute="leading" secondItem="r4R-Mq-OlH" secondAttribute="trailing" constant="5" id="dE9-FA-Utt"/>
+                <constraint firstItem="omE-Jx-U2P" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="fEu-j6-Q9B"/>
+                <constraint firstAttribute="bottom" secondItem="cFp-vk-MBJ" secondAttribute="bottom" id="r4J-lD-toC"/>
+                <constraint firstAttribute="trailing" secondItem="jZw-oF-tKV" secondAttribute="trailing" id="v84-H0-zT2"/>
+                <constraint firstAttribute="bottom" secondItem="omE-Jx-U2P" secondAttribute="bottom" id="ysP-Bz-WnG"/>
+            </constraints>
+            <gestureRecognizers>
+                <clickGestureRecognizer delaysPrimaryMouseButtonEvents="YES" numberOfClicksRequired="1" id="4WZ-Gn-Taq" userLabel="select">
+                    <connections>
+                        <action selector="didClickWithRecognizer:" target="-2" id="eDg-dA-rsw"/>
+                    </connections>
+                </clickGestureRecognizer>
+                <clickGestureRecognizer delaysPrimaryMouseButtonEvents="YES" numberOfClicksRequired="2" id="F7k-Z1-l9R" userLabel="edit">
+                    <connections>
+                        <action selector="didDoubleClickWithRecognizer:" target="-2" id="4iD-mA-FET"/>
+                    </connections>
+                </clickGestureRecognizer>
+            </gestureRecognizers>
+            <point key="canvasLocation" x="97" y="134"/>
+        </customView>
+    </objects>
+</document>
