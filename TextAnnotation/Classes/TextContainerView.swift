@@ -22,7 +22,7 @@ public protocol ActivateResponder: class {
 }
 
 open class TextContainerView: NSView {
-    // MARK: - Variables
+  public var delegate: TextAnnotationDelegate?
   
   public var state: TextAnnotationState = .inactive {
         didSet {          
@@ -77,6 +77,7 @@ open class TextContainerView: NSView {
     var leftTally: MouseTrackingView?
     var rightTally: MouseTrackingView?
     var scaleTally: KnobView?
+  
     
     // MARK: Private
     
@@ -90,6 +91,7 @@ open class TextContainerView: NSView {
     private var doubleClickGestureRecognizer: NSClickGestureRecognizer!
   
     private var lastMouseLocation: NSPoint?
+    private var didMove = false
   
     private var cursorSet = CursorSet.shared
   
@@ -176,6 +178,10 @@ open class TextContainerView: NSView {
       height: locationInWindow.y - lastMouseLocation.y
     )
     
+    if difference.width > 0 || difference.height > 0 {
+      didMove = true
+    }
+    
     self.lastMouseLocation = locationInWindow
     
     switch state {
@@ -192,7 +198,12 @@ open class TextContainerView: NSView {
   
   open override func mouseUp(with event: NSEvent) {
     state = .active
-
+    
+    if didMove {
+      delegate?.textAnnotationDidMove(textAnnotation: self)
+      didMove = false
+    }
+    
     lastMouseLocation = nil
   }
     
@@ -336,14 +347,16 @@ extension TextContainerView: NSTextViewDelegate {
     // MARK: - NSTextDelegate
     
     open func textDidChange(_ notification: Notification) {
-        updateFrameWithText(textView.string)
+      updateFrameWithText(textView.string)
+      delegate?.textAnnotationDidEdit(textAnnotation: self)
     }
 }
 
 extension TextContainerView: ActivateResponder {
   public func textViewDidActivate(_ activeItem: Any?) {
         // After we reach the .editing state - we should not switch it back to .active, only on .inactive on complete edit
-        state = textView.isEditable ? .editing : .active
+      state = textView.isEditable ? .editing : .active
+      delegate?.textAnnotationDidSelect(textAnnotation: self)
     }
 }
 
