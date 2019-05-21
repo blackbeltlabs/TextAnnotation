@@ -7,46 +7,47 @@
 
 import Cocoa
 
-class BBBackgroundView: NSView {
+@IBDesignable
+class SelectionView: NSView {
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         
-        let padding = BBConfiguration.frameMargin + BBConfiguration.dotRadius
+        let padding = Configuration.frameMargin + Configuration.dotRadius
         let framePath = NSBezierPath(rect: NSRect(x: padding,
                                                   y: padding,
                                                   width: dirtyRect.width - 2 * padding,
                                                   height: dirtyRect.height - 2 * padding))
         
-        framePath.lineWidth = BBConfiguration.controlStrokeWidth
-        BBPalette.frameStrokeColor.set()
+        framePath.lineWidth = Configuration.controlStrokeWidth
+        Palette.frameStrokeColor.set()
         framePath.stroke()
         framePath.close()
         
-        let side = 2*BBConfiguration.dotRadius - BBConfiguration.controlStrokeWidth
+        let side = 2*Configuration.dotRadius - Configuration.controlStrokeWidth
         
         // left
-        var squareRect = CGRect(x: BBConfiguration.frameMargin,
-                                y: (dirtyRect.height - BBConfiguration.dotRadius)/2,
+        var squareRect = CGRect(x: Configuration.frameMargin,
+                                y: (dirtyRect.height - Configuration.dotRadius)/2,
                                 width: side,
                                 height: side)
         var path = NSBezierPath(ovalIn: squareRect)
-        BBPalette.controlFillColor.setFill()
+        Palette.controlFillColor.setFill()
         path.fill()
         
-        BBPalette.controlStrokeColor.setFill()
+        Palette.controlStrokeColor.setFill()
         path.stroke()
         
         // right
-        squareRect = CGRect(x: dirtyRect.width - (BBConfiguration.frameMargin + 2*BBConfiguration.dotRadius),
-                            y: (dirtyRect.height - BBConfiguration.dotRadius)/2,
+        squareRect = CGRect(x: dirtyRect.width - (Configuration.frameMargin + 2*Configuration.dotRadius),
+                            y: (dirtyRect.height - Configuration.dotRadius)/2,
                             width: side,
                             height: side)
         path = NSBezierPath(ovalIn: squareRect)
-        BBPalette.controlFillColor.setFill()
+        Palette.controlFillColor.setFill()
         path.fill()
         
-        BBPalette.controlStrokeColor.setFill()
+        Palette.controlStrokeColor.setFill()
         path.stroke()
     }
 }

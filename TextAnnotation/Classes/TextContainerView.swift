@@ -7,35 +7,32 @@
 
 import Cocoa
 
-protocol BBActivateResponder: class {
+public enum TextAnnotationState {
+  case inactive
+  case active
+  case editing
+  case resizeRight
+  case resizeLeft
+  case dragging
+  case scaling
+}
+
+public protocol ActivateResponder: class {
     func textViewDidActivate(_ activeItem: Any?)
 }
 
-open class BBContainerView: NSView {
+open class TextContainerView: NSView {
     // MARK: - Variables
-    
-    enum ContainerViewState {
-        case inactive
-        case active
-        case editing
-        case resizeRight
-        case resizeLeft
-        case dragging
-        case scaling
-    }
-    var state: ContainerViewState = .inactive {
-        didSet {
+  
+  public var state: TextAnnotationState = .inactive {
+        didSet {          
             guard state != oldValue else { return }
-            if oldValue == .resizeLeft || oldValue == .resizeRight {
-                updateSubviewsFrames()
-            }
             
             var isActive: Bool = false
             if state == .inactive {
                 textView.isEditable = false
                 textView.isSelectable = false
                 doubleClickGestureRecognizer.isEnabled = !textView.isEditable
-                updateSubviewsFrames()
             } else {
                 if state == .scaling {
                     textView.calculateScaleRatio()
@@ -68,43 +65,38 @@ open class BBContainerView: NSView {
         }
     }
     
-    weak var activateResponder: BBActivateResponder?
-    weak var activeAreaResponder: BBActiveAreaResponder?
+    weak var activateResponder: ActivateResponder?
+    weak var activeAreaResponder: MouseTrackingResponder?
     
-    var text: String! {
+    public var text: String = "" {
         didSet {
             guard textView != nil else { return }
             textView.string = text
             updateFrameWithText(textView.string)
         }
     }
-    var initialTouchPoint = CGPoint.zero
-    var leftTally: BBActiveView?
-    var rightTally: BBActiveView?
-    var scaleTally: BBDotView?
-    
-    // FIXME: Possible unused
-    var origin: CGPoint = CGPoint.zero {
-        didSet {
-            frame.origin = origin
-            updateSubviewsFrames()
-        }
-    }
+    var leftTally: MouseTrackingView?
+    var rightTally: MouseTrackingView?
+    var scaleTally: KnobView?
     
     // MARK: Private
     
-    private var backgroundView: BBBackgroundView!
-    private var textView: BBTextView!
+    private var backgroundView: SelectionView!
+    private var textView: TextView!
     
-    private let kMinimalWidth: CGFloat = 25 + 2*BBConfiguration.frameMargin + 2*BBConfiguration.dotRadius
+    private let kMinimalWidth: CGFloat = 25 + 2*Configuration.frameMargin + 2*Configuration.dotRadius
     private let kMinimalHeight: CGFloat = 25
     
     private var singleClickGestureRecognizer: NSClickGestureRecognizer!
     private var doubleClickGestureRecognizer: NSClickGestureRecognizer!
-    
+  
+    private var lastMouseLocation: NSPoint?
+  
+    private var cursorSet = CursorSet.shared
+  
     override open var frame: NSRect {
         didSet {
-            updateSubviewsFrames()
+            updateSubviewsFrames(oldValue, frame: frame)
         }
     }
     
@@ -114,18 +106,16 @@ open class BBContainerView: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         
-        initialTouchPoint = CGPoint(x: frameRect.origin.x + frameRect.width/2,
-                                    y: frameRect.origin.y + frameRect.height/2)
         let size = frameRect.size
         
-        backgroundView = BBBackgroundView(frame: NSRect(origin: CGPoint.zero, size: size))
+        backgroundView = SelectionView(frame: NSRect(origin: CGPoint.zero, size: size))
         backgroundView.isHidden = true
         self.addSubview(backgroundView)
         
-        textView = BBTextView(frame: NSRect.zero, responder: self)
+        textView = TextView(frame: NSRect.zero, responder: self)
         textView.alignment = .natural
         textView.backgroundColor = NSColor.clear
-        textView.textColor = BBPalette.controlFillColor
+        textView.textColor = Palette.controlFillColor
         textView.font = NSFont(name: "HelveticaNeue-Bold", size: 30)
         textView.isSelectable = false
         textView.isRichText = false
@@ -137,27 +127,27 @@ open class BBContainerView: NSView {
         
         singleClickGestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(self.singleClickGestureHandle(_:)))
         self.addGestureRecognizer(singleClickGestureRecognizer)
-        
+      
         doubleClickGestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(self.doubleClickGestureHandle(_:)))
         doubleClickGestureRecognizer.numberOfClicksRequired = 2
         doubleClickGestureRecognizer.numberOfTouchesRequired = 2
         self.addGestureRecognizer(doubleClickGestureRecognizer)
-        
+      
         addSubview(textView)
         
         // all frames here is zero, later we set it in updateSubviewsFrames()
         let tallyFrame = NSRect.zero
-        var flipper = BBActiveView(type: .resizeLeftArea, responder: self, frameRect: tallyFrame)
+        var flipper = MouseTrackingView(type: .resizeLeftArea, responder: self, frameRect: tallyFrame)
         flipper.isHidden = true
         addSubview(flipper)
         leftTally = flipper
         
-        flipper = BBActiveView(type: .resizeRightArea, responder: self, frameRect: tallyFrame)
+        flipper = MouseTrackingView(type: .resizeRightArea, responder: self, frameRect: tallyFrame)
         flipper.isHidden = true
         addSubview(flipper)
         rightTally = flipper
         
-        let tally = BBDotView(type: .scaleArea, responder: self, frameRect: tallyFrame)
+        let tally = KnobView(type: .scaleArea, responder: self, frameRect: tallyFrame)
         tally.isHidden = true
         addSubview(tally)
         scaleTally = tally
@@ -168,11 +158,48 @@ open class BBContainerView: NSView {
     }
     
     // MARK: - Private
+  
+  open override func mouseDown(with event: NSEvent) {
+    let mouseLocation = self.convert(event.locationInWindow, from: nil)
+    state = mouseDownState(location: mouseLocation)
+
+    lastMouseLocation = event.locationInWindow
+  }
+  
+  open override func mouseDragged(with event: NSEvent) {
+    guard let lastMouseLocation = lastMouseLocation else {
+      return
+    }
+    
+    let locationInWindow = event.locationInWindow
+    
+    let difference = CGSize(
+      width: locationInWindow.x - lastMouseLocation.x,
+      height: locationInWindow.y - lastMouseLocation.y
+    )
+    
+    self.lastMouseLocation = locationInWindow
+    
+    switch state {
+    case .active:
+      move(difference: difference)
+    case .resizeLeft, .resizeRight:
+      resize(distance: difference.width)
+    case .scaling:
+      scale(difference: difference)
+      cursorSet.scaleCursor.set()
+    default: return
+    }
+  }
+  
+  open override func mouseUp(with event: NSEvent) {
+    state = .active
+
+    lastMouseLocation = nil
+  }
     
     @objc private func singleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
         guard let theTextView = textView, !theTextView.isEditable else { return }
-        // FIXME: Here we fails with location of the point. ONLY in more than one row case
-        initialTouchPoint = gesture.location(in: self.superview)
         state = .active
     }
     
@@ -201,44 +228,54 @@ open class BBContainerView: NSView {
         
         // Now we know text label frame. We should calculate new self.frame and redraw all the subviews
         textFrame = CGRect(x: frame.minX,
-                           y: center.y - height/2.0 - (BBConfiguration.frameMargin + BBConfiguration.horizontalTextPadding),
-                           width: width + 2*(BBConfiguration.frameMargin + BBConfiguration.dotRadius + BBConfiguration.horizontalTextPadding),
-                           height: height + 2*(BBConfiguration.frameMargin + BBConfiguration.horizontalTextPadding))
+                           y: center.y - height/2.0 - (Configuration.frameMargin + Configuration.horizontalTextPadding),
+                           width: width + 2*(Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding),
+                           height: height + 2*(Configuration.frameMargin + Configuration.horizontalTextPadding))
         
         frame = textFrame
     }
     
-    private func updateSubviewsFrames() {
+    private func updateSubviewsFrames(_ oldFrame: NSRect, frame: NSRect) {
+        if oldFrame.width == frame.width && oldFrame.height == frame.height {
+            return
+        }
+      
         let size = frame.size
         
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
         backgroundView.frame = CGRect(origin: CGPoint.zero, size: size)
-        textView.frame = CGRect(x: BBConfiguration.frameMargin + BBConfiguration.dotRadius + BBConfiguration.horizontalTextPadding, y: BBConfiguration.frameMargin + BBConfiguration.horizontalTextPadding, width: size.width - 2*(BBConfiguration.frameMargin + BBConfiguration.dotRadius + BBConfiguration.horizontalTextPadding), height: size.height - 2 * (BBConfiguration.frameMargin + BBConfiguration.horizontalTextPadding))
+        textView.frame = CGRect(x: Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding, y: Configuration.frameMargin + Configuration.horizontalTextPadding, width: size.width - 2*(Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding), height: size.height - 2 * (Configuration.frameMargin + Configuration.horizontalTextPadding))
         
-        var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: BBConfiguration.frameMargin + 2*BBConfiguration.dotRadius, height: size.height))
+        var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: Configuration.frameMargin + 2*Configuration.dotRadius, height: size.height))
         if let tally = leftTally {
             tally.frame = tallyFrame
         }
         
         if let tally = rightTally {
             tallyFrame.origin = CGPoint(x: size.width - tallyFrame.width, y: tallyFrame.width)
-            tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.height - (2*BBConfiguration.dotRadius + BBConfiguration.frameMargin))
+            tallyFrame.size = CGSize(width: tallyFrame.width, height: tallyFrame.height - (2*Configuration.dotRadius + Configuration.frameMargin))
             tally.frame = tallyFrame
         }
         
         if let tally = scaleTally {
-            tallyFrame.origin = CGPoint(x: size.width - (BBConfiguration.frameMargin + 2*BBConfiguration.dotRadius), y: BBConfiguration.frameMargin)
-            tallyFrame.size = CGSize(width: 2*BBConfiguration.dotRadius, height: 2*BBConfiguration.dotRadius)
+            tallyFrame.origin = CGPoint(x: size.width - (Configuration.frameMargin + 2*Configuration.dotRadius), y: Configuration.frameMargin)
+            tallyFrame.size = CGSize(width: 2*Configuration.dotRadius, height: 2*Configuration.dotRadius)
             tally.frame = tallyFrame
         }
-        
-        CATransaction.commit()
     }
     
     // MARK: - Public
-    
-    func resizeWithDistance(_ distance: CGFloat) {
+  
+    func move(difference: CGSize) {
+        var newFrame = frame
+        newFrame.origin = CGPoint(
+            x: frame.origin.x + difference.width,
+            y: frame.origin.y + difference.height
+        )
+      
+        frame = newFrame
+    }
+  
+    public func resize(distance: CGFloat) {
         guard state == .resizeRight || state == .resizeLeft else { return }
         
         var theFrame = frame
@@ -253,11 +290,11 @@ open class BBContainerView: NSView {
         }
         
         // Here we have to check if text view frame has good size for such container size
-        let textFrame = textView.frameForWidth(theFrame.width - 2 * (BBConfiguration.frameMargin + BBConfiguration.dotRadius + BBConfiguration.horizontalTextPadding),
+        let textFrame = textView.frameForWidth(theFrame.width - 2 * (Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding),
                                                height: CGFloat.greatestFiniteMagnitude)
-        let diff_width = theFrame.width - (textFrame.width + 2 * (BBConfiguration.frameMargin + BBConfiguration.dotRadius + BBConfiguration.horizontalTextPadding) + textView.twoSymbolsWidth)
+        let diff_width = theFrame.width - (textFrame.width + 2 * (Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding) + textView.twoSymbolsWidth)
         if diff_width < 0 {
-            let height = textFrame.height + 2 * (BBConfiguration.frameMargin + BBConfiguration.horizontalTextPadding)
+            let height = textFrame.height + 2 * (Configuration.frameMargin + Configuration.horizontalTextPadding)
             let centerY = theFrame.origin.y + theFrame.height/2
             
             theFrame.size = CGSize(width: theFrame.width, height: height)
@@ -265,10 +302,9 @@ open class BBContainerView: NSView {
         }
         
         frame = theFrame
-        updateSubviewsFrames()
     }
     
-    func scaleWithDistance(_ difference: CGSize) {
+    public func scale(difference: CGSize) {
         guard state == .scaling else { return }
         
         // we should scale it proportionally, driver of the mpvement is height difference
@@ -277,15 +313,27 @@ open class BBContainerView: NSView {
         
         width = width < kMinimalWidth ? kMinimalWidth : width
         height = height < kMinimalHeight ? kMinimalHeight : height
-        
+      
         frame = CGRect(origin: CGPoint(x: frame.origin.x, y: frame.origin.y + difference.height),
                        size: CGSize(width: width, height: height))
-        updateSubviewsFrames()
         textView.resetFontSize()
+    }
+  
+    public func mouseDownState(location: NSPoint) -> TextAnnotationState {
+        var state = TextAnnotationState.active // default state
+        if let tally = leftTally, tally.frame.contains(location) {
+            state = .resizeLeft
+        } else if let tally = rightTally, tally.frame.contains(location) {
+            state = .resizeRight
+        } else if let tally = scaleTally, tally.frame.contains(location) {
+            state = .scaling
+        }
+        
+        return state
     }
 }
 
-extension BBContainerView: NSTextViewDelegate {
+extension TextContainerView: NSTextViewDelegate {
     
     // MARK: - NSTextDelegate
     
@@ -294,15 +342,15 @@ extension BBContainerView: NSTextViewDelegate {
     }
 }
 
-extension BBContainerView: BBActivateResponder {
-    func textViewDidActivate(_ activeItem: Any?) {
+extension TextContainerView: ActivateResponder {
+  public func textViewDidActivate(_ activeItem: Any?) {
         // After we reach the .editing state - we should not switch it back to .active, only on .inactive on complete edit
         state = textView.isEditable ? .editing : .active
     }
 }
 
-extension BBContainerView: BBActiveAreaResponder {
-    func areaDidActivated(_ area: BBArea) {
+extension TextContainerView: MouseTrackingResponder {
+  public func areaDidActivated(_ area: TextAnnotationArea) {
         guard let areaResponder = activeAreaResponder, state == .active else { return }
         areaResponder.areaDidActivated(area)
     }

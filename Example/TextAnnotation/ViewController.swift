@@ -9,14 +9,23 @@
 import Cocoa
 import TextAnnotation
 
-class ViewController: TextAnnotationsController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Programmatically creating a text annotation
-        let location = CGPoint(x: 100, y: 150)
-        
-        // Method supplied by TextAnnotationsController protocol implementation
-        addTextAnnotation(text: "Some text", location: location)
-    }
+class ViewController: NSViewController, TextAnnotationCanvas {
+  var textAnnotations: [TextAnnotation] = []
+  var selectedTextAnnotation: TextAnnotation?
+  var lastMouseLocation: NSPoint?
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    // Programmatically creating a text annotation
+    let location = CGPoint(x: 100, y: 150)
+    
+    // Method supplied by TextAnnotationsController protocol implementation
+    addTextAnnotation(text: "Some text", location: location)
+  }
+  
+  override func mouseDown(with event: NSEvent) {
+    let _ = textAnnotationCanvasMouseDown(event: event)
+    super.mouseDown(with: event)
+  }
 }
