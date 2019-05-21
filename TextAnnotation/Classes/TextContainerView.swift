@@ -50,6 +50,8 @@ open class TextContainerView: NSView {
             
             singleClickGestureRecognizer.isEnabled = state == .inactive
             
+            theTextView.isSelectable = isActive
+            
             backgroundView.isHidden = !isActive
             backgroundView.display()
             
@@ -122,6 +124,7 @@ open class TextContainerView: NSView {
         textView.backgroundColor = NSColor.clear
         textView.textColor = Palette.controlFillColor
         textView.font = NSFont(name: "HelveticaNeue-Bold", size: 30)
+        textView.isSelectable = false
         textView.isRichText = false
         textView.usesRuler = false
         textView.usesFontPanel = false
@@ -219,10 +222,10 @@ open class TextContainerView: NSView {
     }
     
     @objc private func doubleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
-        guard let theTextView = textView, !theTextView.isEditable else { return }
+        guard let theTextView = textView else { return }
         
         state = .editing
-        theTextView.isEditable = true
+        startEditing()
         doubleClickGestureRecognizer.isEnabled = !theTextView.isEditable
         
         guard let responder = activateResponder else { return }
@@ -385,6 +388,7 @@ extension TextContainerView: TextAnnotation {
         
         if let theWindow = window {
             textView.isEditable = true
+            textView.isSelectable = true
             theWindow.makeFirstResponder(textView)
         }
     }
