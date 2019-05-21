@@ -31,7 +31,6 @@ open class TextContainerView: NSView {
             var isActive: Bool = false
             if state == .inactive {
                 theTextView.isEditable = false
-//                theTextView.isSelectable = false
                 doubleClickGestureRecognizer.isEnabled = !theTextView.isEditable
             } else {
                 if state == .scaling {
@@ -117,7 +116,6 @@ open class TextContainerView: NSView {
         textView.backgroundColor = NSColor.clear
         textView.textColor = Palette.controlFillColor
         textView.font = NSFont(name: "HelveticaNeue-Bold", size: 30)
-//        textView.isSelectable = false
         textView.isRichText = false
         textView.usesRuler = false
         textView.usesFontPanel = false
@@ -207,7 +205,6 @@ open class TextContainerView: NSView {
         guard let theTextView = textView, !theTextView.isEditable else { return }
         
         state = .editing
-//        theTextView.isSelectable = true
         theTextView.isEditable = true
         doubleClickGestureRecognizer.isEnabled = !theTextView.isEditable
         
