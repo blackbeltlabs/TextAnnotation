@@ -9,35 +9,23 @@
 import Cocoa
 import TextAnnotation
 
-class ViewController: TextAnnotationsController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Programmatically creating a text annotation
-        let location = CGPoint(x: 100, y: 150)
-        
-        // Method supplied by TextAnnotationsController protocol implementation
-        addTextAnnotation(text: "Some text", location: location)
-    }
+class ViewController: NSViewController, TextAnnotationCanvas {
+  var textAnnotations: [TextAnnotation] = []
+  var selectedTextAnnotation: TextAnnotation?
+  var lastMouseLocation: NSPoint?
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
     
-      override func mouseDown(with event: NSEvent) {
-        super.mouseDown(with: event)
-        // TextAnnotationsController needs to handle mouse down events
-        // textAnnotationsMouseDown(event: event)
-      }
-    //
-    //  override func mouseDragged(with event: NSEvent) {
-    //    // TextAnnotationsController needs to handle drag events
-    //    textAnnotationsMouseDragged(event: event)
-    //  }
+    // Programmatically creating a text annotation
+    let location = CGPoint(x: 100, y: 150)
+    
+    // Method supplied by TextAnnotationsController protocol implementation
+    addTextAnnotation(text: "Some text", location: location)
+  }
+  
+  override func mouseDown(with event: NSEvent) {
+    let _ = textAnnotationCanvasMouseDown(event: event)
+    super.mouseDown(with: event)
+  }
 }
-
-//extension ViewController: TextAnnotationDelegate {
-//    func textAnnotationDidEdit(textAnnotation: TextAnnotation) {
-//        print(textAnnotation.text)
-//    }
-//    
-//    func textAnnotationDidMove(textAnnotation: TextAnnotation) {
-//        print(textAnnotation.frame)
-//    }
-//}

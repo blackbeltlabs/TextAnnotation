@@ -7,27 +7,27 @@
 
 import Cocoa
 
-enum BBArea {
+public enum TextAnnotationArea {
     case resizeRightArea
     case resizeLeftArea
     case scaleArea
     case textArea
 }
 
-protocol BBActiveAreaResponder: class {
-    func areaDidActivated(_ area: BBArea)
+public protocol MouseTrackingResponder: class {
+    func areaDidActivated(_ area: TextAnnotationArea)
 }
 
-class BBActiveView: NSView {
+class MouseTrackingView: NSView {
     
     // MARK: - Variables
     
-    weak private var activeAreaResponder: BBActiveAreaResponder?
-    private var area: BBArea?
+    weak private var activeAreaResponder: MouseTrackingResponder?
+    private var area: TextAnnotationArea?
     
     // MARK: - Lifecycle
     
-    convenience init(type: BBArea, responder: BBActiveAreaResponder, frameRect: NSRect) {
+    convenience init(type: TextAnnotationArea, responder: MouseTrackingResponder, frameRect: NSRect) {
         self.init(frame: frameRect)
         
         area = type

@@ -7,12 +7,11 @@
 
 import Cocoa
 
-class BBTextView: NSTextView {
+class TextView: NSTextView {
     
     // MARK: - Variables
-    
     lazy var twoSymbolsWidth: CGFloat = 2 * getFont().xHeight
-    private weak var activeAreaResponder: BBActiveAreaResponder?
+    private weak var activeAreaResponder: MouseTrackingResponder?
     
     // MARK: Private
     
@@ -20,7 +19,7 @@ class BBTextView: NSTextView {
     
     // MARK: - Lifecycle
     
-    convenience init(frame frameRect: NSRect, responder: BBActiveAreaResponder ) {
+    convenience init(frame frameRect: NSRect, responder: MouseTrackingResponder ) {
         self.init(frame: frameRect)
         
         activeAreaResponder = responder
@@ -29,6 +28,15 @@ class BBTextView: NSTextView {
         let trackingArea = NSTrackingArea(rect: bounds, options: NSTrackingArea.Options(rawValue: options), owner: self, userInfo: nil)
         
         addTrackingArea(trackingArea)
+    }
+  
+    override func mouseDown(with event: NSEvent) {
+        if !isEditable {
+          superview?.mouseDown(with: event)
+          return
+        }
+      
+        super.mouseDown(with: event)
     }
     
     override func mouseEntered(with event: NSEvent) {
