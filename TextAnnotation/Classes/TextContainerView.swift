@@ -163,7 +163,7 @@ open class TextContainerView: NSView {
     let mouseLocation = self.convert(event.locationInWindow, from: nil)
     state = mouseDownState(location: mouseLocation)
 
-    lastMouseLocation = mouseLocation
+    lastMouseLocation = event.locationInWindow
   }
   
   open override func mouseDragged(with event: NSEvent) {
@@ -171,13 +171,14 @@ open class TextContainerView: NSView {
       return
     }
     
-    let mouseLocation = self.convert(event.locationInWindow, from: nil)
-    self.lastMouseLocation = mouseLocation
+    let locationInWindow = event.locationInWindow
     
     let difference = CGSize(
-      width: mouseLocation.x - lastMouseLocation.x,
-      height: mouseLocation.y - lastMouseLocation.y
+      width: locationInWindow.x - lastMouseLocation.x,
+      height: locationInWindow.y - lastMouseLocation.y
     )
+    
+    self.lastMouseLocation = locationInWindow
     
     switch state {
     case .active:
