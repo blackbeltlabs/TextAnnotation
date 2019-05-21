@@ -6,6 +6,12 @@ public protocol TextAnnotation where Self: NSView {
   var state: TextAnnotationState { get set }
 }
 
+extension TextAnnotation {
+  public func delete() {
+    removeFromSuperview()
+  }
+}
+
 extension TextContainerView: TextAnnotation {
   
 }
