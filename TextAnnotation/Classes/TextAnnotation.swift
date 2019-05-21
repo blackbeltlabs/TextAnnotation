@@ -13,6 +13,4 @@ extension TextAnnotation {
   }
 }
 
-extension TextContainerView: TextAnnotation {
-  
-}
+extension TextContainerView: TextAnnotation {}

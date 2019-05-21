@@ -210,6 +210,8 @@ open class TextContainerView: NSView {
     @objc private func singleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
         guard let theTextView = textView, !theTextView.isEditable else { return }
         state = .active
+      
+        delegate?.textAnnotationDidSelect(textAnnotation: self)
     }
     
     @objc private func doubleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
@@ -356,7 +358,6 @@ extension TextContainerView: ActivateResponder {
   public func textViewDidActivate(_ activeItem: Any?) {
         // After we reach the .editing state - we should not switch it back to .active, only on .inactive on complete edit
       state = textView.isEditable ? .editing : .active
-      delegate?.textAnnotationDidSelect(textAnnotation: self)
     }
 }
 
