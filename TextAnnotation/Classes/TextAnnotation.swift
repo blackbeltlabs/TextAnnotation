@@ -13,4 +13,12 @@ extension TextAnnotation {
   public func delete() {
     removeFromSuperview()
   }
+  
+  public func select() {
+    state = .active
+  }
+  
+  public func deselect() {
+    state = .inactive
+  }
 }
