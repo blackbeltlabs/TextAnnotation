@@ -366,3 +366,21 @@ extension TextContainerView: MouseTrackingResponder {
         areaResponder.areaDidActivated(area)
     }
 }
+
+// Extension should be here bacause `var textView: TextView` is private property
+extension TextContainerView: TextAnnotation {
+    public func startEditing() {
+        var window: NSWindow? = NSApplication.shared.mainWindow
+        if window == nil {
+            let list = NSApplication.shared.windows
+            if !list.isEmpty {
+                window = list.first
+            }
+        }
+        
+        if let theWindow = window {
+            textView.isEditable = true
+            theWindow.makeFirstResponder(textView)
+        }
+    }
+}

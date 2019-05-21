@@ -21,11 +21,16 @@ class ViewController: NSViewController, TextAnnotationCanvas {
     let location = CGPoint(x: 100, y: 150)
     
     // Method supplied by TextAnnotationsController protocol implementation
-    addTextAnnotation(text: "Some text", location: location)
-    
-    addTextAnnotation(text: "Another one", location: CGPoint(x: 150, y: 200))
+    _ = addTextAnnotation(text: "Some text", location: location)
   }
   
+    override func viewDidAppear() {
+        super.viewDidAppear()
+        
+        let annotation = addTextAnnotation(text: "Another one", location: CGPoint(x: 150, y: 200))
+        annotation.startEditing()
+    }
+    
   override func mouseDown(with event: NSEvent) {
     let _ = textAnnotationCanvasMouseDown(event: event)
     super.mouseDown(with: event)
