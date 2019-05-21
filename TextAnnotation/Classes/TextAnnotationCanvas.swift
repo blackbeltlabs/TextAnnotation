@@ -56,6 +56,7 @@ extension TextAnnotationCanvas {
     
     if annotationToActivate == nil {
       set(selectedTextAnnotation: nil)
+      addTextAnnotation(text: "", location: screenPoint)
     }
   }
 }
