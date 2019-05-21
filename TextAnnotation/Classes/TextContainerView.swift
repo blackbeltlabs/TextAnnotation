@@ -26,16 +26,15 @@ open class TextContainerView: NSView {
   
   public var state: TextAnnotationState = .inactive {
         didSet {          
-            guard state != oldValue else { return }
+            guard state != oldValue, let theTextView = textView else { return }
             
             var isActive: Bool = false
             if state == .inactive {
-                textView.isEditable = false
-                textView.isSelectable = false
-                doubleClickGestureRecognizer.isEnabled = !textView.isEditable
+                theTextView.isEditable = false
+                doubleClickGestureRecognizer.isEnabled = !theTextView.isEditable
             } else {
                 if state == .scaling {
-                    textView.calculateScaleRatio()
+                    theTextView.calculateScaleRatio()
                 }
                 
                 isActive = true
@@ -70,9 +69,9 @@ open class TextContainerView: NSView {
     
     public var text: String = "" {
         didSet {
-            guard textView != nil else { return }
-            textView.string = text
-            updateFrameWithText(textView.string)
+            guard let theTextView = textView else { return }
+            theTextView.string = text
+            updateFrameWithText(theTextView.string)
         }
     }
     var leftTally: MouseTrackingView?
@@ -117,7 +116,6 @@ open class TextContainerView: NSView {
         textView.backgroundColor = NSColor.clear
         textView.textColor = Palette.controlFillColor
         textView.font = NSFont(name: "HelveticaNeue-Bold", size: 30)
-        textView.isSelectable = false
         textView.isRichText = false
         textView.usesRuler = false
         textView.usesFontPanel = false
@@ -207,7 +205,6 @@ open class TextContainerView: NSView {
         guard let theTextView = textView, !theTextView.isEditable else { return }
         
         state = .editing
-        textView.isSelectable = true
         theTextView.isEditable = true
         doubleClickGestureRecognizer.isEnabled = !theTextView.isEditable
         
@@ -216,14 +213,15 @@ open class TextContainerView: NSView {
     }
     
     private func updateFrameWithText(_ string: String) {
+        guard let theTextView = textView else { return }
         let center = CGPoint(x: NSMidX(frame), y: NSMidY(frame))
         
-        var textFrame = textView.frameForWidth(CGFloat.greatestFiniteMagnitude, height: textView.bounds.height)
-        let width = max(textFrame.width + textView.twoSymbolsWidth, textView.bounds.width)
+        var textFrame = theTextView.frameForWidth(CGFloat.greatestFiniteMagnitude, height: theTextView.bounds.height)
+        let width = max(textFrame.width + theTextView.twoSymbolsWidth, theTextView.bounds.width)
         
         // We should use minimal value to get height. Because of multiline.
-        let minWidth = min(textFrame.width + textView.twoSymbolsWidth, textView.bounds.width)
-        textFrame = textView.frameForWidth(minWidth, height: CGFloat.greatestFiniteMagnitude)
+        let minWidth = min(textFrame.width + theTextView.twoSymbolsWidth, textView.bounds.width)
+        textFrame = theTextView.frameForWidth(minWidth, height: CGFloat.greatestFiniteMagnitude)
         let height = textFrame.height
         
         // Now we know text label frame. We should calculate new self.frame and redraw all the subviews
