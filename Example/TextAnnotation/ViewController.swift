@@ -28,4 +28,9 @@ class ViewController: NSViewController, TextAnnotationCanvas {
     let _ = textAnnotationCanvasMouseDown(event: event)
     super.mouseDown(with: event)
   }
+  
+  @IBAction func didSelectDelete(_ sender: AnyObject) {
+    selectedTextAnnotation?.delete()
+    print("delete")
+  }
 }
