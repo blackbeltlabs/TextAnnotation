@@ -1,11 +1,3 @@
-//
-//  ViewController.swift
-//  TextAnnotation
-//
-//  Created by Mirko Kiefer on 03/19/2019.
-//  Copyright (c) 2019 Mirko Kiefer. All rights reserved.
-//
-
 import Cocoa
 import TextAnnotation
 
@@ -25,14 +17,14 @@ class ViewController: NSViewController, TextAnnotationCanvas {
     annotation1.delegate = self
   }
   
-    override func viewDidAppear() {
-        super.viewDidAppear()
-        
-        let annotation = addTextAnnotation(text: "Another one", location: CGPoint(x: 150, y: 200))
-        annotation.delegate = self
-        annotation.startEditing()
-    }
+  override func viewDidAppear() {
+    super.viewDidAppear()
     
+    let annotation = addTextAnnotation(text: "Another one", location: CGPoint(x: 150, y: 200))
+    annotation.delegate = self
+    annotation.startEditing()
+  }
+  
   override func mouseDown(with event: NSEvent) {
     let _ = textAnnotationCanvasMouseDown(event: event)
     super.mouseDown(with: event)
@@ -57,3 +49,4 @@ extension ViewController: TextAnnotationDelegate {
     print("did move")
   }
 }
+

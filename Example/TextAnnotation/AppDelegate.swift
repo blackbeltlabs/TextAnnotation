@@ -1,11 +1,3 @@
-//
-//  AppDelegate.swift
-//  TextAnnotation
-//
-//  Created by Mirko Kiefer on 03/19/2019.
-//  Copyright (c) 2019 Mirko Kiefer. All rights reserved.
-//
-
 import Cocoa
 
 @NSApplicationMain

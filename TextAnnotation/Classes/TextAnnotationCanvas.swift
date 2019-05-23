@@ -23,7 +23,7 @@ extension TextAnnotationCanvas {
     
     self.selectedTextAnnotation = selectedTextAnnotation
   }
-    
+  
   public func addTextAnnotation(text: String, location: CGPoint) -> TextAnnotation {
     let annotation = TextContainerView(frame: NSRect(origin: location, size: CGSize.zero))
     annotation.text = text
@@ -45,7 +45,7 @@ extension TextAnnotationCanvas {
     var annotationToActivate: TextAnnotation?
     for annotation in textAnnotations {
       let locationInView = view.convert(screenPoint, to: annotation)
-
+      
       if annotation.frame.contains(locationInView) {
         annotationToActivate = annotation
         break
@@ -79,3 +79,4 @@ extension TextAnnotationCanvas {
     }
   }
 }
+
