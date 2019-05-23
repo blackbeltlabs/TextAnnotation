@@ -30,6 +30,10 @@ open class TextContainerView: NSView {
             
             var isActive: Bool = false
             if state == .inactive {
+                let selected = theTextView.selectedRange().upperBound
+                let range = NSRange(location: selected == 0 ? theTextView.string.count : selected, length: 0)
+                
+                theTextView.setSelectedRange(range)
                 theTextView.isEditable = false
                 doubleClickGestureRecognizer.isEnabled = !theTextView.isEditable
             } else {
@@ -45,6 +49,8 @@ open class TextContainerView: NSView {
             }
             
             singleClickGestureRecognizer.isEnabled = state == .inactive
+            
+            theTextView.isSelectable = isActive
             
             backgroundView.isHidden = !isActive
             backgroundView.display()
@@ -118,6 +124,7 @@ open class TextContainerView: NSView {
         textView.backgroundColor = NSColor.clear
         textView.textColor = Palette.controlFillColor
         textView.font = NSFont(name: "HelveticaNeue-Bold", size: 30)
+        textView.isSelectable = false
         textView.isRichText = false
         textView.usesRuler = false
         textView.usesFontPanel = false
@@ -215,10 +222,10 @@ open class TextContainerView: NSView {
     }
     
     @objc private func doubleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
-        guard let theTextView = textView, !theTextView.isEditable else { return }
+        guard let theTextView = textView else { return }
         
         state = .editing
-        theTextView.isEditable = true
+        startEditing()
         doubleClickGestureRecognizer.isEnabled = !theTextView.isEditable
         
         guard let responder = activateResponder else { return }
@@ -365,5 +372,24 @@ extension TextContainerView: MouseTrackingResponder {
   public func areaDidActivated(_ area: TextAnnotationArea) {
         guard let areaResponder = activeAreaResponder, state == .active else { return }
         areaResponder.areaDidActivated(area)
+    }
+}
+
+// Extension should be here bacause `var textView: TextView` is private property
+extension TextContainerView: TextAnnotation {
+    public func startEditing() {
+        var window: NSWindow? = NSApplication.shared.mainWindow
+        if window == nil {
+            let list = NSApplication.shared.windows
+            if !list.isEmpty {
+                window = list.first
+            }
+        }
+        
+        if let theWindow = window {
+            textView.isEditable = true
+            textView.isSelectable = true
+            theWindow.makeFirstResponder(textView)
+        }
     }
 }
