@@ -21,5 +21,9 @@ extension TextAnnotation {
   public func deselect() {
     state = .inactive
   }
+  
+  public func addTo(canvas: TextAnnotationCanvas) {
+    canvas.add(textAnnotation: self)
+  }
 }
 
