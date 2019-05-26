@@ -14,16 +14,16 @@ class ViewController: NSViewController, TextAnnotationCanvas {
     
     // Method supplied by TextAnnotationsController protocol implementation
     let annotation1 = createTextAnnotation(text: "Some text", location: location)
-    annotation1.addTo(canvas: self)
     annotation1.delegate = self
+    annotation1.addTo(canvas: self)
   }
   
   override func viewDidAppear() {
     super.viewDidAppear()
     
     let annotation = createTextAnnotation(text: "Another one", location: CGPoint(x: 150, y: 200))
-    annotation.addTo(canvas: self)
     annotation.delegate = self
+    annotation.addTo(canvas: self)
     annotation.startEditing()
   }
   
@@ -39,6 +39,14 @@ class ViewController: NSViewController, TextAnnotationCanvas {
 }
 
 extension ViewController: TextAnnotationDelegate {
+  func textAnnotationDidStartEditing(textAnnotation: TextAnnotation) {
+    print("did start editing")
+  }
+  
+  func textAnnotationDidEndEditing(textAnnotation: TextAnnotation) {
+    print("did end editing")
+  }
+  
   func textAnnotationDidSelect(textAnnotation: TextAnnotation) {
     print("did select")
   }
@@ -54,5 +62,7 @@ extension ViewController: TextAnnotationDelegate {
   func textAnnotationDidMove(textAnnotation: TextAnnotation) {
     print("did move")
   }
+  
+  
 }
 
