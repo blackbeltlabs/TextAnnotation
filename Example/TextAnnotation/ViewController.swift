@@ -43,6 +43,10 @@ extension ViewController: TextAnnotationDelegate {
     print("did select")
   }
   
+  func textAnnotationDidDeselect(textAnnotation: TextAnnotation) {
+    print("did deselect")
+  }
+  
   func textAnnotationDidEdit(textAnnotation: TextAnnotation) {
     print("did edit")
   }

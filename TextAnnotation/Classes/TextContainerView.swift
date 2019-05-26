@@ -29,6 +29,8 @@ open class TextContainerView: NSView {
         theTextView.setSelectedRange(range)
         theTextView.isEditable = false
         doubleClickGestureRecognizer.isEnabled = !theTextView.isEditable
+        
+        delegate?.textAnnotationDidDeselect(textAnnotation: self)
       } else {
         if state == .scaling {
           theTextView.calculateScaleRatio()
