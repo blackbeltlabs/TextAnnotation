@@ -48,7 +48,7 @@ extension ViewController: TextAnnotationDelegate {
   }
   
   func textAnnotationDidEdit(textAnnotation: TextAnnotation) {
-    print("did edit")
+    print("did edit: \(textAnnotation.text)")
   }
   
   func textAnnotationDidMove(textAnnotation: TextAnnotation) {

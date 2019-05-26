@@ -68,10 +68,13 @@ open class TextContainerView: NSView {
   weak var activateResponder: ActivateResponder?
   weak var activeAreaResponder: MouseTrackingResponder?
   
-  public var text: String = "" {
-    didSet {
+  public var text: String {
+    get {
+      return textView.string
+    }
+    set {
       guard let theTextView = textView else { return }
-      theTextView.string = text
+      theTextView.string = newValue
       updateFrameWithText(theTextView.string)
     }
   }
