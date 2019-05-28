@@ -229,7 +229,6 @@ open class TextContainerView: NSView {
   }
   
   @objc private func doubleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
-    guard let theTextView = textView else { return }
     startEditing()
   }
   
