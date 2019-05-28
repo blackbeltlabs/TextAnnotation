@@ -1,6 +1,6 @@
 import Cocoa
 
-public protocol TextAnnotationCanvas: ActivateResponder, MouseTrackingResponder {
+public protocol TextAnnotationCanvas: ActivateResponder, MouseTrackingResponder where Self: TextAnnotationDelegate {
   var view: NSView { get }
   var textAnnotations: [TextAnnotation] { get set }
   var selectedTextAnnotation: TextAnnotation? { get set }
@@ -60,7 +60,8 @@ extension TextAnnotationCanvas {
       set(selectedTextAnnotation: nil)
       let newAnnotation = createTextAnnotation(text: "", location: screenPoint)
       newAnnotation.addTo(canvas: self)
-      selectedTextAnnotation?.startEditing()
+      newAnnotation.delegate = self
+      newAnnotation.startEditing()
     }
   }
 }

@@ -230,13 +230,7 @@ open class TextContainerView: NSView {
   
   @objc private func doubleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
     guard let theTextView = textView else { return }
-    
-    state = .editing
     startEditing()
-    doubleClickGestureRecognizer.isEnabled = !theTextView.isEditable
-    
-    guard let responder = activateResponder else { return }
-    responder.textViewDidActivate(self)
   }
   
   private func updateFrameWithText(_ string: String) {
@@ -382,20 +376,15 @@ extension TextContainerView: MouseTrackingResponder {
 // Extension should be here bacause `var textView: TextView` is private property
 extension TextContainerView: TextAnnotation {
   public func startEditing() {
-    var window: NSWindow? = NSApplication.shared.mainWindow
-    if window == nil {
-      let list = NSApplication.shared.windows
-      if !list.isEmpty {
-        window = list.first
-      }
-    }
+    state = .editing
     
-    if let theWindow = window {
-      textView.isEditable = true
-      textView.isSelectable = true
-      theWindow.makeFirstResponder(textView)
-    }
+    doubleClickGestureRecognizer.isEnabled = !textView.isEditable
+    
+    guard let responder = activateResponder else { return }
+    responder.textViewDidActivate(self)
+    
+    textView.isEditable = true
+    textView.isSelectable = true
+    textView.window?.makeFirstResponder(textView)
   }
 }
-
-
