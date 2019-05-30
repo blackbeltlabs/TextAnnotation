@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'TextAnnotation'
-  s.version          = '0.4.2'
+  s.version          = '0.4.3'
   s.summary          = 'Swift text annotation component for macOS.'
   s.description      = <<-DESC
 Text component that behaves like typical drawing or annotation apps require.
