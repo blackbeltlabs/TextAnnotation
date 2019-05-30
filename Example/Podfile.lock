@@ -1,5 +1,5 @@
 PODS:
-  - TextAnnotation (0.1.0)
+  - TextAnnotation (0.4.2)
 
 DEPENDENCIES:
   - TextAnnotation (from `../`)
@@ -9,8 +9,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  TextAnnotation: b136f9dab699d6c1485f5a6e27d148ff52b83d08
+  TextAnnotation: e9f1f38f9ee5fc7acc895a8a418c46f7f295b5cd
 
 PODFILE CHECKSUM: 1e678a16d5bacffdffbfaf2975293583b01dfd64
 
-COCOAPODS: 1.6.0.beta.1
+COCOAPODS: 1.7.0
