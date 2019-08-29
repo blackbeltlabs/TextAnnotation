@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol TextAnnotationAction {
+public protocol TextAnnotationAction: Codable {
   var text: String { get }
   var frameUndo: CGRect { get }
 	var frameRedo: CGRect { get set}
@@ -46,7 +46,7 @@ public struct TextAnnotationActionScaling: TextAnnotationAction {
 }
 
 // MARK: - Resize
-enum TextAnnotationResizeType {
+enum TextAnnotationResizeType: String, Codable {
 	case left
 	case right
 }
