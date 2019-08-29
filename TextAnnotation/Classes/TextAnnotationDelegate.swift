@@ -6,5 +6,8 @@ public protocol TextAnnotationDelegate {
   func textAnnotationDidStartEditing(textAnnotation: TextAnnotation)
   func textAnnotationDidEndEditing(textAnnotation: TextAnnotation)
   func textAnnotationDidEdit(textAnnotation: TextAnnotation)
-  func textAnnotationDidMove(textAnnotation: TextAnnotation)
+	func textAnnotationDidMove(textAnnotation: TextAnnotation)
+	func textAnnotationDidActionPerformed(textAnnotation: TextAnnotation,
+																				action: TextAnnotationAction,
+																				allActions: [TextAnnotationAction])
 }

@@ -24,10 +24,23 @@ open class TextContainerView: NSView {
       var isActive: Bool = false
       
       if state == .editing {
+        textSnapshot = text
+        frameSnapshot = frame
         delegate?.textAnnotationDidStartEditing(textAnnotation: self)
       }
       
       if oldValue == .editing {
+				if textSnapshot != text {
+					let action = TextAnnotationActionTextEditing(text: text,
+																											 frameUndo: frameSnapshot,
+																											 frameRedo: frame,
+																											 oldText: textSnapshot)
+					actions.save(action)
+					delegate?.textAnnotationDidActionPerformed(textAnnotation: self,
+																										 action: action,
+																										 allActions: actions.undoActionsArray)
+				}
+				
         delegate?.textAnnotationDidEndEditing(textAnnotation: self)
       }
       
@@ -85,13 +98,15 @@ open class TextContainerView: NSView {
       guard let theTextView = textView else { return }
       theTextView.string = newValue
       updateFrameWithText(theTextView.string)
+      textSnapshot = newValue
     }
   }
   var leftTally: MouseTrackingView?
   var rightTally: MouseTrackingView?
   var scaleTally: KnobView?
   
-  
+	private(set) var actions: HistoryClass<TextAnnotationAction> = HistoryClass()
+
   // MARK: Private
   
   private var backgroundView: SelectionView!
@@ -104,6 +119,10 @@ open class TextContainerView: NSView {
   private var doubleClickGestureRecognizer: NSClickGestureRecognizer!
   
   private var lastMouseLocation: NSPoint?
+  private var lastMouseDownLocation: NSPoint?
+  private var frameSnapshot: CGRect = .zero
+  private var textSnapshot: String = ""
+  
   private var didMove = false
   
   private var cursorSet = CursorSet.shared
@@ -178,39 +197,40 @@ open class TextContainerView: NSView {
     state = mouseDownState(location: mouseLocation)
     
     lastMouseLocation = event.locationInWindow
+    lastMouseDownLocation = event.locationInWindow
+    frameSnapshot = frame
+    textView.makeFontSnapshot()
+    print("Mouse down")
   }
   
+  
   open override func mouseDragged(with event: NSEvent) {
-    guard let lastMouseLocation = lastMouseLocation else {
-      return
+    guard let difference = getDifference(with: event,
+                                         lastMouseLocation: lastMouseLocation) else {
+                                          return
     }
-    
-    let locationInWindow = event.locationInWindow
-    
-    let difference = CGSize(
-      width: locationInWindow.x - lastMouseLocation.x,
-      height: locationInWindow.y - lastMouseLocation.y
-    )
     
     if difference.width > 0 || difference.height > 0 {
       didMove = true
     }
     
-    self.lastMouseLocation = locationInWindow
+    self.lastMouseLocation = event.locationInWindow
     
     switch state {
     case .active:
       move(difference: difference)
     case .resizeLeft, .resizeRight:
-      resize(distance: difference.width)
+      resize(distance: difference.width, state: state)
     case .scaling:
-      scale(difference: difference)
+      scale(difference: difference, state: state)
       cursorSet.scaleCursor.set()
     default: return
     }
   }
   
   open override func mouseUp(with event: NSEvent) {
+    addMouseUpEventToHistory(event: event,
+                             state: state)
     state = .active
     
     if didMove {
@@ -219,6 +239,8 @@ open class TextContainerView: NSView {
     }
     
     lastMouseLocation = nil
+    lastMouseDownLocation = nil
+    textView.deleteFontSnapshot()
   }
   
   @objc private func singleClickGestureHandle(_ gesture: NSClickGestureRecognizer) {
@@ -281,6 +303,177 @@ open class TextContainerView: NSView {
     }
   }
   
+  // MARK: - Helpers
+  
+  private func addMouseUpEventToHistory(event: NSEvent, state: TextAnnotationState) {
+    print("Mouse up. State = \(state)")
+    guard let difference = getDifference(with: event,
+                                         lastMouseLocation: lastMouseDownLocation) else {
+                                          return
+    }
+		
+		var action: TextAnnotationAction?
+		
+    
+    switch state {
+    case .active:
+			action = TextAnnotationActionDragging(text: text,
+																						frameUndo: frameSnapshot,
+																						frameRedo: frame,
+																						difference: difference)
+    case .resizeLeft, .resizeRight:
+			action = TextAnnotationActionResize(text: text,
+																					frameUndo: frameSnapshot,
+																					frameRedo: frame,
+																					resizeType: state == .resizeLeft ? .left : .right,
+																					distance: difference.width)
+    case .scaling:
+      let lastFont = textView.lastFontSnapshot
+			let currentFont = textView.currentFontSnapshot
+			action = TextAnnotationActionScaling(text: text,
+																					 frameUndo: frameSnapshot,
+																					 frameRedo: frame,
+																					 difference: difference,
+																					 undoFontName: lastFont?.name,
+																					 undoFontSize: lastFont?.size,
+																					 redoFontName: currentFont.name,
+																					 redoFontSize: currentFont.size)
+    default:
+      print("Do nothing")
+    }
+		
+		if let action = action {
+			actions.save(action)
+			delegate?.textAnnotationDidActionPerformed(textAnnotation: self,
+																								 action: action,
+																								 allActions: actions.undoActionsArray)
+		}
+  }
+  
+  public func performUndo() {
+    guard let event = actions.undo() else {
+      print("Actions are empty. Nothing to undo")
+      return
+    }
+		print("Trying undo = \(event)")
+		performHistoryAction(action: event,
+												 actionType: .undo)
+  }
+	
+	public func performRedo() {
+		guard let event = actions.redo() else {
+			print("Actions are empty. Nothing to redo")
+			return
+		}
+		print("Trying redo = \(event)")
+		performHistoryAction(action: event,
+												 actionType: .redo)
+	}
+	
+	public func performRedoAllActions() {
+		while let event = actions.redo() {
+			performHistoryAction(action: event,
+													 actionType: .redo)
+		}
+		
+	}
+	
+	public func setState(with actions: [TextAnnotationAction]) {
+		for action in actions {
+			performHistoryAction(action: action,
+													 actionType: .redo)
+		}
+	}
+  
+	func performHistoryAction(action: TextAnnotationAction,
+														actionType: TextAnnotationActionDirectionType) {
+    switch action {
+    case let dragging as TextAnnotationActionDragging:
+			let difference = getDifference(difference: dragging.difference,
+																		 actionType: actionType)
+      move(difference: difference)
+    case let resizing as TextAnnotationActionResize:
+      let resizeType: TextAnnotationState = resizing.resizeType == .left ? .resizeLeft : .resizeRight
+			let distance = getDistance(distance: resizing.distance,
+																 actionType: actionType)
+      resize(distance: distance,
+             state: resizeType)
+      self.frame = getFrame(action: action, actionType: actionType)
+    case let scaling as TextAnnotationActionScaling:
+			let difference = getDifference(difference: scaling.difference,
+																		 actionType: actionType)
+      scale(difference: difference, state: .scaling)
+			let font = getFont(action: scaling, actionType: actionType)
+      if let oldFontName = font?.name, let oldFontSize = font?.size {
+        textView.font = NSFont(name: oldFontName, size: oldFontSize)
+      }
+			self.frame = getFrame(action: action, actionType: actionType)
+    case let textEditing as TextAnnotationActionTextEditing:
+			if actionType == .undo {
+      	text = textEditing.oldText
+			} else {
+				text = textEditing.text
+			}
+			self.frame = getFrame(action: action, actionType: actionType)
+    default:
+      print("Unknown event to undo")
+    }
+  }
+	
+	// MARK: - Redo / undo helpers
+	
+  private func getDifference(with event: NSEvent,
+                             lastMouseLocation: NSPoint?) -> CGSize? {
+    guard let lastMouseLocation = lastMouseLocation else {
+      return nil
+    }
+  
+    let locationInWindow = event.locationInWindow
+    return CGSize(width: locationInWindow.x - lastMouseLocation.x,
+                  height: locationInWindow.y - lastMouseLocation.y)
+  }
+  
+  private func reverseDifference(size: CGSize) -> CGSize {
+    return CGSize(width: size.width * -1.0, height: size.height * -1.0)
+  }
+	
+	private func getDifference(difference: CGSize,
+														 actionType: TextAnnotationActionDirectionType) -> CGSize {
+		switch actionType {
+		case .undo:
+			return reverseDifference(size: difference)
+		case .redo:
+			return difference
+		}
+	}
+	
+	private func getDistance(distance: CGFloat,
+													 actionType: TextAnnotationActionDirectionType) -> CGFloat {
+		switch actionType {
+		case .undo:
+			return -distance
+		case .redo:
+			return distance
+		}
+	}
+	
+	private func getFrame(action: TextAnnotationAction,
+												actionType: TextAnnotationActionDirectionType) -> CGRect {
+		return actionType == .redo ? action.frameRedo : action.frameUndo
+	}
+	
+	private func getFont(action: TextAnnotationActionScaling,
+											 actionType: TextAnnotationActionDirectionType) -> FontSnapshot? {
+		switch actionType {
+		case .undo:
+			if let fontName = action.undoFontName, let fontSize = action.undoFontSize {
+				return FontSnapshot(name: fontName, size: fontSize)
+			} else { return nil }
+		case .redo:
+			return FontSnapshot(name: action.redoFontName, size: action.redoFontSize)
+		}
+	}
+  
   // MARK: - Public
   
   func move(difference: CGSize) {
@@ -293,7 +486,7 @@ open class TextContainerView: NSView {
     frame = newFrame
   }
   
-  public func resize(distance: CGFloat) {
+  public func resize(distance: CGFloat, state: TextAnnotationState) {
     guard state == .resizeRight || state == .resizeLeft else { return }
     
     var theFrame = frame
@@ -322,7 +515,7 @@ open class TextContainerView: NSView {
     frame = theFrame
   }
   
-  public func scale(difference: CGSize) {
+  public func scale(difference: CGSize, state: TextAnnotationState) {
     guard state == .scaling else { return }
     
     // we should scale it proportionally, driver of the mpvement is height difference
@@ -334,7 +527,7 @@ open class TextContainerView: NSView {
     
     frame = CGRect(origin: CGPoint(x: frame.origin.x, y: frame.origin.y + difference.height),
                    size: CGSize(width: width, height: height))
-    textView.resetFontSize()
+    textView.resetFontSize()    
   }
   
   public func mouseDownState(location: NSPoint) -> TextAnnotationState {

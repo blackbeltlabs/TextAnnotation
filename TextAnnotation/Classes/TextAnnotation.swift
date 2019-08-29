@@ -7,6 +7,11 @@ public protocol TextAnnotation where Self: NSView {
   var state: TextAnnotationState { get set }
   
   func startEditing()
+  
+  func performUndo()
+	func performRedo()
+	func performRedoAllActions()
+	func setState(with actions: [TextAnnotationAction])
 }
 
 extension TextAnnotation {
