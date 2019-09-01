@@ -79,11 +79,11 @@ class TextView: NSTextView {
     return font ?? NSFont.systemFont(ofSize: 15)
   }
 	
-	public var currentFontSnapshot: FontSnapshot {
-		let currentFont = getFont()
-		return FontSnapshot(name: currentFont.fontName,
-												size: currentFont.pointSize)
-	}
+  public var currentFontSnapshot: FontSnapshot {
+    let currentFont = getFont()
+    return FontSnapshot(name: currentFont.fontName,
+                        size: currentFont.pointSize)
+  }
   
   public func makeFontSnapshot() {
     lastFontSnapshot = currentFontSnapshot
