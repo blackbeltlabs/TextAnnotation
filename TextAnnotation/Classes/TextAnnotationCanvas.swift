@@ -25,10 +25,9 @@ extension TextAnnotationCanvas {
   }
   
   public func createTextAnnotation(text: String, location: CGPoint) -> TextAnnotation {
-    let annotation = TextContainerView(frame: NSRect(origin: location, size: CGSize.zero))
-    if !text.isEmpty {
-      annotation.text = text
-    }
+    let annotation = TextContainerView(frame: NSRect(origin: location, size: CGSize.zero),
+                                       text: text)
+
     annotation.activateResponder = self
     annotation.activeAreaResponder = self
     

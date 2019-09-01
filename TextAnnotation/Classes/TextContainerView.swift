@@ -135,11 +135,17 @@ open class TextContainerView: NSView {
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
     performSubfieldsInit(frameRect: frameRect)
-    self.updateFrameWithText("")
+    self.text = ""
   }
   
   required public init?(coder decoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  
+  public init(frame frameRect: NSRect, text: String) {
+    super.init(frame: frameRect)
+    performSubfieldsInit(frameRect: frameRect)
+    self.text = text
   }
 
   init(modelable: TextAnnotationModelable) {
