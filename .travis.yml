@@ -1,6 +1,5 @@
 os: osx
 osx_image: xcode10.2
-podfile: Example/Podfile
 env:
   global:
   - WORKSPACE=Example/TextAnnotation.xcworkspace
@@ -14,7 +13,6 @@ env:
 install:
   - sudo gem install cocoapods --pre
   - pod repo update
-  - pod install
 script:
   - set -o pipefail
   - xcodebuild -version
