@@ -35,7 +35,8 @@ open class TextContainerView: NSView {
           let action = TextAnnotationAction(text: text,
                                             frame: frame,
                                             fontName: textView.getFont().fontName,
-                                            fontSize: textView.getFont().pointSize)
+                                            fontSize: textView.getFont().pointSize,
+                                            color: textColor)
           textUpdateDelegate?.textAnnotationUpdated(textAnnotation: self,
                                                     modelable: action)
 				}
@@ -124,6 +125,8 @@ open class TextContainerView: NSView {
   
   private var cursorSet = CursorSet.shared
   
+  private let textColor: TextColor
+  
   override open var frame: NSRect {
     didSet {
       updateSubviewsFrames(oldValue, frame: frame)
@@ -133,6 +136,7 @@ open class TextContainerView: NSView {
   // MARK: - Init
   
   override init(frame frameRect: NSRect) {
+    self.textColor = TextColor.defaultColor()
     super.init(frame: frameRect)
     performSubfieldsInit(frameRect: frameRect)
     self.text = ""
@@ -142,13 +146,15 @@ open class TextContainerView: NSView {
     fatalError("init(coder:) has not been implemented")
   }
   
-  public init(frame frameRect: NSRect, text: String) {
+  public init(frame frameRect: NSRect, text: String, color: TextColor) {
+    self.textColor = color
     super.init(frame: frameRect)
     performSubfieldsInit(frameRect: frameRect)
     self.text = text
   }
 
   init(modelable: TextAnnotationModelable) {
+    self.textColor = modelable.color
     super.init(frame: modelable.frame)
     performSubfieldsInit(frameRect: modelable.frame)
     updateFrame(with: modelable)
@@ -164,7 +170,10 @@ open class TextContainerView: NSView {
     textView = TextView(frame: NSRect.zero, responder: self)
     textView.alignment = .natural
     textView.backgroundColor = NSColor.clear
-    textView.textColor = Palette.controlFillColor
+    textView.textColor = NSColor(red: textColor.red,
+                                 green: textColor.green,
+                                 blue: textColor.blue,
+                                 alpha: textColor.alpha)
     textView.font = NSFont(name: "HelveticaNeue-Bold", size: 30)
     textView.isSelectable = false
     textView.isRichText = false
@@ -338,7 +347,8 @@ open class TextContainerView: NSView {
       let action                              = TextAnnotationAction(text: text,
                                                                         frame: frame,
                                                                         fontName: font.fontName,
-                                                                        fontSize: font.pointSize)
+                                                                        fontSize: font.pointSize,
+                                                                        color: textColor)
       textUpdateDelegate?.textAnnotationUpdated(textAnnotation: self,
                                                 modelable: action)
     default:

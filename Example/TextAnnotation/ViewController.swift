@@ -13,7 +13,9 @@ class ViewController: NSViewController, TextAnnotationCanvas {
     let location = CGPoint(x: 100, y: 150)
     
     // Method supplied by TextAnnotationsController protocol implementation
-    let annotation1 = createTextAnnotation(text: "Some text", location: location)
+    let annotation1 = createTextAnnotation(text: "Some text",
+                                           location: location,
+                                           color: TextColor(red: 0.23, green: 0.83, blue: 0.76, alpha: 1.0))
     annotation1.delegate = self
     annotation1.addTo(canvas: self)
   }
@@ -21,7 +23,9 @@ class ViewController: NSViewController, TextAnnotationCanvas {
   override func viewDidAppear() {
     super.viewDidAppear()
     
-    let annotation = createTextAnnotation(text: "Another one", location: CGPoint(x: 150, y: 200))
+    let annotation = createTextAnnotation(text: "Another one",
+                                          location: CGPoint(x: 150, y: 200),
+                                          color: TextColor.defaultColor())
     annotation.delegate = self
     annotation.addTo(canvas: self)
     annotation.startEditing()
