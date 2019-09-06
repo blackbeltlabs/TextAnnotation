@@ -1,6 +1,6 @@
 os: osx
 osx_image: xcode10.2
-podfile: path/to/Podfile
+podfile: Example/Podfile
 env:
   global:
   - WORKSPACE=Example/TextAnnotation.xcworkspace
