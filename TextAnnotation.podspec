@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'TextAnnotation'
-  s.version          = '0.4.3'
+  s.version          = '0.5.0'
   s.summary          = 'Swift text annotation component for macOS.'
   s.description      = <<-DESC
 Text component that behaves like typical drawing or annotation apps require.
@@ -16,7 +16,7 @@ Text component that behaves like typical drawing or annotation apps require.
 
   s.platform = :osx
   s.osx.deployment_target = "10.13"
-  s.swift_version = "4.2"
+  s.swift_version = "5.0"
 
   s.source_files = 'TextAnnotation/Classes/**/*'
   s.resources = 'TextAnnotation/Assets/**/*'
