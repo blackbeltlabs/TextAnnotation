@@ -1,10 +1,3 @@
-//
-//  CustomSwitch.swift
-//  Annotations
-//
-//  Created by Lukasz Dworakowski on 06/05/2020.
-//
-
 import Foundation
 
 public class CustomSwitch: NSControl {
