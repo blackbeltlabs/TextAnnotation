@@ -159,9 +159,9 @@
 		408FCF1D8C9AB42867B98536DB7265E5 /* TextAnnotation */ = {
 			isa = PBXGroup;
 			children = (
-				6502C60124698C9300FF93A9 /* CustomSwitch.swift */,
 				23F69A53C2A90BD736B23714F6E6BCAC /* Constants.swift */,
 				FBED14455C13A0166DECAB279D333F16 /* CursorSet.swift */,
+				6502C60124698C9300FF93A9 /* CustomSwitch.swift */,
 				56A7EA730251F396F48B1B2971156576 /* KnobView.swift */,
 				C40C5D8538643DB1F71ACCE7BE64B8FC /* MouseTrackingView.swift */,
 				7EAA858CD2BEBBF94783834E7692A3D0 /* NSColorExtension.swift */,
