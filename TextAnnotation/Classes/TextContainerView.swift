@@ -284,7 +284,7 @@ open class TextContainerView: NSView {
       resize(distance: difference.width, state: state)
     case .scaling:
       scale(difference: difference, state: state)
-      cursorSet.scaleCursor.set()
+      cursorSet.defaultCursor.set()
     default: return
     }
   }
@@ -362,8 +362,12 @@ open class TextContainerView: NSView {
     }
     
     if let tally = scaleTally {
-      tallyFrame.origin = CGPoint(x: size.width - (Configuration.frameMargin + 2*Configuration.dotRadius), y: Configuration.frameMargin)
-      tallyFrame.size = CGSize(width: 2*Configuration.dotRadius, height: 2*Configuration.dotRadius)
+      tallyFrame.origin = CGPoint(
+        x: size.width / 2 - Configuration.dotRadius,
+        y: Configuration.frameMargin)
+      tallyFrame.size = CGSize(
+        width: 2 * Configuration.dotRadius,
+        height: 2 * Configuration.dotRadius)
       tally.frame = tallyFrame
     }
   }
@@ -373,7 +377,7 @@ open class TextContainerView: NSView {
 
     self.text = action.text
     if action.frame.size.width != 0 && action.frame.size.height != 0 {
-      self.frame = action.frame
+      self.frame = action.frame.integral
     }
     
     
@@ -452,13 +456,13 @@ open class TextContainerView: NSView {
     
     // we should scale it proportionally, driver of the mpvement is height difference
     var height = frame.height - difference.height
-    var width = frame.width/frame.height * height
+    var width = frame.width
     
     width = width < kMinimalWidth ? kMinimalWidth : width
     height = height < kMinimalHeight ? kMinimalHeight : height
     
     frame = CGRect(origin: CGPoint(x: frame.origin.x, y: frame.origin.y + difference.height),
-                   size: CGSize(width: width, height: height))
+                   size: CGSize(width: width, height: height)).integral
     textView.resetFontSize()    
   }
   
