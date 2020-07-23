@@ -332,10 +332,12 @@ open class TextContainerView: NSView {
     let height = textFrame.height
     
     // Now we know text label frame. We should calculate new self.frame and redraw all the subviews
-    textFrame = CGRect(x: frame.minX,
-                       y: center.y - height/2.0 - (Configuration.frameMargin + Configuration.horizontalTextPadding),
-                       width: width + 2*(Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding),
-                       height: height + 2*(Configuration.frameMargin + Configuration.horizontalTextPadding))
+    textFrame = CGRect(
+      x: frame.minX,
+      y: center.y - height/2.0 - (Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding),
+      width: width + 2*(Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding),
+      height: height + 2*(Configuration.frameMargin + Configuration.horizontalTextPadding + Configuration.dotRadius)
+    )
     
     frame = textFrame
   }
