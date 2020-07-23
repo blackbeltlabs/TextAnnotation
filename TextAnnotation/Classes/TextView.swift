@@ -129,6 +129,10 @@ extension NSTextView {
 }
 
 extension NSFont {
+  static func smallestFont(with fontDescriptor: NSFontDescriptor) -> NSFont? {
+    NSFont(descriptor: fontDescriptor, size: CGFloat(1))
+  }
+  
   var lineHeight: CGFloat {
     CGFloat(ceilf(Float(ascender + abs(descender) + leading)))
   }
@@ -140,6 +144,8 @@ extension NSFont {
     let properBounds = CGRect(origin: .zero, size: bounds)
     let largestFontSize = Int(bounds.height)
     let constrainingBounds = CGSize(width: properBounds.width, height: CGFloat.infinity)
+    
+    guard largestFontSize > 0 else { return NSFont.smallestFont(with: fontDescriptor) }
 
     let bestFittingFontSize: Int? = (1...largestFontSize).reversed().first(where: { fontSize in
 
@@ -158,7 +164,9 @@ extension NSFont {
       return false
     })
 
-    guard let fontSize = bestFittingFontSize else { return nil }
+    guard let fontSize = bestFittingFontSize else {
+      return NSFont.smallestFont(with: fontDescriptor)
+    }
 
     return NSFont(descriptor: fontDescriptor, size: CGFloat(fontSize))
   }
