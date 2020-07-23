@@ -188,7 +188,6 @@ open class TextContainerView: NSView {
     textView.isVerticallyResizable = false
     textView.typingAttributes = defaultAttributes()
     textView.delegate = self
-    textView.backgroundColor = .yellow
     
     singleClickGestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(self.singleClickGestureHandle(_:)))
     self.addGestureRecognizer(singleClickGestureRecognizer)
