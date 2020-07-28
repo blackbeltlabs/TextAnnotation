@@ -108,7 +108,7 @@ open class TextContainerView: NSView {
   private var switchView: CustomSwitch!
   
   private let kMinimalWidth: CGFloat = 25 + 2*Configuration.frameMargin + 2*Configuration.dotRadius
-  private let kMinimalHeight: CGFloat = 25
+  private let kMinimalHeight: CGFloat = 70
   
   private var singleClickGestureRecognizer: NSClickGestureRecognizer!
   private var doubleClickGestureRecognizer: NSClickGestureRecognizer!
@@ -332,10 +332,12 @@ open class TextContainerView: NSView {
     let height = textFrame.height
     
     // Now we know text label frame. We should calculate new self.frame and redraw all the subviews
-    textFrame = CGRect(x: frame.minX,
-                       y: center.y - height/2.0 - (Configuration.frameMargin + Configuration.horizontalTextPadding),
-                       width: width + 2*(Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding),
-                       height: height + 2*(Configuration.frameMargin + Configuration.horizontalTextPadding))
+    textFrame = CGRect(
+      x: frame.minX,
+      y: center.y - height/2.0 - (Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding),
+      width: width + 2*(Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding),
+      height: height + 2*(Configuration.frameMargin + Configuration.horizontalTextPadding + Configuration.dotRadius)
+    )
     
     frame = textFrame
   }
@@ -348,7 +350,12 @@ open class TextContainerView: NSView {
     let size = frame.size
     
     backgroundView.frame = CGRect(origin: CGPoint.zero, size: size)
-    textView.frame = CGRect(x: Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding, y: Configuration.frameMargin + Configuration.horizontalTextPadding, width: size.width - 2*(Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding), height: size.height - 2 * (Configuration.frameMargin + Configuration.horizontalTextPadding))
+    textView.frame = CGRect(
+      x: Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding,
+      y: Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding,
+      width: size.width - 2*(Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding),
+      height: size.height - 2 * (Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding)
+    )
     
     var tallyFrame = NSRect(origin: CGPoint.zero, size: CGSize(width: Configuration.frameMargin + 2*Configuration.dotRadius, height: size.height))
     if let tally = leftTally {
