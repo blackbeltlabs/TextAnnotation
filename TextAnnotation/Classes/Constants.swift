@@ -1,7 +1,7 @@
 import Cocoa
 
 struct Configuration {
-  static let controlStrokeWidth: CGFloat = 4
+  static let controlStrokeWidth: CGFloat = 3
   static let frameMargin: CGFloat = 22
   static let dotRadius: CGFloat = 7
   static let scaleTallyRadius: CGFloat = 9

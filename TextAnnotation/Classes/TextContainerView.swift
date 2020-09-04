@@ -301,7 +301,7 @@ open class TextContainerView: NSView {
   private func updateMouseCursorForMovement(with event: NSEvent) {
     let mouseLocation = self.convert(event.locationInWindow, from: nil)
     if backgroundView.currentSelectionFrame.contains(mouseLocation) {
-      NSCursor.resizeLeftRight.set()
+      cursorSet.moveCursor.set()
     } else if !isMoving {
       cursorSet.defaultCursor.set()
       print("Set cursor as arrow")

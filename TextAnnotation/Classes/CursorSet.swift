@@ -15,5 +15,10 @@ class CursorSet {
     guard let image = Bundle(for: CursorSet.self).image(forResource: "North-West-South-East") else { return NSCursor.crosshair }
     return NSCursor(image: image, hotSpot: NSPoint(x: 9, y: 9))
   }()
+  
+  lazy var moveCursor: NSCursor = {
+    guard let image = Bundle(for: CursorSet.self).image(forResource: "Arrows") else { return NSCursor.crosshair }
+    return NSCursor(image: image, hotSpot: NSPoint(x: 7, y: 7))
+  }()
 }
 
