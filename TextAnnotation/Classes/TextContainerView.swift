@@ -78,8 +78,6 @@ open class TextContainerView: NSView {
         tally.isHidden = !isActive
         tally.display()
       }
-      
-      switchView.isHidden = state == .inactive
     }
   }
   
@@ -105,7 +103,6 @@ open class TextContainerView: NSView {
   
   private var backgroundView: SelectionView!
   private var textView: TextView!
-  private var switchView: CustomSwitch!
   
   private let kMinimalWidth: CGFloat = 25 + 2*Configuration.frameMargin + 2*Configuration.dotRadius
   private let kMinimalHeight: CGFloat = 70
@@ -191,7 +188,7 @@ open class TextContainerView: NSView {
     textView.usesFontPanel = false
     textView.isEditable = false
     textView.isVerticallyResizable = false
-    textView.typingAttributes = defaultAttributes()
+    textView.typingAttributes = defaultOutlineAttributes()
     textView.delegate = self
     
     singleClickGestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(self.singleClickGestureHandle(_:)))
@@ -221,12 +218,9 @@ open class TextContainerView: NSView {
     addSubview(tally)
     scaleTally = tally
     
-    switchView = CustomSwitch(frame: CGRect(x: 0, y: 0, width: 64, height: 20))
-    switchView.bounds = switchView.frame
-    switchView.target = self
-    switchView.action = #selector(switchViewValudChanged(sender:))
-    switchView.isHidden = true
-    addSubview(switchView)
+    wantsLayer = true
+    layer?.borderColor = NSColor.black.cgColor
+    layer?.borderWidth = 1.0
   }
   
   func defaultAttributes() -> [NSAttributedString.Key: Any] {

@@ -2,7 +2,7 @@ import Cocoa
 
 struct Configuration {
   static let controlStrokeWidth: CGFloat = 1
-  static let frameMargin: CGFloat = 22
+  static let frameMargin: CGFloat = 5
   static let dotRadius: CGFloat = 5
   static let horizontalTextPadding: CGFloat = 2
 }
