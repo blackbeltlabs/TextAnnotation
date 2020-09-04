@@ -138,7 +138,10 @@ open class TextContainerView: NSView {
   
   public var textColor: TextColor {
     set {
-      textView.textColor = NSColor.color(from: newValue)
+      let nsColor = NSColor.color(from: newValue)
+      textView.textColor = nsColor
+      textView.insertionPointColor = nsColor
+
       notifyAboutTextAnnotationUpdates()
     }
     
@@ -190,10 +193,12 @@ open class TextContainerView: NSView {
     textView = TextView(frame: NSRect.zero, responder: self)
     textView.alignment = .natural
     textView.backgroundColor = NSColor.clear
-    textView.textColor = NSColor(red: textColor.red,
-                                 green: textColor.green,
-                                 blue: textColor.blue,
-                                 alpha: textColor.alpha)
+    let nsColor = NSColor(red: textColor.red,
+                          green: textColor.green,
+                          blue: textColor.blue,
+                          alpha: textColor.alpha)
+    textView.textColor = nsColor
+    textView.insertionPointColor = nsColor
     textView.font = NSFont(name: "HelveticaNeue-Bold", size: 30)
     textView.isSelectable = false
     textView.isRichText = false
