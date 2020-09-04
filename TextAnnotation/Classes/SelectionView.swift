@@ -19,11 +19,11 @@ class SelectionView: NSView {
     
     let side = 2*Configuration.dotRadius - Configuration.controlStrokeWidth
     
-    // left
-    var squareRect = CGRect(x: Configuration.frameMargin,
-                            y: (dirtyRect.height - Configuration.dotRadius)/2,
+    var squareRect = CGRect(x: padding - side / 2.0,
+                            y: dirtyRect.height / 2.0 - side / 2.0,
                             width: side,
                             height: side)
+    
     var path = NSBezierPath(ovalIn: squareRect)
     Palette.controlFillColor.setFill()
     path.fill()
@@ -32,8 +32,8 @@ class SelectionView: NSView {
     path.stroke()
     
     // right
-    squareRect = CGRect(x: dirtyRect.width - (Configuration.frameMargin + 2*Configuration.dotRadius),
-                        y: (dirtyRect.height - Configuration.dotRadius)/2,
+    squareRect = CGRect(x: dirtyRect.width - padding - side / 2.0,
+                        y: dirtyRect.height / 2.0 - side / 2.0,
                         width: side,
                         height: side)
     path = NSBezierPath(ovalIn: squareRect)
