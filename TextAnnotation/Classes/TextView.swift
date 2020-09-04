@@ -13,6 +13,8 @@ class TextView: NSTextView {
   
   private weak var activeAreaResponder: MouseTrackingResponder?
   
+  var cursorWidth: CGFloat = 2.0
+  
   // MARK: Private
   
   private var fontSizeToSizeRatio: CGFloat!
@@ -101,6 +103,22 @@ class TextView: NSTextView {
     }
     
     return numberOfLines
+  }
+  
+  // MARK: - Cursor
+  
+  // Taken from here -> https://christiantietze.de/posts/2017/08/nstextview-fat-caret/
+  override func drawInsertionPoint(in rect: NSRect, color: NSColor, turnedOn flag: Bool) {
+    var updatedRect = rect
+    updatedRect.size.width = cursorWidth
+    super.drawInsertionPoint(in: updatedRect, color: color, turnedOn: flag)
+
+  }
+
+  override func setNeedsDisplay(_ rect: NSRect, avoidAdditionalLayout flag: Bool) {
+    var rect = rect
+    rect.size.width += cursorWidth - 1
+    super.setNeedsDisplay(rect, avoidAdditionalLayout: flag)
   }
 }
 
