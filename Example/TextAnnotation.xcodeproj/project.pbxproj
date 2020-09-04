@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6F6EFF79250155B800CF71DC /* TextContainerView_Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6EFF78250155B800CF71DC /* TextContainerView_Preview.swift */; };
 		9F26AF7DF6C4C3B9E79A707C /* Pods_TextAnnotation_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E407781AC1326E99295B8A6 /* Pods_TextAnnotation_Tests.framework */; };
 		C0C93D9B7598916B05EDF75D /* Pods_TextAnnotation_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C31043B9B6FC1C8B8F605D6F /* Pods_TextAnnotation_Example.framework */; };
 		ED83F67C20348A760038D96B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED83F67B20348A760038D96B /* AppDelegate.swift */; };
@@ -33,6 +34,7 @@
 		4EB25F493E1BCA6749EABAAE /* TextAnnotation.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = TextAnnotation.podspec; path = ../TextAnnotation.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		5191DD13053457CF169E29B9 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		545575EC41988555FE24BECF /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		6F6EFF78250155B800CF71DC /* TextContainerView_Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextContainerView_Preview.swift; sourceTree = "<group>"; };
 		7D8C2C23BECE287ED74EAFB1 /* Pods-TextAnnotation_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TextAnnotation_Tests.debug.xcconfig"; path = "Target Support Files/Pods-TextAnnotation_Tests/Pods-TextAnnotation_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		C31043B9B6FC1C8B8F605D6F /* Pods_TextAnnotation_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TextAnnotation_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC38B4B00FE44D390A4B65F4 /* Pods-TextAnnotation_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TextAnnotation_Example.release.xcconfig"; path = "Target Support Files/Pods-TextAnnotation_Example/Pods-TextAnnotation_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -79,6 +81,14 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		6F6EFF77250155A800CF71DC /* Previews */ = {
+			isa = PBXGroup;
+			children = (
+				6F6EFF78250155B800CF71DC /* TextContainerView_Preview.swift */,
+			);
+			path = Previews;
+			sourceTree = "<group>";
+		};
 		ED83F66F20348A760038D96B = {
 			isa = PBXGroup;
 			children = (
@@ -103,6 +113,7 @@
 		ED83F67A20348A760038D96B /* TextAnnotation */ = {
 			isa = PBXGroup;
 			children = (
+				6F6EFF77250155A800CF71DC /* Previews */,
 				ED83F67B20348A760038D96B /* AppDelegate.swift */,
 				ED83F67D20348A760038D96B /* ViewController.swift */,
 				ED83F67F20348A760038D96B /* Assets.xcassets */,
@@ -334,6 +345,7 @@
 			files = (
 				ED83F67E20348A760038D96B /* ViewController.swift in Sources */,
 				ED83F67C20348A760038D96B /* AppDelegate.swift in Sources */,
+				6F6EFF79250155B800CF71DC /* TextContainerView_Preview.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
