@@ -188,7 +188,8 @@ open class TextContainerView: NSView {
     textView.usesFontPanel = false
     textView.isEditable = false
     textView.isVerticallyResizable = false
-    textView.typingAttributes = defaultOutlineAttributes()
+    textView.typingAttributes = TextAttributes.defaultOutlineAttributes(font: textView.getFont(),
+                                                                        color: NSColor.color(from: textColor))
     textView.delegate = self
     
     singleClickGestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(self.singleClickGestureHandle(_:)))
@@ -218,40 +219,11 @@ open class TextContainerView: NSView {
     addSubview(tally)
     scaleTally = tally
     
-    wantsLayer = true
-    layer?.borderColor = NSColor.black.cgColor
-    layer?.borderWidth = 1.0
+//    wantsLayer = true
+//    layer?.borderColor = NSColor.black.cgColor
+//    layer?.borderWidth = 1.0
   }
   
-  func defaultAttributes() -> [NSAttributedString.Key: Any] {
-    let textShadow = NSShadow()
-    textShadow.shadowColor = NSColor.black.withAlphaComponent(0.5)
-    textShadow.shadowOffset = NSMakeSize(1.0, -1.5)
-    return [
-      NSAttributedString.Key.font: textView.getFont(),
-      NSAttributedString.Key.foregroundColor: NSColor.color(from: textColor),
-      NSAttributedString.Key.shadow: textShadow,
-    ]
-  }
-  
-  func defaultOutlineAttributes() -> [NSAttributedString.Key: Any] {
-    return [
-      NSAttributedString.Key.font: textView.getFont(),
-      NSAttributedString.Key.strokeColor: NSColor.white,
-      NSAttributedString.Key.strokeWidth: -1.5,
-      NSAttributedString.Key.foregroundColor: NSColor.color(from: textColor),
-    ]
-  }
-  
-  @objc func switchViewValudChanged(sender: CustomSwitch) {
-    let attributes = sender.isOn ? defaultOutlineAttributes() : defaultAttributes()
-    textView.typingAttributes = attributes
-    textView.textStorage?.setAttributes(
-      attributes,
-      range: NSRange(location: 0, length: textView.textStorage?.string.count ?? 0)
-    )
-    textView.needsDisplay = true
-  }
   
   // MARK: - Mouse actions
   
