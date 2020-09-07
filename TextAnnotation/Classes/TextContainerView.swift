@@ -155,12 +155,14 @@ open class TextContainerView: NSView {
       updateSubviewsFrames(oldValue, frame: frame)
     }
   }
-  
+    
   // MARK: - Init
   
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
-    performSubfieldsInit(frameRect: frameRect, textColor: TextColor.defaultColor())
+    performSubfieldsInit(frameRect: frameRect,
+                         textColor: TextColor.defaultColor(),
+                         attributes: TextAttributes.defaultOutlineAttributes())
     self.text = ""
   }
   
@@ -168,19 +170,23 @@ open class TextContainerView: NSView {
     fatalError("init(coder:) has not been implemented")
   }
   
-  public init(frame frameRect: NSRect, text: String, color: TextColor) {
+  public init(frame frameRect: NSRect, text: String, color: TextColor, textAttributes: [NSAttributedString.Key: Any]? = nil) {
     super.init(frame: frameRect)
-    performSubfieldsInit(frameRect: frameRect, textColor: color)
+    performSubfieldsInit(frameRect: frameRect,
+                         textColor: color,
+                         attributes: textAttributes ?? TextAttributes.defaultOutlineAttributes())
     self.text = text
   }
 
-  init(modelable: TextAnnotationModelable) {
+  init(modelable: TextAnnotationModelable, textAttributes: [NSAttributedString.Key: Any]? = nil) {
     super.init(frame: modelable.frame)
-    performSubfieldsInit(frameRect: modelable.frame, textColor: modelable.color)
+    performSubfieldsInit(frameRect: modelable.frame,
+                         textColor: modelable.color,
+                         attributes: textAttributes ?? TextAttributes.defaultOutlineAttributes())
     updateFrame(with: modelable)
   }
   
-  func performSubfieldsInit(frameRect: CGRect, textColor: TextColor) {
+  func performSubfieldsInit(frameRect: CGRect, textColor: TextColor, attributes: [NSAttributedString.Key: Any]) {
     let size = frameRect.size
     
     backgroundView = SelectionView(frame: NSRect(origin: CGPoint.zero, size: size))
@@ -203,8 +209,13 @@ open class TextContainerView: NSView {
     textView.usesFontPanel = false
     textView.isEditable = false
     textView.isVerticallyResizable = false
-    textView.typingAttributes = TextAttributes.defaultOutlineAttributes(font: textView.getFont(),
-                                                                        color: NSColor.color(from: textColor))
+    
+    var textAttributes = attributes
+    textAttributes[.font] = textView.getFont()
+    textAttributes[.foregroundColor] = NSColor.color(from: textColor)
+    
+    textView.typingAttributes = textAttributes
+    
     textView.delegate = self
     
     singleClickGestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(self.singleClickGestureHandle(_:)))
@@ -242,29 +253,8 @@ open class TextContainerView: NSView {
     let trackingArea = NSTrackingArea(rect: self.bounds, options: options, owner: self, userInfo: nil)
     self.addTrackingArea(trackingArea)
   }
-  
-  func defaultAttributes() -> [NSAttributedString.Key: Any] {
-    let textShadow = NSShadow()
-    textShadow.shadowColor = NSColor.black.withAlphaComponent(0.5)
-    textShadow.shadowOffset = NSMakeSize(1.0, -1.5)
-    return [
-      NSAttributedString.Key.font: textView.getFont(),
-      NSAttributedString.Key.foregroundColor: NSColor.color(from: textColor),
-      NSAttributedString.Key.shadow: textShadow,
-    ]
-  }
-  
-  func defaultOutlineAttributes() -> [NSAttributedString.Key: Any] {
-    return [
-      NSAttributedString.Key.font: textView.getFont(),
-      NSAttributedString.Key.strokeColor: NSColor.white,
-      NSAttributedString.Key.strokeWidth: -1.5,
-      NSAttributedString.Key.foregroundColor: NSColor.color(from: textColor),
-    ]
-  }
-  
-  
-  
+
+
   // MARK: - Mouse events
   
   open override func mouseEntered(with event: NSEvent) {

@@ -1,30 +1,58 @@
 import AppKit
 
+public struct TextShadow {
+  
+  public init(color: NSColor,
+              offsetX: CGFloat,
+              offsetY: CGFloat,
+              blur: CGFloat) {
+    self.color = color
+    self.offsetX = offsetX
+    self.offsetY = offsetY
+    self.blur = blur
+  }
+  
+  let color: NSColor
+  let offsetX: CGFloat
+  let offsetY: CGFloat
+  let blur: CGFloat
+}
+
 public struct TextAttributes {
-  public static func defaultAttributes(font: NSFont, color: NSColor) -> [NSAttributedString.Key: Any] {
+  public static func shadowAttributes(color: NSColor,
+                                      offsetX: CGFloat,
+                                      offsetY: CGFloat,
+                                      blur: CGFloat) -> [NSAttributedString.Key: Any] {
     let textShadow = NSShadow()
-    textShadow.shadowColor = NSColor.black.withAlphaComponent(0.5)
-    textShadow.shadowOffset = NSMakeSize(1.0, -1.5)
+    textShadow.shadowColor = color
+    textShadow.shadowOffset = NSMakeSize(offsetX, offsetY)
+    textShadow.shadowBlurRadius = blur
     return [
-        NSAttributedString.Key.font: font,
-        NSAttributedString.Key.foregroundColor: color,
         NSAttributedString.Key.shadow: textShadow,
     ]
   }
     
      
-  public static func defaultOutlineAttributes(font: NSFont, color: NSColor) -> [NSAttributedString.Key: Any] {
-    let textShadow = NSShadow()
-    textShadow.shadowColor = NSColor.white.withAlphaComponent(1.0)
-    textShadow.shadowOffset = NSMakeSize(1.5, 1.5)
-    textShadow.shadowBlurRadius = 2.0
+  public static func defaultOutlineAttributes() -> [NSAttributedString.Key: Any] {
+    return [
+      NSAttributedString.Key.strokeColor: NSColor.white,
+      NSAttributedString.Key.strokeWidth: -1.5,
+    ]
+  }
+  
+  public static func outlineWithShadow(shadowProperties: TextShadow,
+                                       outlineWidth: CGFloat,
+                                       outlineColor: NSColor) -> [NSAttributedString.Key: Any] {
+    let shadow = NSShadow()
+    shadow.shadowColor = shadowProperties.color
+    shadow.shadowOffset = NSSize(width: shadowProperties.offsetX,
+                                 height: shadowProperties.offsetY)
+    shadow.shadowBlurRadius = shadowProperties.blur
     
     return [
-      NSAttributedString.Key.font: font,
-      NSAttributedString.Key.strokeColor: NSColor.white,
-      NSAttributedString.Key.strokeWidth: -2.5,
-      NSAttributedString.Key.foregroundColor: color,
-      NSAttributedString.Key.shadow: textShadow
+      .strokeColor: outlineColor,
+      .strokeWidth: outlineWidth,
+      .shadow: shadow
     ]
   }
 }
