@@ -14,7 +14,7 @@ class KnobView: MouseTrackingView {
     Palette.controlFillColor.setFill()
     path.fill()
     
-    path.lineWidth = Configuration.controlStrokeWidth
+    path.lineWidth = 1
     Palette.controlStrokeColor.setStroke()
     path.stroke()
   }
