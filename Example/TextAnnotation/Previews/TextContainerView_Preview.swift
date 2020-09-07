@@ -29,7 +29,7 @@ struct TextContainerViewPreview: NSViewRepresentable {
 struct TextContainerView_Previews: PreviewProvider {
   
   // a color to use in all previews if no custom color is passed
-  static var defaultColor: NSColor? = nil
+  static var defaultColor: NSColor? = NSColor.color(from: TextColor.orange)
   
   // background image for all previews
   static var defaultImageName: String = "zapier_screenshot"
@@ -40,7 +40,7 @@ struct TextContainerView_Previews: PreviewProvider {
       preview(with: nil) // current default settings
       
       preview(with: TextAttributes.shadowAttributes(color: .white,
-                                                    offsetX: 3.0,
+                                                    offsetX: 4.0,
                                                     offsetY: 0.0,
                                                     blur: 3.0))
       
@@ -53,6 +53,10 @@ struct TextContainerView_Previews: PreviewProvider {
     
       preview(with: TextAttributes.outline(outlineWidth: -5.0,
                                            outlineColor: .white))
+      
+      preview(with: TextAttributes.outline(outlineWidth: -5.0,
+                                           outlineColor: .white),
+              color: NSColor.color(from: TextColor.violet))
       
       preview(with: TextAttributes.outline(outlineWidth: -5.0,
                                            outlineColor: .black))
@@ -75,7 +79,7 @@ struct TextContainerView_Previews: PreviewProvider {
       preview(with: [.font: NSFont(name: "Apple Chancery", size: 30.0) as Any,
                      .strokeColor: NSColor.white,
                      .strokeWidth: -2.5],
-              color: .green)
+              color: NSColor.color(from: TextColor.violet))
     }
   }
   
@@ -88,3 +92,12 @@ struct TextContainerView_Previews: PreviewProvider {
   }
 }
 #endif
+
+extension NSColor {
+ func color(from textColor: TextColor) -> NSColor {
+  return NSColor(red: textColor.red,
+                 green: textColor.green,
+                 blue: textColor.blue,
+                 alpha: textColor.alpha)
+  }
+}
