@@ -39,7 +39,7 @@ struct TextContainerView_Previews: PreviewProvider {
       
       preview(with: nil) // current default settings
       
-      preview(with: TextAttributes.shadowAttributes(color: .white,
+      preview(with: TextAttributes.shadow(color: .white,
                                                     offsetX: 4.0,
                                                     offsetY: 0.0,
                                                     blur: 3.0))

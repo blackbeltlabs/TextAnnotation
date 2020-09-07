@@ -1,10 +1,20 @@
 import AppKit
 
 public struct TextAttributes {
-  public static func shadowAttributes(color: NSColor,
-                                      offsetX: CGFloat,
-                                      offsetY: CGFloat,
-                                      blur: CGFloat) -> [NSAttributedString.Key: Any] {
+  
+  // outline attributes
+  public static func outline(outlineWidth: CGFloat, outlineColor: NSColor) -> [NSAttributedString.Key: Any] {
+    [
+      NSAttributedString.Key.strokeColor: outlineColor,
+      NSAttributedString.Key.strokeWidth: outlineWidth,
+    ]
+  }
+  
+  // shadow attributes with all available shadow settings
+  public static func shadow(color: NSColor,
+                            offsetX: CGFloat,
+                            offsetY: CGFloat,
+                            blur: CGFloat) -> [NSAttributedString.Key: Any] {
     let textShadow = NSShadow()
     textShadow.shadowColor = color
     textShadow.shadowOffset = NSMakeSize(offsetX, offsetY)
@@ -13,21 +23,8 @@ public struct TextAttributes {
         NSAttributedString.Key.shadow: textShadow,
     ]
   }
-    
-  public static func defaultOutlineAttributes() -> [NSAttributedString.Key: Any] {
-     [
-      NSAttributedString.Key.strokeColor: NSColor.white,
-      NSAttributedString.Key.strokeWidth: -1.5,
-    ]
-  }
   
-  public static func outline(outlineWidth: CGFloat, outlineColor: NSColor) -> [NSAttributedString.Key: Any] {
-    [
-      NSAttributedString.Key.strokeColor: outlineColor,
-      NSAttributedString.Key.strokeWidth: outlineWidth,
-    ]
-  }
-    
+  // outline attributes plus shadow attributes with all available shadow settings
   public static func outlineWithShadow(outlineWidth: CGFloat,
                                        outlineColor: NSColor,
                                        shadowColor: NSColor,
@@ -46,5 +43,10 @@ public struct TextAttributes {
       .strokeWidth: outlineWidth,
       .shadow: shadow
     ]
+  }
+  
+  // currently used in the app
+  public static func defaultOutlineAttributes() -> [NSAttributedString.Key: Any] {
+    outline(outlineWidth: -1.5, outlineColor: NSColor.white)
   }
 }
