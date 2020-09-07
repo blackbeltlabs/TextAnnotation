@@ -211,7 +211,9 @@ open class TextContainerView: NSView {
     textView.isVerticallyResizable = false
     
     var textAttributes = attributes
-    textAttributes[.font] = textView.getFont()
+    if textAttributes[.font] == nil {
+      textAttributes[.font] = textView.getFont()  
+    }
     textAttributes[.foregroundColor] = NSColor.color(from: textColor)
     
     textView.typingAttributes = textAttributes

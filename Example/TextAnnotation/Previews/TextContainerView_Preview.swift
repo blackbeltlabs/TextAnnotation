@@ -27,21 +27,22 @@ struct TextContainerViewPreview: NSViewRepresentable {
 
 @available(OSX 10.15.0, *)
 struct TextContainerView_Previews: PreviewProvider {
+  
+  // a color to use in all previews if no custom color is passed
   static var defaultColor: NSColor? = nil
+  
+  // background image for all previews
   static var defaultImageName: String = "zapier_screenshot"
   
   static var previews: some View {
     Group {
-      TextContainerViewPreview(color: defaultColor)
-        .background(Image(defaultImageName))
-        .previewLayout(.fixed(width: 300.0, height: 100.0))
       
+      preview(with: nil) // current default settings
       
       preview(with: TextAttributes.shadowAttributes(color: .white,
                                                     offsetX: 3.0,
                                                     offsetY: 0.0,
                                                     blur: 3.0))
-      
       
       preview(with: TextAttributes.outlineWithShadow(outlineWidth: -2.5,
                                                      outlineColor: .white,
@@ -56,6 +57,12 @@ struct TextContainerView_Previews: PreviewProvider {
       preview(with: TextAttributes.outline(outlineWidth: -5.0,
                                            outlineColor: .black))
       
+      preview(with: TextAttributes.outlineWithShadow(outlineWidth: -2.5,
+                                                     outlineColor: .black,
+                                                     shadowColor: .white,
+                                                     shadowOffsetX: -2.0,
+                                                     shadowOffsetY: -0.5,
+                                                     shadowBlur: 3.0))
       
       preview(with: TextAttributes.outlineWithShadow(outlineWidth: -2.5,
                                                      outlineColor: .blue,
@@ -64,6 +71,11 @@ struct TextContainerView_Previews: PreviewProvider {
                                                      shadowOffsetY: 0.5,
                                                      shadowBlur: 5.0),
               color: .yellow)
+      
+      preview(with: [.font: NSFont(name: "Apple Chancery", size: 30.0) as Any,
+                     .strokeColor: NSColor.white,
+                     .strokeWidth: -2.5],
+              color: .green)
     }
   }
   
