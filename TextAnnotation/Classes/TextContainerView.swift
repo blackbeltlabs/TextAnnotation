@@ -80,6 +80,20 @@ open class TextContainerView: NSView {
       }
       
       switchView.isHidden = state == .inactive
+      
+      // should disable is active state to ensure that correct cursor is shown
+      if state == .active {
+        textView.isEditable = false
+        textView.isSelectable = false
+      }
+    }
+  }
+  
+  var isMoving: Bool = false {
+    didSet {
+      leftTally?.isEnabled = !isMoving
+      rightTally?.isEnabled = !isMoving
+      scaleTally?.isEnabled = !isMoving
     }
   }
   
@@ -100,7 +114,7 @@ open class TextContainerView: NSView {
   var leftTally: MouseTrackingView?
   var rightTally: MouseTrackingView?
   var scaleTally: KnobView?
- 
+  
   // MARK: Private
   
   private var backgroundView: SelectionView!
@@ -120,6 +134,7 @@ open class TextContainerView: NSView {
   private var didMove = false
   
   private var cursorSet = CursorSet.shared
+  private var trackingArea: NSTrackingArea?
   
   public var textColor: TextColor {
     set {
@@ -227,6 +242,14 @@ open class TextContainerView: NSView {
     switchView.action = #selector(switchViewValudChanged(sender:))
     switchView.isHidden = true
     addSubview(switchView)
+    
+    addTrackingAreas()
+  }
+  
+  private func addTrackingAreas() {
+    let options: NSTrackingArea.Options = [.mouseEnteredAndExited, .activeAlways, .mouseMoved]
+    let trackingArea = NSTrackingArea(rect: self.bounds, options: options, owner: self, userInfo: nil)
+    self.addTrackingArea(trackingArea)
   }
   
   func defaultAttributes() -> [NSAttributedString.Key: Any] {
@@ -259,11 +282,51 @@ open class TextContainerView: NSView {
     textView.needsDisplay = true
   }
   
-  // MARK: - Mouse actions
+  
+  // MARK: - Mouse events
+  
+  open override func mouseEntered(with event: NSEvent) {
+    guard state == .active else {
+      super.mouseEntered(with: event)
+      return
+    }
+  
+    updateMouseCursorForMovement(with: event)
+  }
+  
+  open override func mouseMoved(with event: NSEvent) {
+    guard state == .active else {
+      super.mouseMoved(with: event)
+      return
+    }
+    
+    updateMouseCursorForMovement(with: event)
+  }
+  
+  private func updateMouseCursorForMovement(with event: NSEvent) {
+    let mouseLocation = self.convert(event.locationInWindow, from: nil)
+    if backgroundView.currentSelectionFrame.contains(mouseLocation) {
+      cursorSet.moveCursor.set()
+    } else if !isMoving {
+      cursorSet.defaultCursor.set()
+      print("Set cursor as arrow")
+    }
+  }
   
   open override func mouseDown(with event: NSEvent) {
     let mouseLocation = self.convert(event.locationInWindow, from: nil)
-    state = mouseDownState(location: mouseLocation)
+    let tmpState = mouseDownState(location: mouseLocation)
+    
+    // ignore if mouse pressed not inside the selection view
+    if tmpState == .active, !backgroundView.currentSelectionFrame.contains(mouseLocation) {
+      return
+    }
+    
+    state = tmpState
+    
+    if state == .active {
+      isMoving = true
+    }
     
     lastMouseLocation = event.locationInWindow
     lastMouseDownLocation = event.locationInWindow
@@ -281,6 +344,8 @@ open class TextContainerView: NSView {
     }
     
     self.lastMouseLocation = event.locationInWindow
+    
+    updateMouseCursorForMovement(with: event)
     
     switch state {
     case .active:
@@ -307,6 +372,8 @@ open class TextContainerView: NSView {
     lastMouseLocation = nil
     lastMouseDownLocation = nil
     textView.deleteFontSnapshot()
+    
+    isMoving = false
   }
   
   // MARK: - Gestures handlers
@@ -523,7 +590,7 @@ extension TextContainerView: ActivateResponder {
 
 extension TextContainerView: MouseTrackingResponder {
   public func areaDidActivated(_ area: TextAnnotationArea) {
-    guard let areaResponder = activeAreaResponder, state == .active else { return }
+    guard let areaResponder = activeAreaResponder, state == .active, !isMoving else { return }
     areaResponder.areaDidActivated(area)
   }
 }

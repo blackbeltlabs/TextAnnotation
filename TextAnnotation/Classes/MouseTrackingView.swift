@@ -18,6 +18,8 @@ class MouseTrackingView: NSView {
   weak private var activeAreaResponder: MouseTrackingResponder?
   private var area: TextAnnotationArea?
   
+  var isEnabled: Bool = true
+  
   // MARK: - Lifecycle
   
   convenience init(type: TextAnnotationArea, responder: MouseTrackingResponder, frameRect: NSRect) {
@@ -43,10 +45,15 @@ class MouseTrackingView: NSView {
   // MARK: NSResponder
   
   override func mouseEntered(with event: NSEvent) {
+    guard isEnabled else { return }
     // we can not implement it on this level, because on the dragging we directly receive mouseExited(with theEvent:) here
     if let responder = activeAreaResponder, let type = area {
       responder.areaDidActivated(type)
     }
+  }
+  
+  override func hitTest(_ point: NSPoint) -> NSView? {
+    isEnabled ? super.hitTest(point) : nil
   }
 }
 
