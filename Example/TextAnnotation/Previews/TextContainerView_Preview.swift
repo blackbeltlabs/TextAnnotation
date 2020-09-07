@@ -27,31 +27,51 @@ struct TextContainerViewPreview: NSViewRepresentable {
 
 @available(OSX 10.15.0, *)
 struct TextContainerView_Previews: PreviewProvider {
-    static var previews: some View {
-      Group {
-        TextContainerViewPreview()
-          .background(Color.gray)
-          .previewLayout(.fixed(width: 300.0, height: 100.0))
-        
-        
-        preview(with: TextAttributes.shadowAttributes(color: .white,
-                                                      offsetX: 3.0,
-                                                      offsetY: 0.0,
-                                                      blur: 3.0))
-        
-        preview(with: TextAttributes.outlineWithShadow(shadowProperties: TextShadow(color: .white, offsetX: 1.5, offsetY: 1.5, blur: 2.0),
-                                                       
-                                                       outlineWidth: -2.5,
-                                                       outlineColor: .white))
-
-      }
+  static var defaultColor: NSColor? = nil
+  static var defaultImageName: String = "zapier_screenshot"
+  
+  static var previews: some View {
+    Group {
+      TextContainerViewPreview(color: defaultColor)
+        .background(Image(defaultImageName))
+        .previewLayout(.fixed(width: 300.0, height: 100.0))
+      
+      
+      preview(with: TextAttributes.shadowAttributes(color: .white,
+                                                    offsetX: 3.0,
+                                                    offsetY: 0.0,
+                                                    blur: 3.0))
+      
+      
+      preview(with: TextAttributes.outlineWithShadow(outlineWidth: -2.5,
+                                                     outlineColor: .white,
+                                                     shadowColor: .white,
+                                                     shadowOffsetX: 1.5,
+                                                     shadowOffsetY: 1.5,
+                                                     shadowBlur: 2.0))
+    
+      preview(with: TextAttributes.outline(outlineWidth: -5.0,
+                                           outlineColor: .white))
+      
+      preview(with: TextAttributes.outline(outlineWidth: -5.0,
+                                           outlineColor: .black))
+      
+      
+      preview(with: TextAttributes.outlineWithShadow(outlineWidth: -2.5,
+                                                     outlineColor: .blue,
+                                                     shadowColor: .systemBlue,
+                                                     shadowOffsetX: 2.5,
+                                                     shadowOffsetY: 0.5,
+                                                     shadowBlur: 5.0),
+              color: .yellow)
     }
+  }
   
   static func preview(with attributes: [NSAttributedString.Key: Any]?,
-                      color: NSColor? = nil) -> some View {
+                      color: NSColor? = defaultColor) -> some View {
     
      TextContainerViewPreview(attributes: attributes, color: color)
-                   .background(Color.gray)
+                   .background(Image(defaultImageName))
                    .previewLayout(.fixed(width: 300.0, height: 100.0))
   }
 }
