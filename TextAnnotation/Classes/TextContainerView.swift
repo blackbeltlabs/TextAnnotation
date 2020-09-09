@@ -309,7 +309,6 @@ open class TextContainerView: NSView {
       cursorSet.moveCursor.set()
     } else if !isMoving {
       cursorSet.defaultCursor.set()
-      print("Set cursor as arrow")
     }
   }
   
@@ -520,7 +519,7 @@ open class TextContainerView: NSView {
                                            height: CGFloat.greatestFiniteMagnitude)
     let diff_width = theFrame.width - (textFrame.width + 2 * (Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding) + textView.twoSymbolsWidth)
     if diff_width < 0 {
-      let height = textFrame.height + 2 * (Configuration.frameMargin + Configuration.horizontalTextPadding)
+      let height = textFrame.height + 2 * (Configuration.frameMargin + Configuration.dotRadius + Configuration.horizontalTextPadding)
       let centerY = theFrame.origin.y + theFrame.height/2
       
       theFrame.size = CGSize(width: theFrame.width, height: height)

@@ -54,7 +54,7 @@ class TextView: NSTextView {
   func frameForWidth(_ width: CGFloat, height: CGFloat) -> CGRect {
     return string.boundingRect(with: CGSize(width: width, height: height),
                                options: NSString.DrawingOptions.usesLineFragmentOrigin,
-                               attributes: [NSAttributedString.Key.font : getFont()])
+                               attributes: typingAttributes)
   }
   
   func calculateScaleRatio() {
