@@ -17,8 +17,7 @@ struct TextContainerViewPreview: NSViewRepresentable {
   func makeNSView(context: Context) -> TextContainerView {
     TextContainerView(frame: .zero,
                       text: "Text Annotation",
-                      color: color?.textColor ?? .defaultColor(),
-                      textAttributes: attributes)
+                      textParams: TextParams.textParams(from: attributes ?? [:]))
   }
 
   func updateNSView(_ view: TextContainerView, context: Context) {
@@ -30,18 +29,6 @@ struct ExampleScreenshots {
     static var landingPage = #imageLiteral(resourceName: "browser_screenshot")
     static var browserApp = #imageLiteral(resourceName: "browser_app_screenshot")
     static var figma = #imageLiteral(resourceName: "figma_screenshot")
-}
-
-struct TextParams {
-    var font = "HelveticaNeue-Bold"
-    var fontSize = 30.0
-    var strokeWidth = 3.0
-    var outlineWidth = -2.5
-    var outlineColor = NSColor.white
-    var shadowColor = NSColor.white
-    var shadowOffsetX = 1.5
-    var shadowOffsetY = 1.5
-    var shadowBlur = 2.0
 }
 
 @available(OSX 10.15.0, *)

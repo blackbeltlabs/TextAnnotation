@@ -24,10 +24,10 @@ extension TextAnnotationCanvas {
     self.selectedTextAnnotation = selectedTextAnnotation
   }
   
-  public func createTextAnnotation(text: String, location: CGPoint, color: TextColor) -> TextAnnotation {
+  public func createTextAnnotation(text: String, location: CGPoint, textParams: TextParams) -> TextAnnotation {
     let annotation = TextContainerView(frame: NSRect(origin: location, size: CGSize.zero),
                                        text: text,
-                                       color: color)
+                                       textParams: textParams)
 
     annotation.activateResponder = self
     annotation.activeAreaResponder = self

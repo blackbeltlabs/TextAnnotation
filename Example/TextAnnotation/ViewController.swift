@@ -13,9 +13,22 @@ class ViewController: NSViewController, TextAnnotationCanvas {
     let location = CGPoint(x: 100, y: 150)
     
     // Method supplied by TextAnnotationsController protocol implementation
-    let annotation1 = createTextAnnotation(text: "Some text",
+    
+    let attributes =  TextAttributes.shadow(color: .white,
+                                              offsetX: 4.0,
+                                              offsetY: 0.0,
+                                              blur: 3.0)
+    let annotation1 = createTextAnnotation(text: "Some Text",
                                            location: location,
-                                           color: TextColor(red: 0.23, green: 0.83, blue: 0.76, alpha: 1.0))
+                                           textParams: TextParams.textParams(from: attributes))
+      
+    
+  
+    
+    createTextAnnotation(text: "Some text",
+                        location: location,
+                        textParams: TextParams(fontName: "HelveticaNeue-Bold", fontSize: 30.0, foregroundColor: "#fe4a01"))
+    
     annotation1.delegate = self
     annotation1.addTo(canvas: self)
   }
@@ -25,7 +38,7 @@ class ViewController: NSViewController, TextAnnotationCanvas {
     
     let annotation = createTextAnnotation(text: "Another one",
                                           location: CGPoint(x: 150, y: 200),
-                                          color: TextColor.defaultColor())
+                                          textParams: TextParams(foregroundColor: "#fe4a01"))
     annotation.delegate = self
     annotation.addTo(canvas: self)
     annotation.startEditing()
