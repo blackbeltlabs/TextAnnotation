@@ -25,14 +25,32 @@ struct TextContainerViewPreview: NSViewRepresentable {
   }
 }
 
+struct ExampleScreenshots {
+    static var github = #imageLiteral(resourceName: "github_screenshot")
+    static var landingPage = #imageLiteral(resourceName: "browser_screenshot")
+    static var browserApp = #imageLiteral(resourceName: "browser_app_screenshot")
+    static var figma = #imageLiteral(resourceName: "figma_screenshot")
+}
+
+struct TextParams {
+    var font = "HelveticaNeue-Bold"
+    var fontSize = 30.0
+    var strokeWidth = 3.0
+    var outlineWidth = -2.5
+    var outlineColor = NSColor.white
+    var shadowColor = NSColor.white
+    var shadowOffsetX = 1.5
+    var shadowOffsetY = 1.5
+    var shadowBlur = 2.0
+}
+
 @available(OSX 10.15.0, *)
 struct TextContainerView_Previews: PreviewProvider {
   
   // a color to use in all previews if no custom color is passed
   static var defaultColor: NSColor? = NSColor.color(from: TextColor.orange)
-  
-  // background image for all previews
-  static var defaultImageName: String = "zapier_screenshot"
+    
+    
   
   static var previews: some View {
     Group {
@@ -87,8 +105,8 @@ struct TextContainerView_Previews: PreviewProvider {
                       color: NSColor? = defaultColor) -> some View {
     
      TextContainerViewPreview(attributes: attributes, color: color)
-                   .background(Image(defaultImageName))
-                   .previewLayout(.fixed(width: 300.0, height: 100.0))
+        .background(Image(nsImage: ExampleScreenshots.landingPage))
+                   .previewLayout(.fixed(width: 300.0, height: 200.0))
   }
 }
 #endif
