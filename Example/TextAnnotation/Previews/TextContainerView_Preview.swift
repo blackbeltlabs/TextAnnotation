@@ -48,6 +48,8 @@ struct TextContainerView_Previews: PreviewProvider {
                                           offsetX: 4.0,
                                           offsetY: 0.0,
                                           blur: 3.0))
+ 
+
       
       preview(with: TextAttributes.outlineWithShadow(outlineWidth: -2.5,
                                                      outlineColor: .white,
@@ -55,14 +57,16 @@ struct TextContainerView_Previews: PreviewProvider {
                                                      shadowOffsetX: 1.5,
                                                      shadowOffsetY: 1.5,
                                                      shadowBlur: 2.0))
+      
+    
     
       preview(with: TextAttributes.outline(outlineWidth: -5.0,
                                            outlineColor: .white))
-      
+        
       preview(with: TextAttributes.outline(outlineWidth: -5.0,
                                            outlineColor: .white),
               color: NSColor.color(from: TextColor.violet))
-      
+       
       preview(with: TextAttributes.outline(outlineWidth: -5.0,
                                            outlineColor: .black))
       
@@ -75,11 +79,10 @@ struct TextContainerView_Previews: PreviewProvider {
       
       preview(with: TextAttributes.outlineWithShadow(outlineWidth: -2.5,
                                                      outlineColor: .blue,
-                                                     shadowColor: .systemBlue,
+                                                     shadowColor: .blue,
                                                      shadowOffsetX: 2.5,
                                                      shadowOffsetY: 0.5,
-                                                     shadowBlur: 5.0),
-              color: .yellow)
+                                                     shadowBlur: 5.0))
       
       preview(with: [.font: NSFont(name: "Apple Chancery", size: 30.0) as Any,
                      .strokeColor: NSColor.white,
@@ -92,7 +95,7 @@ struct TextContainerView_Previews: PreviewProvider {
                       color: NSColor? = defaultColor) -> some View {
     
      TextContainerViewPreview(attributes: attributes, color: color)
-        .background(Image(nsImage: ExampleScreenshots.landingPage))
+      .background(Image(nsImage: ExampleScreenshots.figma))
                    .previewLayout(.fixed(width: 300.0, height: 200.0))
   }
 }

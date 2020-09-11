@@ -136,7 +136,7 @@ open class TextContainerView: NSView {
   public var textColor: TextColor {
     set {
       let nsColor = NSColor.color(from: newValue)
-      textView.textColor = nsColor
+      textView.typingAttributes[.foregroundColor] = nsColor
       textView.insertionPointColor = nsColor
 
       notifyAboutTextAnnotationUpdates()

@@ -1,25 +1,24 @@
 import AppKit
 
-public struct TextParams: Codable {
+public struct TextParams: Codable, Equatable {
   // MARK: - Properties
   public var fontName: String?
   public var fontSize: Double?
-  public var foregroundColor: String? // hex
+  public var foregroundColor: TextColor?
   public var outlineWidth: Double?
-  public var outlineColor: String? // hex
-  public var shadowColor: String? // hex
+  public var outlineColor: TextColor?
+  public var shadowColor: TextColor?
   public var shadowOffsetX: Double?
   public var shadowOffsetY: Double?
   public var shadowBlur: Double?
   
-  
   // MARK: - Init
   public init(fontName: String? = nil,
               fontSize: Double? = nil,
-              foregroundColor: String? = nil,
+              foregroundColor: TextColor? = nil,
               outlineWidth: Double? = nil,
-              outlineColor: String? = nil,
-              shadowColor: String? = nil,
+              outlineColor: TextColor? = nil,
+              shadowColor: TextColor? = nil,
               shadowOffsetX: Double? = nil,
               shadowOffsetY: Double? = nil,
               shadowBlur: Double? = nil) {
@@ -35,7 +34,7 @@ public struct TextParams: Codable {
   }
   
   static func defaultFontAndColor() -> TextParams {
-    TextParams(fontName: "HelveticaNeue-Bold", fontSize: 30.0, foregroundColor: "#fe4a01")
+    TextParams(fontName: "HelveticaNeue-Bold", fontSize: 30.0, foregroundColor: TextColor.orange)
   }
   
   // get attributes from current params
@@ -62,7 +61,7 @@ public struct TextParams: Codable {
     }
     
     if let foregroundColor = self.foregroundColor {
-      attributes[.foregroundColor] = NSColor(hex: foregroundColor)
+      attributes[.foregroundColor] = NSColor.color(from: foregroundColor)
     }
     
     
@@ -71,7 +70,7 @@ public struct TextParams: Codable {
     }
     
     if let outlineColor = self.outlineColor {
-      attributes[.strokeColor] = NSColor(hex: outlineColor)
+      attributes[.strokeColor] = NSColor.color(from: outlineColor)
     }
     
     
@@ -79,7 +78,7 @@ public struct TextParams: Codable {
       let shadow = NSShadow()
       
       if let shadowColor = self.shadowColor {
-        shadow.shadowColor = NSColor(hex: shadowColor)
+        shadow.shadowColor = NSColor.color(from: shadowColor)
       }
       
       if let shadowOffsetX = self.shadowOffsetX,
@@ -105,7 +104,7 @@ public struct TextParams: Codable {
     }
     
     if let foregroundColor = attributes[.foregroundColor] as? NSColor {
-      params.foregroundColor = foregroundColor.hexString
+      params.foregroundColor = foregroundColor.textColor
     }
     
     if let outlineWidth = attributes[.strokeColor] as? CGFloat {
@@ -113,12 +112,12 @@ public struct TextParams: Codable {
     }
     
     if let outlineColor = attributes[.strokeColor] as? NSColor {
-      params.outlineColor = outlineColor.hexString
+      params.outlineColor = outlineColor.textColor
     }
     
     if let shadow = attributes[.shadow] as? NSShadow {
       if let color = shadow.shadowColor {
-        params.shadowColor = color.hexString
+        params.shadowColor = color.textColor
       }
       params.shadowOffsetX = Double(shadow.shadowOffset.width)
       params.shadowOffsetY = Double(shadow.shadowOffset.height)
